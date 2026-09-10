@@ -2,9 +2,11 @@
 
 ## Abstract
 
-This paper proposes BT Expansion, an automated behavior-planning algorithm that incrementally expands a behavior tree until a goal can be achieved. The method is analyzed using a state-space formulation of BTs and is accompanied by proofs of soundness and completeness. The authors also connect the method to blended reactive planning and acting, arguing that the resulting robot can tolerate resolvable disturbances while retaining the modular and reactive execution properties of BTs.
+Verbatim excerpt from the paper's abstract:
 
-- [Raw abstract and article page](https://ojs.aaai.org/index.php/AAAI/article/view/16755)
+> “Automated synthesis of BTs can reduce human workload and build behavior models for complex tasks beyond the ability of human design…”
+
+[Read the complete source abstract on the AAAI article page](https://ojs.aaai.org/index.php/AAAI/article/view/16755).
 
 ## Full text
 

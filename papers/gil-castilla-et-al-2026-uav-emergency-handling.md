@@ -2,9 +2,11 @@
 
 ## Abstract
 
-This open-access paper presents a modular Behavior Tree framework for autonomous UAV inspection missions, with emphasis on heterogeneous platforms, scalable mission actuation, and deterministic emergency handling. The architecture integrates BTs with ROS-based UAV software, separates high-level decision logic from task execution, and gives emergency behaviors explicit priorities so nominal mission activity can be interrupted safely.
+Verbatim excerpt from the paper's abstract:
 
-- [Raw abstract and full article](https://link.springer.com/article/10.1007/s10846-026-02367-z)
+> “Unmanned Aerial Vehicles (UAVs) require reliable and adaptable autonomy frameworks to perform critical tasks such as infrastructure inspection…”
+
+[Read the complete source abstract and full article](https://link.springer.com/article/10.1007/s10846-026-02367-z).
 
 ## Full text
 

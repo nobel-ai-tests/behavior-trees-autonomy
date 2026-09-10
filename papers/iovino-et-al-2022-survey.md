@@ -2,14 +2,12 @@
 
 ## Abstract
 
-Verbatim opening from the paper's abstract:
+Verbatim excerpt from the paper's abstract:
 
-> “Behavior Trees (BTs) were invented as a tool to enable modular AI in computer games, but have received an increasing amount of attention...”
+> “Behavior Trees (BTs) were invented as a tool to enable modular AI in computer games, but have received an increasing amount of attention…”
 
 - [Read the complete abstract on arXiv](https://arxiv.org/abs/2005.05842)
 - [Publisher abstract on ScienceDirect](https://www.sciencedirect.com/science/article/pii/S0921889022000513)
-
-The abstract frames the survey around the transition of behavior trees from game AI to robotics, the scaling limitations of finite-state-machine transition logic, and the effect of organizing switching logic hierarchically. It states that the literature is categorized by methods, application areas, and contributions, and that the survey closes with open research challenges.
 
 ## Full text
 

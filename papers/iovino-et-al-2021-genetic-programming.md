@@ -2,9 +2,11 @@
 
 ## Abstract
 
-This paper studies automatic behavior-tree synthesis for robotic tasks in unpredictable environments using genetic programming. The authors evolve BT structure in a deliberately simple simulator, then test whether the learned policy transfers to a more realistic simulation. The approach avoids task-specific heuristics and produces fault-tolerant robot behavior, making it a useful example of interpretable program synthesis for robotics.
+Verbatim excerpt from the paper's abstract:
 
-- [Raw abstract and preprint on arXiv](https://arxiv.org/abs/2011.03252)
+> “Modern industrial applications require robots to be able to operate in unpredictable environments, and programs to be created with a minimal effort…”
+
+[Read the complete source abstract on arXiv](https://arxiv.org/abs/2011.03252).
 
 ## Full text
 

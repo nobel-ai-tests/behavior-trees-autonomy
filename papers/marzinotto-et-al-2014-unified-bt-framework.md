@@ -2,9 +2,11 @@
 
 ## Abstract
 
-The paper argues that robotics needs a more mathematically precise and internally consistent behavior-tree formalism. It introduces a unified framework, relates behavior trees to Controlled Hybrid Dynamical Systems, and demonstrates the formulation on a NAO grasping task.
+Verbatim excerpt from the paper's abstract:
 
-[Read the source abstract on the Christian Smith / KTH publication page](https://www.csc.kth.se/~ccs/Publications/icra14b.html).
+> “This paper presents a unified framework for Behavior Trees (BTs), a plan representation and execution tool.”
+
+[Read the complete source abstract on the Christian Smith / KTH publication page](https://www.csc.kth.se/~ccs/Publications/icra14b.html).
 
 ## Full text
 

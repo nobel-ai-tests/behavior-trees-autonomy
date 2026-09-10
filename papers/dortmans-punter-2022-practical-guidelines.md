@@ -2,9 +2,11 @@
 
 ## Abstract
 
-This open-access review translates behavior-tree concepts into practical guidance for autonomous robot software. It frames BTs as action-selection policies for dynamic environments, then develops a stepwise method for designing robust and reactive robot behavior and discusses the execution architecture needed to connect BTs to robot skills, world models, middleware, and reusable software components.
+Verbatim excerpt from the paper's abstract:
 
-- [Raw abstract and full article](https://onlinelibrary.wiley.com/doi/full/10.1155/2022/3314084)
+> “Behavior Trees are a promising approach to model the autonomous behaviour of robots in dynamic environments.”
+
+[Read the complete source abstract and full article](https://onlinelibrary.wiley.com/doi/full/10.1155/2022/3314084).
 
 ## Full text
 

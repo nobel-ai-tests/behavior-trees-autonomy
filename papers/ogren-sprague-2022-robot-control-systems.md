@@ -2,14 +2,12 @@
 
 ## Abstract
 
-Verbatim opening from the paper's abstract:
+Verbatim excerpt from the paper's abstract:
 
-> “In this paper we will give a control theoretic perspective on the research area of behavior trees in robotics.”
+> “In this article, we provide a control-theoretic perspective on the research area of behavior trees in robotics.”
 
-- [Read the complete abstract on arXiv](https://arxiv.org/abs/2203.13083)
-- [Version of record at Annual Reviews](https://doi.org/10.1146/annurev-control-042920-095314)
-
-The abstract identifies **modularity, hierarchy, and feedback** as the three ideas used to manage the complexity of versatile robot-control systems. It then states that the review uses those ideas across theoretical analysis, practical design, and extensions that connect BTs with other concepts from control theory and robotics.
+- [Read the complete abstract at Annual Reviews](https://www.annualreviews.org/content/journals/10.1146/annurev-control-042920-095314)
+- [Preprint abstract on arXiv](https://arxiv.org/abs/2203.13083)
 
 ## Full text
 

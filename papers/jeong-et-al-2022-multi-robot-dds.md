@@ -2,9 +2,11 @@
 
 ## Abstract
 
-This paper extends behavior-tree task execution to multiple mobile robots coordinated through a Data Distribution Service (DDS). Because a conventional single-root, single-tick BT does not directly model distributed asynchronous execution, the authors introduce task/action structures that let one planning unit assign work to several robots while individual robots retain local recovery behavior. The approach is demonstrated with three mobile robots executing coordinated goal-visiting tasks.
+Verbatim excerpt from the paper's abstract:
 
-- [Raw abstract and preprint on arXiv](https://arxiv.org/abs/2201.10918)
+> “In this study, we propose task planning framework for multiple robots that builds on a behavior tree (BT).”
+
+[Read the complete source abstract on arXiv](https://arxiv.org/abs/2201.10918).
 
 ## Full text
 

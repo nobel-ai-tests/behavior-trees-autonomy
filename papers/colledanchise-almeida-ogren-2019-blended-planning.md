@@ -2,9 +2,11 @@
 
 ## Abstract
 
-This paper shows how a planning algorithm can automatically create and refine a behavior tree while the robot is acting. Starting from goal conditions, the method backchains through action preconditions and effects to build BT structure incrementally. Because the resulting policy is executed as a reactive BT, the robot can often absorb environmental changes without replanning from scratch and can extend the tree only when an unmet condition requires new behavior.
+Verbatim excerpt from the paper's abstract:
 
-- [Raw abstract and preprint on arXiv](https://arxiv.org/abs/1611.00230)
+> “In this paper, we show how a planning algorithm can be used to automatically create and update a Behavior Tree (BT), controlling a robot…”
+
+[Read the complete source abstract on arXiv](https://arxiv.org/abs/1611.00230).
 
 ## Full text
 

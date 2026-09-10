@@ -2,9 +2,11 @@
 
 ## Abstract
 
-This open-access paper presents ILBERT, a framework that learns a behavior tree from a small number of human task demonstrations recorded as RGB-D video and then allows the learned tree to be repaired interactively during execution. The system extracts continuous preconditions and postconditions from visual features, constructs an initial BT using backchaining, detects execution-time failure cases, and refines the tree with additional user input.
+Verbatim excerpt from the paper's abstract:
 
-- [Raw abstract and full article](https://www.frontiersin.org/journals/robotics-and-ai/articles/10.3389/frobt.2023.1152595/full)
+> “In Interactive Task Learning (ITL), an agent learns a new task through natural interaction with a human instructor.”
+
+- [Read the complete source abstract and full article](https://www.frontiersin.org/journals/robotics-and-ai/articles/10.3389/frobt.2023.1152595/full)
 - [PubMed Central copy](https://pmc.ncbi.nlm.nih.gov/articles/PMC10368948/)
 
 ## Full text

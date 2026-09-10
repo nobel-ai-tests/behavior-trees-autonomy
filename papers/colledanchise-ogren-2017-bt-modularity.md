@@ -2,7 +2,9 @@
 
 ## Abstract
 
-The paper treats behavior trees as switching structures for hybrid dynamical systems, analyzes why BT composition improves modularity and preserves useful properties, and shows how BTs generalize several earlier control structures, including decision trees and subsumption.
+Verbatim excerpt from the paper's abstract:
+
+> “Behavior trees (BTs) are a way of organizing the switching structure of a hybrid dynamical system (HDS)…”
 
 [Read the abstract in the accepted manuscript](https://www.diva-portal.org/smash/get/diva2:1078931/FULLTEXT01.pdf).
 

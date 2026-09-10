@@ -2,9 +2,11 @@
 
 ## Abstract
 
-The paper explains a practical methodology for inducing decision trees from examples, presents ID3 in detail, studies noisy and incomplete information, compares remedies for a known weakness of the basic method, and closes with directions for further research.
+Verbatim excerpt from the paper's abstract:
 
-[Read the source abstract via the Springer DOI page](https://doi.org/10.1007/BF00116251).
+> “The technology for building knowledge-based systems by inductive inference from examples has been demonstrated successfully in several practical applications.”
+
+[Read the complete source abstract via the Springer DOI page](https://doi.org/10.1007/BF00116251).
 
 ## Full text
 

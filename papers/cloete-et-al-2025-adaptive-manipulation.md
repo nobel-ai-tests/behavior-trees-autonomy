@@ -2,9 +2,11 @@
 
 ## Abstract
 
-This paper introduces an adaptive behavior-tree pattern for manipulation tasks whose critical properties may only become known after physical interaction begins. The robot uses task feedback, including force/torque information, to select among discrete manipulation strategies, switch strategies before failure, and reuse information from previous attempts. The approach is evaluated on industrial-style manipulation tasks including valve operation.
+Verbatim excerpt from the paper's abstract:
 
-- [Raw abstract and preprint on arXiv](https://arxiv.org/abs/2406.14634)
+> “Many manipulation tasks pose a challenge since they depend on non-visual environmental information that can only be determined after sustained physical interaction has already begun.”
+
+- [Read the complete source abstract on arXiv](https://arxiv.org/abs/2406.14634)
 - [Oxford Research Archive record](https://ora.ox.ac.uk/objects/uuid%3Acfc482c4-2237-4bff-949d-037178689f0e)
 
 ## Full text
