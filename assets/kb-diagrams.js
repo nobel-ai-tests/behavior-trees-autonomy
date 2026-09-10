@@ -11,9 +11,10 @@ if (article) {
     flowchart: {
       htmlLabels: true,
       useMaxWidth: true,
-      curve: 'basis',
-      nodeSpacing: 34,
-      rankSpacing: 48
+      curve: 'linear',
+      nodeSpacing: 18,
+      rankSpacing: 26,
+      diagramPadding: 4
     },
     themeVariables: {
       background: '#ffffff',
@@ -26,14 +27,14 @@ if (article) {
       tertiaryColor: '#fff7e8',
       tertiaryTextColor: '#17202a',
       tertiaryBorderColor: '#a95a13',
-      lineColor: '#718096',
+      lineColor: '#657383',
       textColor: '#17202a',
       mainBkg: '#ffffff',
       nodeBorder: '#718096',
       clusterBkg: '#fbfcfd',
       clusterBorder: '#cbd2da',
       edgeLabelBackground: '#ffffff',
-      fontSize: '15px'
+      fontSize: '18px'
     }
   });
 
