@@ -5,19 +5,34 @@ Topic-oriented pages connect concepts and findings across sources.
 ## Current topics
 
 - [Behavior Tree Foundations](behavior-tree-foundations.md) — what a behavior tree is, core execution semantics, and how BTs differ from machine-learning decision trees and nearby autonomy architectures.
+- [Behavior Trees in Robotics: Core Research Topics](robotics-behavior-trees.md) — robotics literature map covering task planning, synthesis, robot learning, manipulation, mobile and multi-robot systems, aerial robotics, software architecture, and fault recovery.
 
 ## Topic-page convention
 
 Register every topic-oriented Markdown page in `../kb-manifest.json` with a one-sentence `description`, explicit stable `topics` IDs, and useful `keywords`/`tags`. Stable topic definitions belong under `graph.taxonomy`; each taxonomy node should also carry a concise description so selecting that conceptual node produces a meaningful inspector summary.
 
-## Areas to develop
+## Robotics taxonomy now represented
 
-- Foundations and semantics
-- Planning and execution
-- Reactive control
-- Task and motion planning
-- Learning and synthesis
-- Verification, safety, and formal methods
-- Human-robot interaction
+- Robot task planning
+- Behavior-tree synthesis
+- Robot learning
+- Evolutionary learning
+- Learning from demonstration
+- Robot manipulation
+- Mobile robotics
 - Multi-robot systems
-- Tooling and implementations
+- Aerial robotics
+- Fault tolerance and recovery
+- Robot software architecture
+- Human-robot interaction
+
+## Areas to develop next
+
+- Task and motion planning
+- Formal verification and safety
+- Long-horizon autonomy
+- ROS 2 navigation and production tooling
+- Language-guided and LLM-assisted robot programming
+- Human-robot collaboration
+- Swarm robotics
+- Marine and underwater robotics
