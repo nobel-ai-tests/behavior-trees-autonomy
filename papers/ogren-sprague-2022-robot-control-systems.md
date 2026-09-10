@@ -56,30 +56,64 @@ That organization matters because it treats BTs as more than a software notation
 
 ## Analysis methodology: operating regions
 
-![Repository redraw of Figure 2: state space partitioned into BT operating regions](../assets/figures/ogren-sprague-2022-fig2-operating-regions.svg)
+The operating-region analysis can be read as a bottom-up verification procedure. The following pseudocode is a repository-written restatement of that reasoning, not a reproduction of the paper's notation or algorithm text.
 
-*Repository redraw of the paper's Figure 2. The review partitions state space into operating regions for subtrees plus global success and failure regions, then studies how execution moves through those regions.*
+```text
+procedure ANALYZE_BT_WITH_OPERATING_REGIONS(tree):
+    for each subtree T_i in tree:
+        define S_i  # states where T_i returns Success
+        define F_i  # states where T_i returns Failure
+        define R_i  # states where T_i returns Running
+        identify u_i  # controller/action active while T_i runs
 
-The formal model associates each BT or subtree with Running, Success, and Failure regions. For a composed tree, the authors define **operating regions** in which a particular subtree supplies the active controller. This turns BT execution into a state-dependent switching system: feedback through return statuses determines which control law is active at each point in the state space.
+    derive Ω_i for each subtree from:
+        - the parent's Sequence/Fallback semantics
+        - the status of higher-priority siblings
+        - the states in which T_i is actually selected
 
-The analysis then asks whether execution reaches the global success region while avoiding failure or unsafe regions. This framing supports convergence, robustness, safety, and efficiency arguments for larger BTs by reasoning about how properties compose across Sequence and Fallback structures.
+    for each operating region Ω_i:
+        check whether trajectories under u_i:
+            - remain outside unsafe/failure sets
+            - make progress toward the next region or global success
+            - avoid cycles that prevent finite-time progress
+
+    compose the local claims upward through the tree
+    report whether the root can reach global Success while avoiding global Failure
+```
+
+The key idea is not the specific pseudocode syntax but the decomposition: each subtree owns a region in which its controller is active, and the analysis asks how execution moves between those regions under feedback. That makes convergence and safety questions compositional rather than requiring one monolithic controller proof from the outset.
 
 ## Design workflow: recursive goal expansion
 
-![Repository redraw of Figure 7: recursive behavior-tree design principle](../assets/figures/ogren-sprague-2022-fig7-recursive-design.svg)
+The paper's practical design principle is naturally expressed as recursion. The following pseudocode is repository-authored and summarizes the design logic in our own words.
 
-*Repository redraw of the design logic in the paper's Figure 7. A desired condition is checked first; alternative ways to achieve it sit under a Fallback, their preconditions become new conditions, and those conditions can recursively be replaced by subtrees that achieve them.*
+```text
+function ACHIEVE(desired_condition):
+    # Always succeed immediately when the goal is already true.
+    choices ← [ CONDITION(desired_condition) ]
 
-The practical workflow is recursive:
+    for each action that can make desired_condition true:
+        candidate ← SEQUENCE()
 
-1. State a desired condition or goal.
-2. Check whether it already holds.
-3. If it does not, collect alternative actions that can make it true under a Fallback.
-4. Place each action behind the conditions required for that action to be applicable.
-5. Replace an unmet precondition with another BT that tries to make that precondition true.
-6. Repeat until the required conditions are grounded in checks or executable skills.
+        for each required_condition of action:
+            if required_condition is directly observable:
+                candidate.add(CONDITION(required_condition))
+            else:
+                candidate.add(ACHIEVE(required_condition))
 
-This pattern exposes the relationship between modularity and feedback. A subtree only needs to know how to achieve its local condition; its parent decides why that condition matters. The leading condition check also prevents unnecessary action when the goal is already satisfied, while the Fallback gives the controller alternate ways to recover when one method is unavailable or fails.
+        candidate.add(ACTION(action))
+        choices.append(candidate)
+
+    return FALLBACK(choices)
+
+procedure DESIGN_TASK(goal_conditions):
+    task ← SEQUENCE()
+    for each goal in goal_conditions:
+        task.add(ACHIEVE(goal))
+    return task
+```
+
+This pattern exposes the relationship between modularity and feedback. A subtree only needs to know how to achieve its local condition; its parent decides why that condition matters. The leading condition check prevents unnecessary work when the goal already holds, while Fallback supplies alternate ways to recover when one method is unavailable or fails.
 
 ## Modularity, hierarchy, and feedback
 
@@ -99,7 +133,7 @@ It also provides a bridge between foundational BT theory and later application p
 
 ## Repository notes
 
-This note follows the paper's progression from system overview to analysis method to recursive design workflow. The three local visuals are simplified repository redraws derived from Figures 1, 2, and 7; use the linked full text for the original artwork and complete mathematical detail.
+This note keeps the review's system-overview visual, but expresses the operating-region analysis and recursive design principle as repository-written pseudocode instead of self-made methodology/workflow diagrams. The pseudocode is intentionally explanatory rather than a claim that the paper publishes these exact algorithms.
 
 Connections in this knowledge base:
 
