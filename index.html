@@ -3,254 +3,190 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Behavior Trees in Autonomous Systems and Robotics knowledge base" />
-  <title>Behavior Trees Knowledge Base</title>
-  <style>
-    :root {
-      color-scheme: light dark;
-      --bg: #f7f7f5;
-      --panel: #ffffff;
-      --text: #171717;
-      --muted: #686868;
-      --line: #ddddda;
-      --accent: #2357a6;
-      --code: #f0f0ed;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #101112;
-        --panel: #17191b;
-        --text: #ededed;
-        --muted: #a9a9a9;
-        --line: #303338;
-        --accent: #8ab4f8;
-        --code: #212428;
-      }
-    }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font: 16px/1.6 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-    a { color: var(--accent); }
-    .shell {
-      display: grid;
-      grid-template-columns: minmax(230px, 300px) minmax(0, 1fr);
-      min-height: 100vh;
-    }
-    aside {
-      border-right: 1px solid var(--line);
-      padding: 28px 22px;
-      background: var(--panel);
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      overflow: auto;
-    }
-    main { padding: 48px clamp(22px, 5vw, 72px) 80px; }
-    .content { max-width: 960px; margin: 0 auto; }
-    h1, h2, h3 { line-height: 1.2; }
-    h1 { font-size: clamp(2rem, 5vw, 3.4rem); margin: 0 0 12px; }
-    .lede { color: var(--muted); font-size: 1.08rem; max-width: 760px; }
-    .search {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--bg);
-      color: var(--text);
-      margin: 14px 0 18px;
-    }
-    .nav-section { margin: 18px 0; }
-    .nav-section strong { display: block; margin-bottom: 6px; }
-    .nav-section a {
-      display: block;
-      padding: 5px 0;
-      text-decoration: none;
-      color: var(--muted);
-    }
-    .nav-section a:hover { color: var(--text); }
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 14px;
-      margin: 28px 0 42px;
-    }
-    .card {
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 18px;
-      background: var(--panel);
-      cursor: pointer;
-    }
-    .card:hover { border-color: var(--muted); }
-    .card h3 { margin: 0 0 7px; }
-    .card p { color: var(--muted); margin: 0; }
-    article {
-      border-top: 1px solid var(--line);
-      padding-top: 28px;
-      min-height: 220px;
-    }
-    article img { max-width: 100%; }
-    article pre {
-      overflow: auto;
-      padding: 14px;
-      border-radius: 8px;
-      background: var(--code);
-    }
-    article code {
-      background: var(--code);
-      padding: .12em .28em;
-      border-radius: 4px;
-    }
-    article pre code { padding: 0; }
-    blockquote {
-      border-left: 3px solid var(--line);
-      margin-left: 0;
-      padding-left: 16px;
-      color: var(--muted);
-    }
-    .status { color: var(--muted); }
-    .source-link { margin-top: 34px; color: var(--muted); font-size: .92rem; }
-    @media (max-width: 760px) {
-      .shell { grid-template-columns: 1fr; }
-      aside { position: relative; height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
-      main { padding-top: 30px; }
-    }
-  </style>
+  <meta name="description" content="Interactive knowledge graph for behavior trees in autonomous systems and robotics" />
+  <title>Behavior Trees Knowledge Graph</title>
+  <link rel="stylesheet" href="assets/kb.css" />
 </head>
 <body>
-  <div class="shell">
-    <aside>
-      <strong>Knowledge Base</strong>
-      <input id="search" class="search" type="search" placeholder="Filter documents…" aria-label="Filter documents" />
-      <nav id="nav" aria-label="Knowledge-base navigation"></nav>
+  <header class="app-header">
+    <div class="brand">
+      <h1 id="title">Behavior Trees Knowledge Base</h1>
+      <p id="description">Loading knowledge graph…</p>
+    </div>
+    <div class="header-search">
+      <input id="search" type="search" placeholder="Search topics, papers, authors, keywords…" aria-label="Search knowledge graph" autocomplete="off" />
+      <span class="search-hint">/ to focus</span>
+    </div>
+    <div class="header-actions">
+      <button id="openControls" class="mobile-panel-buttons" type="button">Filters</button>
+      <button id="openInspector" class="mobile-panel-buttons" type="button">Inspect</button>
+      <button id="resetView" type="button">Reset</button>
+    </div>
+  </header>
+
+  <div class="workspace">
+    <aside id="controls" class="controls" aria-label="Graph configuration">
+      <div class="panel-inner">
+        <div class="panel-title">
+          <h2>Explore</h2>
+          <span>multi-level controls</span>
+        </div>
+
+        <section class="control-group">
+          <h3>Presets</h3>
+          <div class="preset-grid">
+            <button type="button" data-preset="concepts">Concept map</button>
+            <button type="button" data-preset="literature">Literature</button>
+            <button type="button" data-preset="papers">Papers</button>
+            <button type="button" data-preset="taxonomy">Taxonomy</button>
+            <button type="button" data-preset="everything">Everything</button>
+          </div>
+        </section>
+
+        <section class="control-group">
+          <h3>Search behavior</h3>
+          <div class="control-row">
+            <label for="searchMode">Mode</label>
+            <select id="searchMode">
+              <option value="highlight">Highlight matches</option>
+              <option value="focus">Show matches + neighbors</option>
+            </select>
+          </div>
+          <div class="control-row">
+            <label for="depth">Neighborhood depth</label>
+            <input id="depth" type="range" min="1" max="5" step="1" value="2" />
+            <span id="depthValue" class="range-value">2</span>
+          </div>
+          <div class="check">
+            <input id="localOnly" type="checkbox" />
+            <label for="localOnly">Only selected node neighborhood</label>
+          </div>
+        </section>
+
+        <section class="control-group">
+          <h3>Node types</h3>
+          <div id="typeFilters" class="check-grid"></div>
+        </section>
+
+        <section class="control-group">
+          <h3>Relationship types</h3>
+          <div id="edgeFilters"></div>
+        </section>
+
+        <section class="control-group">
+          <h3>Complexity</h3>
+          <div class="control-row">
+            <label for="maxNodes">Maximum nodes</label>
+            <input id="maxNodes" type="range" min="20" max="300" step="10" value="160" />
+            <span id="maxNodesValue" class="range-value">160</span>
+          </div>
+          <div class="control-row">
+            <label for="minKeywordFrequency">Min. keyword docs</label>
+            <input id="minKeywordFrequency" type="range" min="1" max="8" step="1" value="1" />
+            <span id="minKeywordFrequencyValue" class="range-value">1</span>
+          </div>
+        </section>
+
+        <section class="control-group">
+          <h3>Layout</h3>
+          <div class="control-row">
+            <label for="layout">Geometry</label>
+            <select id="layout">
+              <option value="force">Force network</option>
+              <option value="radial">Radial rings</option>
+              <option value="layered">Layered entities</option>
+            </select>
+          </div>
+          <div class="control-row">
+            <label for="labelMode">Labels</label>
+            <select id="labelMode">
+              <option value="smart">Smart</option>
+              <option value="all">All</option>
+              <option value="none">None</option>
+            </select>
+          </div>
+          <div class="control-row">
+            <label for="nodeSizeMode">Node size</label>
+            <select id="nodeSizeMode">
+              <option value="degree">By connectivity</option>
+              <option value="fixed">Fixed by type</option>
+            </select>
+          </div>
+        </section>
+
+        <section class="control-group">
+          <h3>Physics</h3>
+          <div class="control-row">
+            <label for="linkDistance">Link distance</label>
+            <input id="linkDistance" type="range" min="35" max="180" step="5" value="80" />
+            <span id="linkDistanceValue" class="range-value">80</span>
+          </div>
+          <div class="control-row">
+            <label for="charge">Repulsion</label>
+            <input id="charge" type="range" min="-500" max="-40" step="10" value="-190" />
+            <span id="chargeValue" class="range-value">-190</span>
+          </div>
+        </section>
+
+        <section class="control-group">
+          <h3>Document library</h3>
+          <div class="control-row" style="display:block">
+            <label for="docSelect" style="display:block; margin-bottom:6px">Jump directly to a knowledge page or paper note</label>
+            <select id="docSelect" style="width:100%"></select>
+          </div>
+          <button id="openSelectedDoc" type="button">Open selected document</button>
+        </section>
+      </div>
     </aside>
-    <main>
-      <div class="content">
-        <header>
-          <h1 id="title">Behavior Trees Knowledge Base</h1>
-          <p id="description" class="lede">Loading knowledge base…</p>
-        </header>
-        <section id="cards" class="cards" aria-label="Knowledge-base sections"></section>
-        <article id="document"><p class="status">Select a document from the navigation.</p></article>
-        <p class="source-link">Content is sourced from Markdown files in this repository and indexed by <code>kb-manifest.json</code>.</p>
+
+    <main class="graph-stage">
+      <div class="graph-toolbar">
+        <span id="graphStatus" class="status">Building graph…</span>
+        <button id="fitGraph" type="button">Fit graph</button>
+      </div>
+      <div class="graph-wrap">
+        <svg id="graph" role="img" aria-label="Interactive knowledge graph"></svg>
+        <div id="graphEmpty" class="graph-empty" hidden>No nodes match the current filters.</div>
+        <div class="legend" aria-label="Node legend">
+          <span><i class="dot topic"></i>topic/subtopic</span>
+          <span><i class="dot knowledge"></i>general knowledge</span>
+          <span><i class="dot paper"></i>paper</span>
+          <span><i class="dot keyword"></i>keyword</span>
+          <span><i class="dot author"></i>author</span>
+          <span><i class="dot venue"></i>venue</span>
+          <span><i class="dot year"></i>year</span>
+        </div>
+        <div class="zoom-controls" aria-label="Zoom controls">
+          <button id="zoomIn" type="button" title="Zoom in">+</button>
+          <button id="zoomOut" type="button" title="Zoom out">−</button>
+        </div>
       </div>
     </main>
+
+    <aside id="inspector" class="inspector" aria-label="Selected node details">
+      <div class="panel-inner">
+        <div class="panel-title">
+          <h2>Inspector</h2>
+          <span>click a node</span>
+        </div>
+        <div id="inspectorContent">
+          <p class="inspector-placeholder">Select a node to inspect its metadata and relationships.</p>
+        </div>
+      </div>
+    </aside>
   </div>
 
+  <section id="reader" class="reader" hidden aria-label="Markdown document reader">
+    <div class="reader-head">
+      <strong id="readerTitle">Document</strong>
+      <button id="closeReader" type="button">Close reader</button>
+    </div>
+    <article id="article"></article>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script>
-    const state = { manifest: null, docs: [] };
-    const nav = document.querySelector('#nav');
-    const cards = document.querySelector('#cards');
-    const article = document.querySelector('#document');
-    const search = document.querySelector('#search');
-
-    function safePath(path) {
-      if (!/^[a-zA-Z0-9_./-]+\.md$/.test(path) || path.includes('..')) {
-        throw new Error('Invalid Markdown path');
-      }
-      return path;
-    }
-
-    async function showDocument(path, title) {
-      article.innerHTML = '<p class="status">Loading…</p>';
-      try {
-        const response = await fetch(safePath(path), { cache: 'no-cache' });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const markdown = await response.text();
-        article.innerHTML = marked.parse(markdown);
-        document.title = `${title} · Behavior Trees Knowledge Base`;
-        history.replaceState(null, '', `#${encodeURIComponent(path)}`);
-      } catch (error) {
-        article.innerHTML = `<p class="status">Could not load <code>${path}</code>: ${error.message}</p>`;
-      }
-    }
-
-    function renderNavigation(filter = '') {
-      nav.replaceChildren();
-      const query = filter.trim().toLowerCase();
-
-      for (const section of state.manifest.sections) {
-        const matches = section.documents.filter(doc => {
-          const text = [doc.title, doc.path, ...(doc.tags || [])].join(' ').toLowerCase();
-          return !query || text.includes(query);
-        });
-        if (!matches.length) continue;
-
-        const wrapper = document.createElement('div');
-        wrapper.className = 'nav-section';
-        const heading = document.createElement('strong');
-        heading.textContent = section.title;
-        wrapper.appendChild(heading);
-
-        for (const doc of matches) {
-          const link = document.createElement('a');
-          link.href = `#${encodeURIComponent(doc.path)}`;
-          link.textContent = doc.title;
-          link.addEventListener('click', event => {
-            event.preventDefault();
-            showDocument(doc.path, doc.title);
-          });
-          wrapper.appendChild(link);
-        }
-        nav.appendChild(wrapper);
-      }
-    }
-
-    function renderCards() {
-      cards.replaceChildren();
-      for (const section of state.manifest.sections) {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.tabIndex = 0;
-        card.innerHTML = `<h3>${section.title}</h3><p>${section.description || `${section.documents.length} document(s)`}</p>`;
-        const open = () => {
-          const first = section.documents[0];
-          if (first) showDocument(first.path, first.title);
-        };
-        card.addEventListener('click', open);
-        card.addEventListener('keydown', event => {
-          if (event.key === 'Enter' || event.key === ' ') open();
-        });
-        cards.appendChild(card);
-      }
-    }
-
-    async function init() {
-      try {
-        const response = await fetch('kb-manifest.json', { cache: 'no-cache' });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        state.manifest = await response.json();
-        state.docs = state.manifest.sections.flatMap(section => section.documents);
-        document.querySelector('#title').textContent = state.manifest.title;
-        document.querySelector('#description').textContent = state.manifest.description;
-        renderNavigation();
-        renderCards();
-
-        const requestedPath = decodeURIComponent(location.hash.slice(1));
-        const requestedDoc = state.docs.find(doc => doc.path === requestedPath);
-        const initial = requestedDoc || state.docs[0];
-        if (initial) showDocument(initial.path, initial.title);
-      } catch (error) {
-        document.querySelector('#description').textContent = 'Unable to load kb-manifest.json.';
-        article.innerHTML = `<p class="status">Initialization failed: ${error.message}</p>`;
-      }
-    }
-
-    search.addEventListener('input', event => renderNavigation(event.target.value));
-    window.addEventListener('hashchange', () => {
-      if (!state.docs.length) return;
-      const path = decodeURIComponent(location.hash.slice(1));
-      const doc = state.docs.find(item => item.path === path);
-      if (doc) showDocument(doc.path, doc.title);
-    });
-
-    init();
-  </script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+  <script src="assets/kb-graph.js"></script>
 </body>
 </html>
