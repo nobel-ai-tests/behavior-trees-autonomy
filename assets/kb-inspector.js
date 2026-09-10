@@ -187,6 +187,34 @@
     else root.prepend(section);
   }
 
+  function ensurePaperResourceActions(selected) {
+    root.querySelectorAll('[data-paper-resource-action]').forEach(element => element.remove());
+    const doc = documentForSelection(selected);
+    if (!doc || doc.kind !== 'paper' || (!doc.abstractUrl && !doc.pdf)) return;
+
+    let actions = root.querySelector(':scope > .inspector-actions');
+    if (!actions) {
+      actions = document.createElement('div');
+      actions.className = 'inspector-actions';
+      root.appendChild(actions);
+    }
+
+    const addLink = (label, href) => {
+      if (!href) return;
+      const link = document.createElement('a');
+      link.className = 'button';
+      link.href = href;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.textContent = label;
+      link.dataset.paperResourceAction = 'true';
+      actions.appendChild(link);
+    };
+
+    addLink('Abstract', doc.abstractUrl);
+    addLink('PDF', doc.pdf);
+  }
+
   function moveConnectionsToBottom() {
     const connections = root.querySelector(':scope > .neighbors');
     if (!connections) return;
@@ -212,6 +240,7 @@
       renderTopics(topicIds);
       root.dataset.inspectorEnhancedKey = key;
     }
+    ensurePaperResourceActions(selected);
     moveConnectionsToBottom();
   }
 
