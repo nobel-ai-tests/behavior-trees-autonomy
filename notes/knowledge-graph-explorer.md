@@ -7,7 +7,7 @@ The GitHub Pages index is an interactive graph over the Markdown knowledge base.
 The explorer uses three main regions:
 
 - a **full-width configuration bar** for presets, entity/relationship filters, search behavior, complexity, layout, physics, and direct document selection;
-- a **resizable content pane** on the left for Markdown reading;
+- a **resizable content pane** on the left for Markdown and generated node content;
 - a **graph pane** on the right, with an optional inspector directly below the graph.
 
 The content/graph divider defaults to 70/30, can be dragged, and persists the selected width in browser storage. The inspector can be turned on or off from the graph toolbar.
@@ -77,6 +77,8 @@ Each registered document should provide inspector-ready metadata:
   "year": 2026,
   "venue": "Example Conference",
   "doi": "10.xxxx/example",
+  "abstractUrl": "https://example.org/paper#abstract",
+  "pdf": "https://example.org/paper.pdf",
   "topics": ["foundations", "robot-control"],
   "keywords": ["reactivity", "planning"],
   "related": ["topics/foundations.md"],
@@ -90,9 +92,9 @@ Each registered document should provide inspector-ready metadata:
 
 `topics` should contain one or more stable taxonomy IDs. These IDs drive the explicit topic list in the inspector and the document → topic graph edges. Prefer a small set of durable conceptual topics over using every possible keyword as a topic.
 
-Every declared taxonomy node should also have a one-sentence `description`. Selecting a topic node uses that description directly; its inspector topic list shows the taxonomy path from the root topic to the selected topic.
+Every declared taxonomy node should also have a one-sentence `description`. Selecting a topic node uses that description directly; its inspector topic list shows the taxonomy path from the root topic to the selected topic, and the content pane shows the topic description plus related repository content.
 
-For non-document nodes such as authors, keywords, venues, years, and sections, the inspector derives topics from the documents associated with that entity. It also generates a concise relationship summary from those document/topic counts.
+For non-document nodes such as authors, keywords, venues, years, and sections, the inspector derives topics from the documents associated with that entity. Selecting one of these nodes also generates a compact content page from available metadata and related documents.
 
 `kind` determines whether a document is rendered as a paper or general-knowledge node. Documents in the `papers` section default to paper if `kind` is omitted; other sections default to general knowledge.
 
@@ -100,7 +102,7 @@ For non-document nodes such as authors, keywords, venues, years, and sections, t
 
 `related` contains repository Markdown paths and creates explicit document-to-document relationships. Use it for meaningful conceptual or lineage connections rather than every citation.
 
-`authors`, `venue`, `year`, and `doi` are primarily useful for papers. The first three become graph nodes; DOI becomes an external action in the node inspector.
+`authors`, `venue`, `year`, and `doi` are primarily useful for papers. The first three become graph nodes; DOI becomes an external action in the node inspector. `abstractUrl` should point to the source that exposes the paper's raw abstract. `pdf` should point directly to an author, institutional, preprint, publisher, or otherwise lawful public reading copy when available. Paper notes should summarize the abstract rather than duplicating copyrighted source text when redistribution rights are unclear.
 
 ## Inspector contract
 
@@ -110,7 +112,7 @@ Selecting a node populates the inspector in this order:
 2. a single-line summary;
 3. a visible list of associated topics;
 4. entity-specific metadata;
-5. document/focus/source actions;
+5. document/focus/source actions, including Abstract and PDF for papers when available;
 6. **Connections** at the bottom.
 
 Document and taxonomy summaries come directly from the manifest. Entity summaries/topics for authors, keywords, venues, years, and sections are derived from their associated documents. The connections list remains last so it functions as the transition point from understanding the selected node to exploring adjacent nodes.
@@ -155,7 +157,9 @@ Presets are starting points. Any individual control can be changed afterward.
 
 ## Interaction model
 
-Click a node to select it and populate the inspector. Double-click a paper or general-knowledge node to open its Markdown page. The inspector provides an explicit **Open document** action and DOI/source action when present, followed by its connection list.
+A **single click** on any graph node selects it, updates the inspector, and brings its best available content into the left pane. Document-backed paper and knowledge nodes open their Markdown notes. Topic nodes show their taxonomy description, keywords/subtopics, and related documents. Authors, keywords, venues, years, and sections show generated content based on their linked repository documents. Keyboard activation with Enter or Space follows the same behavior.
+
+The inspector provides explicit **Open document**, DOI/source, **Abstract**, and **PDF** actions when those resources are available, followed by its connection list.
 
 The graph supports drag, pan, zoom, fit-to-view, keyboard search (`/`), and an integrated Markdown reader. Markdown is rendered with `marked`, sanitized with DOMPurify, and relative Markdown/media links are resolved against the directory of the source document.
 
