@@ -2,7 +2,18 @@
 
 ## Citation
 
-Alejandro Marzinotto, Michele Colledanchise, Christian Smith, and Petter Ögren. **Towards a Unified Behavior Trees Framework for Robot Control.** *2014 IEEE International Conference on Robotics and Automation (ICRA)*, pp. 5420–5427. DOI: [10.1109/ICRA.2014.6907656](https://doi.org/10.1109/ICRA.2014.6907656). [KTH accepted version](https://kth.diva-portal.org/smash/get/diva2:808739/FULLTEXT01).
+Alejandro Marzinotto, Michele Colledanchise, Christian Smith, and Petter Ögren. **Towards a Unified Behavior Trees Framework for Robot Control.** *2014 IEEE International Conference on Robotics and Automation (ICRA)*, pp. 5420–5427. DOI: [10.1109/ICRA.2014.6907656](https://doi.org/10.1109/ICRA.2014.6907656).
+
+## Abstract and full text
+
+- **Raw abstract source:** [Christian Smith / KTH publication page](https://www.csc.kth.se/~ccs/Publications/icra14b.html)
+- **Abstract summary:** The paper argues that robotics needs a more mathematically precise and internally consistent behavior-tree formalism, then introduces a unified framework, relates BTs to Controlled Hybrid Dynamical Systems, and demonstrates the framework on a NAO grasping task.
+- **Full-text PDF:** [Author/KTH-hosted PDF](https://www.csc.kth.se/~almc/pdf/unified_bt_framework.pdf)
+- **Accepted manuscript:** [KTH DiVA](https://kth.diva-portal.org/smash/get/diva2:808739/FULLTEXT01)
+
+## Paper contents
+
+The paper progresses from a review of inconsistent prior BT formulations to a compact formal model. It introduces Action and Condition subsets, formalizes node extensions, defines Controlled Hybrid Dynamical Systems, analyzes equivalence between BTs and CHDSs, describes the software implementation, reports the NAO grasping demonstration, and closes with conclusions and future work.
 
 ## Problem / motivation
 
