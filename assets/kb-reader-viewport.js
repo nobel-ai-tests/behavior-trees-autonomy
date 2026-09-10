@@ -51,14 +51,14 @@
   try {
     reader.scrollIntoView = () => resetToTop();
   } catch (_) {
-    // Older engines may expose the method as non-writable; the mutation and
-    // navigation hooks below still keep the internal reader at its top.
+    // Older engines may expose the method as non-writable. Explicit content
+    // navigation hooks below still reset only when navigation actually occurs.
   }
 
-  new MutationObserver(() => resetToTop()).observe(article, {
-    childList: true,
-    subtree: true
-  });
+  // Do not reset reader.scrollTop from an article MutationObserver. Diagram
+  // renderers, simulations, syntax highlighting, and other enhancements mutate
+  // the article after content loads; treating those mutations as navigation can
+  // continuously force the reader back to the top and make scrolling unusable.
 
   if ('ResizeObserver' in window) {
     const paneObserver = new ResizeObserver(schedulePaneHeightSync);
