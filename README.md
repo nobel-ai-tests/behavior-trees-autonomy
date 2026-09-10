@@ -7,8 +7,15 @@ The repository collects and connects papers, implementation notes, conceptual su
 ## Start here
 
 - [Behavior Tree Foundations](topics/behavior-tree-foundations.md) — what a behavior tree is, how its runtime semantics work, and how it differs from a machine-learning decision tree.
+- [Behavior Trees in Robotics: Core Research Topics](topics/robotics-behavior-trees.md) — a robotics-first literature map across task planning, synthesis, learning, manipulation, mobile and multi-robot systems, aerial robotics, software architecture, and fault recovery.
 - [Knowledge Graph Explorer](notes/knowledge-graph-explorer.md) — graph model, manifest schema, presets, filters, layouts, inspector behavior, content behavior, and scaling guidance.
 - [References](references.md) — consolidated bibliography with DOI, abstract-source, and accessible full-text links.
+
+## Robotics literature coverage
+
+The first domain expansion is centered on robotics. The graph now connects foundational BT work with primary papers on reactive task planning, formally grounded behavior synthesis, genetic-programming-based robot learning, learning from demonstration, adaptive manipulation, mobile and multi-robot execution, ROS-oriented robot software architecture, and UAV mission/emergency handling.
+
+The robotics taxonomy is designed to expand incrementally. Current first-class topics include Robot Task Planning, Behavior-Tree Synthesis, Robot Learning, Evolutionary Learning, Learning from Demonstration, Robot Manipulation, Mobile Robotics, Multi-Robot Systems, Aerial Robotics, Fault Tolerance and Recovery, Robot Software Architecture, and Human-Robot Interaction.
 
 ## Interactive knowledge graph
 
@@ -28,7 +35,7 @@ The graph can be explored using concept, literature, paper, taxonomy, or all-ent
 
 - `papers/` — notes on individual papers and technical publications
 - `notes/` — working notes, questions, synthesis, and explorer documentation
-- `topics/` — topic-focused Markdown pages
+- `topics/` — topic-focused Markdown pages, including the robotics literature map
 - `references.md` — consolidated bibliography and links
 - `kb-manifest.json` — content manifest, graph taxonomy, document summaries, topic assignments, and paper resource URLs
 - `index.html` — graph-first GitHub Pages entry point
@@ -39,6 +46,8 @@ The graph can be explored using concept, literature, paper, taxonomy, or all-ent
 - `assets/kb-history.css` — history bar and recent-item presentation
 - `assets/kb-inspector.js` — summary/topic enrichment, paper resource actions, and inspector ordering
 - `assets/kb-reader-links.js` — directory-aware Markdown and asset links in the reader
+- `assets/kb-reader-viewport.js` — keeps content navigation anchored in the left reader instead of scrolling the page
+- `assets/kb-reader-viewport.css` — isolated left-reader scrolling and viewport sizing
 - `assets/kb-layout.js` — resizable content/graph layout and panel state
 - `assets/kb.css` — responsive graph/explorer base presentation
 - `assets/kb-inspector.css` — inspector-specific summary/topic presentation
