@@ -44,13 +44,14 @@
     resizeDispatchTimer = setTimeout(() => window.dispatchEvent(new Event('resize')), 30);
   }
 
-  function finishResize(event) {
+  function finishResize() {
     if (activePointer === null) return;
-    if (event && splitter.hasPointerCapture?.(activePointer)) {
-      try { splitter.releasePointerCapture(activePointer); } catch (_) { /* already released */ }
-    }
+    const pointerId = activePointer;
     activePointer = null;
     workspaceRect = null;
+    if (splitter.hasPointerCapture?.(pointerId)) {
+      try { splitter.releasePointerCapture(pointerId); } catch (_) { /* already released */ }
+    }
     document.body.classList.remove('resizing-columns');
     applyContentWidth(currentContentWidth(), true);
     notifyGraphResize();
@@ -85,7 +86,7 @@
 
   splitter.addEventListener('pointerup', finishResize);
   splitter.addEventListener('pointercancel', finishResize);
-  splitter.addEventListener('lostpointercapture', () => finishResize());
+  splitter.addEventListener('lostpointercapture', finishResize);
 
   splitter.addEventListener('dblclick', () => {
     applyContentWidth(DEFAULT_CONTENT_PERCENT, true);
