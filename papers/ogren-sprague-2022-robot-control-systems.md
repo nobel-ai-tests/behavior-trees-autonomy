@@ -1,19 +1,30 @@
 # Ögren & Sprague (2022) — Behavior Trees in Robot Control Systems
 
-## Citation
+## Abstract
 
-Petter Ögren and Christopher I. Sprague. **Behavior Trees in Robot Control Systems.** *Annual Review of Control, Robotics, and Autonomous Systems*, 5, 81–107, 2022. DOI: [10.1146/annurev-control-042920-095314](https://doi.org/10.1146/annurev-control-042920-095314).
+The review interprets behavior trees through modularity, hierarchy, and feedback, showing how those ideas support robot-control design, analysis, convergence arguments, safety mechanisms, explainability, learning, and planning.
 
-## Abstract and full text
+- [Read the source abstract at Annual Reviews](https://www.annualreviews.org/content/journals/10.1146/annurev-control-042920-095314)
+- [Preprint abstract on arXiv](https://arxiv.org/abs/2203.13083)
 
-- **Raw abstract source:** [Annual Reviews](https://www.annualreviews.org/content/journals/10.1146/annurev-control-042920-095314)
-- **Preprint abstract:** [arXiv:2203.13083](https://arxiv.org/abs/2203.13083)
-- **Abstract summary:** The review interprets behavior trees through modularity, hierarchy, and feedback, showing how those ideas support robot-control design, analysis, convergence arguments, safety mechanisms, explainability, learning, and planning.
-- **Full-text PDF:** [arXiv PDF](https://arxiv.org/pdf/2203.13083)
+## Full text
 
-## Paper contents
+- [arXiv PDF](https://arxiv.org/pdf/2203.13083)
+- [Version of record](https://doi.org/10.1146/annurev-control-042920-095314)
 
-The review covers the history of BTs and their relationship to finite-state machines; formal BT definitions; optimal modularity; convergence analysis; a design principle based on modularity and feedback; safety and invariance with control barrier functions; explainability and human-robot interaction; reinforcement learning and utility; evolutionary algorithms; planning; and conclusions.
+## Contents
+
+- History of behavior trees and their relationship to finite-state machines
+- Formal BT definitions
+- Optimal modularity
+- Convergence analysis
+- Design principles based on modularity and feedback
+- Safety and invariance with control barrier functions
+- Explainability and human-robot interaction
+- Reinforcement learning and utility
+- Evolutionary algorithms
+- Planning
+- Conclusions
 
 ## Problem / motivation
 
@@ -25,19 +36,25 @@ The review organizes the value of BTs around three ideas: **modularity, hierarch
 
 ## Method
 
-This is a review article rather than a single experiment. It synthesizes theoretical analysis, design principles, extensions, and relationships between BTs and control/robotics concepts.
+This is a review article rather than a single experiment. It synthesizes theoretical analysis, design principles, extensions, and relationships between BTs and control and robotics concepts.
 
 ## Key results / significance
 
-The paper is especially useful for avoiding a purely software-engineering interpretation of BTs. A BT can be seen as a high-level feedback mechanism that repeatedly chooses among behavior modules based on their applicability and progress.
+The paper is especially useful for avoiding a purely software-engineering interpretation of behavior trees. A BT can be viewed as a high-level feedback mechanism that repeatedly chooses among behavior modules based on applicability and progress.
 
-That perspective helps distinguish a BT from a standard ML decision tree. A classifier may contribute information to a controller, but a BT itself participates in ongoing task execution and switching.
+That perspective also separates BTs from standard machine-learning decision trees: a classifier may contribute information to a controller, but a BT itself participates in ongoing task execution and switching.
 
-## Limitations
+## Repository notes
 
-The review adopts a control-systems lens and therefore should be read alongside broader AI/robotics surveys for coverage of learning, game AI, tooling, and application-specific variants.
+The review adopts a control-systems lens and is best read alongside broader AI and robotics surveys for coverage of learning, game AI, tooling, and application-specific variants.
 
-## Connections to other work
+The review includes formal diagrams and conceptual figures throughout. Those visuals remain in the linked full text rather than being rehosted here unless reuse rights are clear.
+
+Connections in this knowledge base:
 
 - Complements Iovino et al. (2022), which surveys the broader BT literature.
 - Builds conceptually on the modularity and hybrid-control analysis in Colledanchise & Ögren (2017).
+
+## Citation
+
+Petter Ögren and Christopher I. Sprague. **Behavior Trees in Robot Control Systems.** *Annual Review of Control, Robotics, and Autonomous Systems*, 5, 81–107, 2022. DOI: [10.1146/annurev-control-042920-095314](https://doi.org/10.1146/annurev-control-042920-095314).
