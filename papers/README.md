@@ -10,11 +10,14 @@ One Markdown note per paper or technical publication.
 - [Ögren & Sprague (2022) — Behavior Trees in Robot Control Systems](ogren-sprague-2022-robot-control-systems.md)
 - [Quinlan (1986) — Induction of Decision Trees](quinlan-1986-induction-decision-trees.md)
 
-## Recommended fields for future paper notes
+## Required structure for paper notes
 
 Each paper note should cover:
 
 - Citation
+- Abstract source and an accurate repository-written abstract summary
+- Direct PDF/full-text link when an author, institutional repository, preprint server, or other suitable public copy is available
+- A compact map of the paper's contents
 - Problem / motivation
 - Behavior-tree or comparison contribution
 - Method
@@ -23,4 +26,6 @@ Each paper note should cover:
 - Limitations
 - Connections to other work
 
-Each paper must also be registered in `../kb-manifest.json` with a one-sentence `description` and explicit `topics` IDs so the graph inspector can present a useful summary and topic list. Add `authors`, `year`, `venue`, `doi`, `keywords`, `related`, and `tags` when available.
+Do not duplicate a publisher's full copyrighted abstract or paper text into the repository when redistribution rights are unclear. Link the raw abstract at its source and write a faithful summary here instead.
+
+Each paper must also be registered in `../kb-manifest.json` with a one-sentence `description` and explicit `topics` IDs so the graph inspector can present a useful summary and topic list. Add `authors`, `year`, `venue`, `doi`, `abstractUrl`, `pdf`, `keywords`, `related`, and `tags` when available. The `abstractUrl` field should point to the raw abstract source; `pdf` should point directly to the best lawful reading copy available.
