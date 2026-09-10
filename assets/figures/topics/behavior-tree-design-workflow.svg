@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-labelledby="title desc">
+  <title id="title">Behavior-tree design and execution workflow</title>
+  <desc id="desc">Five-stage robotics workflow from task analysis through tree design, implementation, repeated ticking, and monitoring/recovery.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0 0 L0 6 L9 3 z" fill="#718096"/></marker>
+    <style>
+      .serif{font-family:Georgia,'Times New Roman',serif;fill:#17202a}.sans{font-family:Arial,Helvetica,sans-serif;fill:#27313b}.title{font-size:28px;font-weight:700}.subtitle{font-size:17px;fill:#5f6b78}.stepTitle{font-size:17px;font-weight:700}.body{font-size:14px;fill:#4b5966}.num{font-size:14px;font-weight:700}.arrow{stroke:#718096;stroke-width:2;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1200" height="520" fill="#fff"/>
+  <text x="42" y="48" class="serif title">From task specification to reactive execution</text>
+  <text x="42" y="78" class="sans subtitle">A methodological workflow for constructing and deploying a behavior tree in robotics.</text>
+
+  <g transform="translate(42 128)">
+    <path d="M205 92 H247" class="arrow"/><path d="M437 92 H479" class="arrow"/><path d="M669 92 H711" class="arrow"/><path d="M901 92 H943" class="arrow"/>
+
+    <g>
+      <rect width="163" height="184" fill="#eef4fa" stroke="#245b88"/>
+      <text x="16" y="30" class="sans num" fill="#245b88">01</text>
+      <text x="16" y="59" class="serif stepTitle">Task analysis</text>
+      <text x="16" y="88" class="sans body">Goals</text><text x="16" y="110" class="sans body">constraints</text><text x="16" y="132" class="sans body">world state</text><text x="16" y="154" class="sans body">failure modes</text>
+    </g>
+    <g transform="translate(232 0)">
+      <rect width="163" height="184" fill="#eef8f3" stroke="#28775f"/>
+      <text x="16" y="30" class="sans num" fill="#28775f">02</text>
+      <text x="16" y="59" class="serif stepTitle">BT design</text>
+      <text x="16" y="88" class="sans body">conditions + actions</text><text x="16" y="110" class="sans body">Sequence / Fallback</text><text x="16" y="132" class="sans body">priority ordering</text><text x="16" y="154" class="sans body">subtree boundaries</text>
+    </g>
+    <g transform="translate(464 0)">
+      <rect width="163" height="184" fill="#fff7e8" stroke="#a95a13"/>
+      <text x="16" y="30" class="sans num" fill="#a95a13">03</text>
+      <text x="16" y="59" class="serif stepTitle">Implementation</text>
+      <text x="16" y="88" class="sans body">robot skills</text><text x="16" y="110" class="sans body">blackboard / data ports</text><text x="16" y="132" class="sans body">halting semantics</text><text x="16" y="154" class="sans body">middleware integration</text>
+    </g>
+    <g transform="translate(696 0)">
+      <rect width="163" height="184" fill="#f3f0fb" stroke="#6847a5"/>
+      <text x="16" y="30" class="sans num" fill="#6847a5">04</text>
+      <text x="16" y="59" class="serif stepTitle">Tick + act</text>
+      <text x="16" y="88" class="sans body">sample state</text><text x="16" y="110" class="sans body">evaluate root</text><text x="16" y="132" class="sans body">propagate status</text><text x="16" y="154" class="sans body">execute active action</text>
+    </g>
+    <g transform="translate(928 0)">
+      <rect width="188" height="184" fill="#fff0f1" stroke="#9a3f67"/>
+      <text x="16" y="30" class="sans num" fill="#9a3f67">05</text>
+      <text x="16" y="59" class="serif stepTitle">Monitor + recover</text>
+      <text x="16" y="88" class="sans body">observe outcome</text><text x="16" y="110" class="sans body">detect changed state</text><text x="16" y="132" class="sans body">preempt if necessary</text><text x="16" y="154" class="sans body">fallback / retry / replan</text>
+    </g>
+
+    <path d="M1022 206 C1022 284 780 300 582 300 C362 300 130 286 130 222" fill="none" stroke="#245b88" stroke-width="2" stroke-dasharray="7 6" marker-end="url(#arrow)"/>
+    <text x="408" y="334" class="sans" font-size="15" fill="#245b88">feedback closes the loop: new state can change the active subtree on the next tick</text>
+
+    <g transform="translate(0 370)">
+      <text x="0" y="0" class="serif" font-size="18" font-weight="700">Control-loop interpretation</text>
+      <text x="220" y="0" class="serif" font-size="18">xₜ → BT(xₜ) → actionₜ → environment → xₜ₊₁ → BT(xₜ₊₁)</text>
+    </g>
+  </g>
+</svg>
