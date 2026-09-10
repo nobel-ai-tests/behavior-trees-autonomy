@@ -2,7 +2,18 @@
 
 ## Citation
 
-Matteo Iovino, Edvards Scukins, Jonathan Styrud, Petter Ögren, and Christian Smith. **A Survey of Behavior Trees in Robotics and AI.** *Robotics and Autonomous Systems*, 154, 104096, 2022. DOI: [10.1016/j.robot.2022.104096](https://doi.org/10.1016/j.robot.2022.104096). [arXiv:2005.05842](https://arxiv.org/abs/2005.05842).
+Matteo Iovino, Edvards Scukins, Jonathan Styrud, Petter Ögren, and Christian Smith. **A Survey of Behavior Trees in Robotics and AI.** *Robotics and Autonomous Systems*, 154, 104096, 2022. DOI: [10.1016/j.robot.2022.104096](https://doi.org/10.1016/j.robot.2022.104096).
+
+## Abstract and full text
+
+- **Raw abstract source:** [arXiv:2005.05842](https://arxiv.org/abs/2005.05842)
+- **Publisher abstract:** [ScienceDirect](https://www.sciencedirect.com/science/article/pii/S0921889022000513)
+- **Abstract summary:** The survey traces behavior trees from game AI into robotics, explains their hierarchical organization and modular switching logic, and categorizes the literature by theory, applications, synthesis/learning methods, implementation libraries, and open research challenges.
+- **Full-text PDF:** [arXiv PDF](https://arxiv.org/pdf/2005.05842)
+
+## Paper contents
+
+The survey is organized around seven major parts: introduction and core BT semantics; fundamental theory; applications in game AI, chatbots, manipulation, mobile robots, and aerial/underwater systems; methods including hand design, learning, demonstration, and planning; implementation libraries; open research challenges; and conclusions.
 
 ## Problem / motivation
 
