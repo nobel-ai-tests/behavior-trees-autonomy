@@ -6,6 +6,16 @@ Behavior Trees are a promising approach to model the autonomous behaviour of rob
 
 *Verbatim abstract. The article is licensed CC BY 4.0.*
 
+**Contribution / method.** The paper turns practitioner experience with behavior-tree-based robots into an engineering workflow for building robot decision logic. The method starts from the robot's context and purpose, builds a nominal “good weather” plan, adds explicit preconditions/postconditions and recovery behavior for robustness, then introduces reactive contingency handling and connects the resulting BT to robot skills, world-state data, middleware, and execution infrastructure.
+
+**Quantitative evidence.** The paper is a guidelines/review contribution rather than a controlled experiment. Its procedure is organized as **four main design steps**, but it reports no experimental sample size, success-rate comparison, runtime benchmark, defect-count reduction, maintainability metric, statistical test, or numerical head-to-head evaluation against finite-state machines. The evidence is therefore experiential and architectural rather than statistical.
+
+**Advantages.** Its main strength is practical specificity. It translates BT concepts into software-engineering decisions that a robotics team can apply: where to put condition checks, how to encode recovery, how to separate skills from task logic, how to use a blackboard/world model, and how to structure ROS-oriented execution. That makes it a useful bridge between formal BT theory and deployable robot software, especially for teams that need explicit fault handling and modular skill reuse.
+
+**Disadvantages / trade-offs.** The method still depends heavily on human design quality. Engineers must identify the right state variables, conditions, action interfaces, priorities, and recovery paths; a poorly structured tree can become large, coupled through shared blackboard data, or difficult to debug despite the hierarchical notation. Reactive checks and contingency branches improve adaptability but add execution complexity and can create priority inversions, repeated work, or hard-to-see interactions if side effects are not carefully controlled.
+
+**Limitations.** The recommendations are derived from engineering experience and illustrative examples rather than a reproducible comparative study, so the paper does not establish quantitatively that BT-based software is easier to maintain, safer, faster to develop, or more reliable than hierarchical state machines or other executives. It does not measure scaling behavior as trees, skill libraries, teams, or blackboard state grow; nor does it provide formal guarantees for timing, resource conflicts, asynchronous actions, or safety-critical concurrency. The examples are oriented toward robot software and mobile/manipulation-style tasks, so generalization to very large distributed systems or learning-heavy autonomy remains an engineering judgment rather than an experimentally demonstrated result.
+
 [Source abstract and full article](https://onlinelibrary.wiley.com/doi/full/10.1155/2022/3314084).
 
 ## Full text
