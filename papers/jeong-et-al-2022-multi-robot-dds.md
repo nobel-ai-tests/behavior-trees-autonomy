@@ -2,11 +2,19 @@
 
 ## Abstract
 
-Verbatim excerpt from the paper's abstract:
+*Analytical abstract — repository-authored because the source does not provide clear permission to reproduce the complete publisher abstract verbatim.*
 
-> “In this study, we propose task planning framework for multiple robots that builds on a behavior tree (BT).”
+**Contribution / method.** The paper extends behavior-tree task execution from one synchronously ticked robot to multiple asynchronously operating mobile robots. A supervisory task-planning unit uses a coalesced BT to assign tasks, while DDS carries shared task/action variables between the planner and the robots. Novel task/action node behavior supports asynchronous execution, and each robot can switch to a local recovery BT when a fault occurs.
 
-[Read the complete source abstract on arXiv](https://arxiv.org/abs/2201.10918).
+**Quantitative evidence.** The experimental validation uses 3 mobile robots coordinated through one planning unit and 4 goal positions, with the robots traveling to the goals in an alternating coordinated task. This establishes small-fleet feasibility, but the paper does not report throughput, task-completion-time improvement, DDS latency, packet loss, bandwidth, CPU load, recovery-time distributions, success percentages across repeated trials, or scaling tests with larger robot counts.
+
+**Advantages.** Architecturally, the method separates global task sequencing from local fault recovery and allows the supervisory BT to assign work to several robots simultaneously instead of forcing all activity through one ordinary single-root/single-tick execution path. DDS provides a middleware mechanism for exchanging task state without tightly coupling the planner to each robot implementation. Local recovery also prevents every robot fault from requiring immediate restructuring of the fleet-level tree.
+
+**Disadvantages / trade-offs.** The design introduces dependence on distributed middleware and shared state consistency. A supervisory planning unit simplifies coordination but can become a bottleneck or single point of coordination failure as fleet size and task interaction increase. Recovery behavior is predefined in robot-side BTs; the architecture does not automatically synthesize a new recovery strategy when a fault falls outside the available local tree. The additional task/action abstractions also depart from conventional single-agent BT semantics and therefore require implementation-specific coordination logic.
+
+**Limitations.** The empirical evidence is limited to three robots and four goal locations, so scalability to tens or hundreds of agents is not demonstrated. The paper does not isolate communication performance from planning performance, test degraded or partitioned networks, quantify DDS quality-of-service choices, or compare against decentralized multi-robot BTs, auction/task-allocation methods, or other supervisory architectures. The task itself is primarily coordinated mobile navigation, leaving richer dependencies such as shared resources, manipulation handoffs, collision-coupled planning, heterogeneous capabilities, and adversarial/long-duration communication failures largely untested. Thus the work shows that the proposed architecture is feasible for a small fleet, but it does not establish quantitative scaling, optimal task allocation, or fault tolerance beyond the predefined recovery modes.
+
+[Source abstract on arXiv](https://arxiv.org/abs/2201.10918).
 
 ## Full text
 
