@@ -1,0 +1,41 @@
+.reader article .kb-diagram {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 1.5rem 0;
+  padding: 1rem 1.1rem;
+  overflow-x: auto;
+  background: #fcfdff;
+  border: 1px solid var(--line);
+}
+
+.reader article .kb-diagram svg {
+  display: block;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  margin: 0 auto;
+}
+
+.reader article .kb-diagram .nodeLabel,
+.reader article .kb-diagram .edgeLabel,
+.reader article .kb-diagram .cluster-label {
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif !important;
+}
+
+.reader article .kb-diagram .cluster rect,
+.reader article .kb-diagram .node rect,
+.reader article .kb-diagram .node polygon,
+.reader article .kb-diagram .node path {
+  rx: 0 !important;
+  ry: 0 !important;
+}
+
+.reader article .kb-diagram .edgeLabel {
+  background: #ffffff !important;
+}
+
+@media (max-width: 760px) {
+  .reader article .kb-diagram {
+    padding: .7rem;
+  }
+}
