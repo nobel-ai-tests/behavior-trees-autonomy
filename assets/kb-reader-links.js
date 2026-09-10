@@ -7,17 +7,26 @@
 
   if (!article) return;
 
-  function loadDiagramSupport() {
-    if (!document.querySelector('link[data-kb-diagrams]')) {
+  function loadStructuredVisualSupport() {
+    const assets = [
+      ['assets/kb-diagrams.css', 'kbDiagrams'],
+      ['assets/kb-simulations.css', 'kbSimulations']
+    ];
+
+    assets.forEach(([href, dataKey]) => {
+      if (document.querySelector(`link[data-${dataKey.replace(/[A-Z]/g, match => `-${match.toLowerCase()}`)}]`)) return;
       const stylesheet = document.createElement('link');
       stylesheet.rel = 'stylesheet';
-      stylesheet.href = new URL('assets/kb-diagrams.css', document.baseURI).href;
-      stylesheet.dataset.kbDiagrams = 'true';
+      stylesheet.href = new URL(href, document.baseURI).href;
+      stylesheet.dataset[dataKey] = 'true';
       document.head.appendChild(stylesheet);
-    }
+    });
 
-    const moduleUrl = new URL('assets/kb-diagrams.js', document.baseURI).href;
-    import(moduleUrl).catch(error => console.warn('Structured diagram support unavailable:', error));
+    import(new URL('assets/kb-diagrams.js', document.baseURI).href)
+      .catch(error => console.warn('Structured diagram support unavailable:', error));
+
+    import(new URL('assets/kb-simulations.js', document.baseURI).href)
+      .catch(error => console.warn('Structured simulation support unavailable:', error));
   }
 
   function currentDocumentPath() {
@@ -113,5 +122,5 @@
   observer.observe(article, { childList: true, subtree: true });
 
   rewriteLinks();
-  loadDiagramSupport();
+  loadStructuredVisualSupport();
 })();
