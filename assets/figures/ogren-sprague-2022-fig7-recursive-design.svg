@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 720" role="img" aria-labelledby="title desc">
+  <title id="title">Recursive behavior-tree design workflow</title>
+  <desc id="desc">Repository redraw of Figure 7 from Ogren and Sprague 2022, showing a goal condition, alternative actions with preconditions, and recursive replacement of unmet conditions by new behavior-tree subtrees.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#245b88"/></marker>
+    <style>
+      .edge{stroke:#64748b;stroke-width:2;fill:none}.dash{stroke:#245b88;stroke-width:2.5;stroke-dasharray:8 7;fill:none;marker-end:url(#arrow)}.control{fill:#eef4f8;stroke:#245b88;stroke-width:2}.condition{fill:#fff;stroke:#28775f;stroke-width:2}.action{fill:#fff7e8;stroke:#a95a13;stroke-width:2}.label{font:15px ui-sans-serif,system-ui,sans-serif;fill:#17202a;text-anchor:middle}.title{font:18px ui-sans-serif,system-ui,sans-serif;font-weight:650;fill:#17202a;text-anchor:middle}.symbol{font:bold 24px Georgia,serif;fill:#17202a;text-anchor:middle}.caption{font:14px ui-sans-serif,system-ui,sans-serif;fill:#475569}
+    </style>
+  </defs>
+  <text class="title" x="330" y="36">1. Build a subtree for one desired condition</text>
+  <path class="edge" d="M330 95 V145 M330 145 H110 V205 M330 145 H330 V205 M330 145 H550 V205"/>
+  <path class="edge" d="M330 245 V300 M330 300 H230 V355 M330 300 H330 V355 M330 300 H430 V355"/>
+  <path class="edge" d="M550 245 V300 M550 300 H500 V355 M550 300 H550 V355 M550 300 H600 V355"/>
+  <circle class="control" cx="330" cy="75" r="28"/><text class="symbol" x="330" y="84">?</text>
+  <rect class="condition" x="35" y="205" width="150" height="48"/><text class="label" x="110" y="234">Check X</text>
+  <circle class="control" cx="330" cy="225" r="27"/><text class="symbol" x="330" y="234">→</text>
+  <circle class="control" cx="550" cy="225" r="27"/><text class="symbol" x="550" y="234">→</text>
+  <rect class="condition" x="180" y="355" width="100" height="48"/><text class="label" x="230" y="384">Y₁?</text>
+  <rect class="condition" x="280" y="355" width="100" height="48"/><text class="label" x="330" y="384">… Yₙ?</text>
+  <rect class="action" x="385" y="355" width="120" height="48"/><text class="label" x="445" y="384">Do Y</text>
+  <rect class="condition" x="455" y="435" width="100" height="48"/><text class="label" x="505" y="464">Z₁?</text>
+  <rect class="condition" x="555" y="435" width="100" height="48"/><text class="label" x="605" y="464">… Zₙ?</text>
+  <rect class="action" x="655" y="435" width="120" height="48"/><text class="label" x="715" y="464">Do Z</text>
+  <path class="edge" d="M550 252 V410 M550 410 H505 V435 M550 410 H605 V435 M550 410 H715 V435"/>
+
+  <text class="title" x="940" y="36">2. Recurse on preconditions to grow the full tree</text>
+  <path class="edge" d="M940 95 V145 M940 145 H805 V205 M940 145 H940 V205 M940 145 H1075 V205"/>
+  <circle class="control" cx="940" cy="75" r="28"/><text class="symbol" x="940" y="84">→</text>
+  <circle class="control" cx="805" cy="225" r="27"/><text class="symbol" x="805" y="234">?</text>
+  <circle class="control" cx="940" cy="225" r="27"/><text class="symbol" x="940" y="234">?</text>
+  <circle class="control" cx="1075" cy="225" r="27"/><text class="symbol" x="1075" y="234">?</text>
+  <text class="label" x="805" y="270">Goal 1</text><text class="label" x="940" y="270">Goal 2</text><text class="label" x="1075" y="270">Goal 3</text>
+  <rect class="condition" x="755" y="330" width="100" height="46"/><text class="label" x="805" y="358">C₁?</text>
+  <rect class="condition" x="890" y="330" width="100" height="46"/><text class="label" x="940" y="358">C₂?</text>
+  <rect class="condition" x="1025" y="330" width="100" height="46"/><text class="label" x="1075" y="358">C₃?</text>
+  <path class="edge" d="M805 252 V330 M940 252 V330 M1075 252 V330"/>
+  <path class="dash" d="M805 388 C790 475,735 500,670 520"/>
+  <path class="dash" d="M940 388 C920 470,855 520,790 550"/>
+  <path class="dash" d="M1075 388 C1085 470,1040 520,980 555"/>
+  <rect class="control" x="645" y="520" width="120" height="54"/><text class="label" x="705" y="543">replace with</text><text class="label" x="705" y="561">subtree</text>
+  <rect class="control" x="785" y="550" width="120" height="54"/><text class="label" x="845" y="573">recurse</text><text class="label" x="845" y="591">again</text>
+  <rect class="control" x="930" y="555" width="120" height="54"/><text class="label" x="990" y="578">expand</text><text class="label" x="990" y="596">precondition</text>
+
+  <text class="caption" x="55" y="665">Repository redraw of the design logic shown in the paper’s Figure 7: check the goal, try alternative ways to achieve it, expose their preconditions, then recursively expand unmet conditions.</text>
+</svg>
