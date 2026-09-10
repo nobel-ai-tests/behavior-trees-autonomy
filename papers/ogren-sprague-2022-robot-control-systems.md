@@ -2,7 +2,18 @@
 
 ## Citation
 
-Petter Ögren and Christopher I. Sprague. **Behavior Trees in Robot Control Systems.** *Annual Review of Control, Robotics, and Autonomous Systems*, 5, 81–107, 2022. DOI: [10.1146/annurev-control-042920-095314](https://doi.org/10.1146/annurev-control-042920-095314). [arXiv:2203.13083](https://arxiv.org/abs/2203.13083).
+Petter Ögren and Christopher I. Sprague. **Behavior Trees in Robot Control Systems.** *Annual Review of Control, Robotics, and Autonomous Systems*, 5, 81–107, 2022. DOI: [10.1146/annurev-control-042920-095314](https://doi.org/10.1146/annurev-control-042920-095314).
+
+## Abstract and full text
+
+- **Raw abstract source:** [Annual Reviews](https://www.annualreviews.org/content/journals/10.1146/annurev-control-042920-095314)
+- **Preprint abstract:** [arXiv:2203.13083](https://arxiv.org/abs/2203.13083)
+- **Abstract summary:** The review interprets behavior trees through modularity, hierarchy, and feedback, showing how those ideas support robot-control design, analysis, convergence arguments, safety mechanisms, explainability, learning, and planning.
+- **Full-text PDF:** [arXiv PDF](https://arxiv.org/pdf/2203.13083)
+
+## Paper contents
+
+The review covers the history of BTs and their relationship to finite-state machines; formal BT definitions; optimal modularity; convergence analysis; a design principle based on modularity and feedback; safety and invariance with control barrier functions; explainability and human-robot interaction; reinforcement learning and utility; evolutionary algorithms; planning; and conclusions.
 
 ## Problem / motivation
 
