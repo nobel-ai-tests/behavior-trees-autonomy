@@ -188,9 +188,21 @@
   }
 
   function ensurePaperResourceActions(selected) {
-    root.querySelectorAll('[data-paper-resource-action]').forEach(element => element.remove());
     const doc = documentForSelection(selected);
-    if (!doc || doc.kind !== 'paper' || (!doc.abstractUrl && !doc.pdf)) return;
+    const resources = doc?.kind === 'paper'
+      ? [
+          ['Abstract', doc.abstractUrl],
+          ['PDF', doc.pdf]
+        ].filter(([, href]) => Boolean(href))
+      : [];
+    const resourceKey = resources.map(([label, href]) => `${label}:${href}`).join('|');
+    const existing = [...root.querySelectorAll('[data-paper-resource-action]')];
+
+    if (root.dataset.paperResourceKey === resourceKey && existing.length === resources.length) return;
+
+    existing.forEach(element => element.remove());
+    root.dataset.paperResourceKey = resourceKey;
+    if (!resources.length) return;
 
     let actions = root.querySelector(':scope > .inspector-actions');
     if (!actions) {
@@ -199,8 +211,7 @@
       root.appendChild(actions);
     }
 
-    const addLink = (label, href) => {
-      if (!href) return;
+    resources.forEach(([label, href]) => {
       const link = document.createElement('a');
       link.className = 'button';
       link.href = href;
@@ -209,10 +220,7 @@
       link.textContent = label;
       link.dataset.paperResourceAction = 'true';
       actions.appendChild(link);
-    };
-
-    addLink('Abstract', doc.abstractUrl);
-    addLink('PDF', doc.pdf);
+    });
   }
 
   function moveConnectionsToBottom() {
