@@ -1,19 +1,30 @@
 # Iovino et al. (2022) — A Survey of Behavior Trees in Robotics and AI
 
-## Citation
+## Abstract
 
-Matteo Iovino, Edvards Scukins, Jonathan Styrud, Petter Ögren, and Christian Smith. **A Survey of Behavior Trees in Robotics and AI.** *Robotics and Autonomous Systems*, 154, 104096, 2022. DOI: [10.1016/j.robot.2022.104096](https://doi.org/10.1016/j.robot.2022.104096).
+The survey traces behavior trees from game AI into robotics, explains their hierarchical organization and modular switching logic, and categorizes the literature by theory, applications, synthesis and learning methods, implementation libraries, and open research challenges.
 
-## Abstract and full text
+- [Read the raw abstract on arXiv](https://arxiv.org/abs/2005.05842)
+- [Publisher abstract on ScienceDirect](https://www.sciencedirect.com/science/article/pii/S0921889022000513)
 
-- **Raw abstract source:** [arXiv:2005.05842](https://arxiv.org/abs/2005.05842)
-- **Publisher abstract:** [ScienceDirect](https://www.sciencedirect.com/science/article/pii/S0921889022000513)
-- **Abstract summary:** The survey traces behavior trees from game AI into robotics, explains their hierarchical organization and modular switching logic, and categorizes the literature by theory, applications, synthesis/learning methods, implementation libraries, and open research challenges.
-- **Full-text PDF:** [arXiv PDF](https://arxiv.org/pdf/2005.05842)
+## Full text
 
-## Paper contents
+- [arXiv PDF](https://arxiv.org/pdf/2005.05842)
+- [Publisher version](https://doi.org/10.1016/j.robot.2022.104096)
 
-The survey is organized around seven major parts: introduction and core BT semantics; fundamental theory; applications in game AI, chatbots, manipulation, mobile robots, and aerial/underwater systems; methods including hand design, learning, demonstration, and planning; implementation libraries; open research challenges; and conclusions.
+## Contents
+
+- Introduction and core behavior-tree semantics
+- Fundamental theory
+- Applications in game AI and chatbots
+- Manipulation and mobile robotics
+- Aerial and underwater systems
+- Hand-designed behavior trees
+- Learning from demonstration and reinforcement learning
+- Planning and synthesis methods
+- Implementation libraries
+- Open research challenges
+- Conclusions
 
 ## Problem / motivation
 
@@ -21,9 +32,9 @@ Behavior trees spread from game AI into robotics, but the research literature be
 
 ## Behavior-tree contribution
 
-This peer-reviewed survey provides one of the most useful entry points to the field. It summarizes BT history, semantics, applications, learning and synthesis approaches, and research directions across robotics and AI.
+This peer-reviewed survey provides a broad entry point to the field. It summarizes BT history, semantics, applications, learning and synthesis approaches, and research directions across robotics and AI.
 
-The survey emphasizes a central motivation for BTs: in complex agent controllers, transition logic in traditional finite-state-machine designs can become difficult to extend, adapt, and reuse. BTs instead organize switching logic hierarchically, which can improve modularity and make both human and algorithmic synthesis/analysis easier.
+The survey emphasizes a central motivation for BTs: in complex agent controllers, transition logic in traditional finite-state-machine designs can become difficult to extend, adapt, and reuse. BTs instead organize switching logic hierarchically, which can improve modularity and make both human and algorithmic synthesis and analysis easier.
 
 ## Method
 
@@ -31,17 +42,23 @@ The authors review and categorize the existing BT literature by methods, applica
 
 ## Key results / significance
 
-For newcomers, this is the best broad literature map in the current repository. It supports three foundational points:
+The survey supports three foundational observations:
 
 - BTs originated in game AI practice and later became significant in robotics.
 - Their key architectural themes are hierarchical organization and modular switching logic.
-- The research area includes not only hand-authored trees but also planning, learning, verification, and other synthesis/analysis techniques.
+- The research area includes hand-authored trees as well as planning, learning, verification, and other synthesis and analysis techniques.
 
-## Limitations
+## Repository notes
 
-As a survey, the paper summarizes a large field rather than providing one definitive implementation semantics. Concrete BT libraries may differ in node behavior, memory, concurrency, halting/pre-emption, and data-sharing conventions.
+As a survey, the paper summarizes a large field rather than defining one implementation semantics. Concrete BT libraries may differ in node behavior, memory, concurrency, halting or pre-emption, and data-sharing conventions.
 
-## Connections to other work
+The paper contains numerous diagrams, taxonomy tables, and examples. Those visuals remain in the linked arXiv/publisher versions rather than being rehosted here unless reuse rights are clear.
+
+Connections in this knowledge base:
 
 - Use Marzinotto et al. (2014) and Colledanchise & Ögren (2017) for formal semantics and control-theoretic foundations.
 - Use Ögren & Sprague (2022) for a control-systems perspective centered on modularity, hierarchy, and feedback.
+
+## Citation
+
+Matteo Iovino, Edvards Scukins, Jonathan Styrud, Petter Ögren, and Christian Smith. **A Survey of Behavior Trees in Robotics and AI.** *Robotics and Autonomous Systems*, 154, 104096, 2022. DOI: [10.1016/j.robot.2022.104096](https://doi.org/10.1016/j.robot.2022.104096).
