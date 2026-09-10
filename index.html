@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="assets/kb.css" />
   <link rel="stylesheet" href="assets/kb-inspector.css" />
   <link rel="stylesheet" href="assets/kb-node-content.css" />
+  <link rel="stylesheet" href="assets/kb-history.css" />
   <style>
     .reader-head { display: none !important; }
     .reader article { margin-top: 0; padding-top: 32px; }
@@ -150,6 +151,16 @@
 
   <div id="splitWorkspace" class="split-workspace">
     <section class="content-pane" aria-label="Knowledge-base content">
+      <nav id="contentHistory" class="content-history" aria-label="Content browsing history">
+        <div class="content-history-controls">
+          <button id="contentBack" type="button" disabled>← Back</button>
+          <button id="contentForward" type="button" disabled>Forward →</button>
+        </div>
+        <div id="contentHistoryTrail" class="content-history-trail" aria-label="Recent content history">
+          <span class="content-history-empty">History appears as you browse the graph and documents.</span>
+        </div>
+      </nav>
+
       <section id="reader" class="reader" aria-label="Markdown document reader">
         <div class="reader-head">
           <strong id="readerTitle">Knowledge base content</strong>
@@ -210,6 +221,7 @@
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
   <script src="assets/kb-graph.js"></script>
   <script src="assets/kb-node-content.js"></script>
+  <script src="assets/kb-history.js"></script>
   <script src="assets/kb-inspector.js"></script>
   <script src="assets/kb-reader-links.js"></script>
   <script src="assets/kb-layout.js"></script>
