@@ -62,22 +62,30 @@
     #ffffff;
   background-size: 24px 24px;
   cursor: default;
-  touch-action: pan-y;
-}
-
-.reader article .kb-diagram-viewport:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: -2px;
+  touch-action: auto;
+  pointer-events: none;
 }
 
 .reader article .kb-diagram-viewport.pan-enabled {
   cursor: grab;
   touch-action: none;
+  pointer-events: auto;
+}
+
+.reader article .kb-diagram-viewport.pan-enabled:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
 }
 
 .reader article .kb-diagram-viewport.is-panning {
   cursor: grabbing;
   user-select: none;
+}
+
+.reader article .kb-diagram-canvas,
+.reader article .kb-diagram,
+.reader article .kb-diagram svg {
+  pointer-events: none;
 }
 
 .reader article .kb-diagram-canvas {
