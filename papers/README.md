@@ -34,7 +34,7 @@ Paper briefs should follow a consistent academic reading order:
 
 1. **Abstract** — an accurate repository-written summary followed by a link to the raw/source abstract.
 2. **Full text** — direct PDF or accepted-manuscript access first, followed by the version of record when applicable.
-3. **Images / figures, when appropriate** — embed only material with a stable source and clear reuse permission; otherwise keep the original figures in the linked paper and note that near the bottom of the brief.
+3. **Images / figures, when appropriate** — prefer repository-authored fenced `mermaid` diagrams for method graphs, behavior trees, workflows, state transitions, data structures, and system architecture so layout is automatic and the source remains editable. Embed source figures only when there is a stable source and clear reuse permission. Use custom animation when temporal behavior or physical motion is essential, preferably driven from structured scenario/state data rather than hand-positioned drawing coordinates.
 4. **Contents** — a compact map of the paper's major sections or argument progression.
 5. **Paper-derived material** — problem/motivation, contribution, method, experimental setting where applicable, and key results/significance.
 6. **Repository notes** — limitations, comparison notes, why the paper matters to this knowledge base, and cross-paper connections.
