@@ -1,0 +1,54 @@
+{
+  "title": "Behavior Trees in Autonomous Systems and Robotics",
+  "description": "A living Markdown knowledge base for behavior trees in robotics and autonomous systems.",
+  "sections": [
+    {
+      "id": "topics",
+      "title": "Topics",
+      "description": "Cross-cutting concepts and synthesis across the literature.",
+      "documents": [
+        {
+          "title": "Topics overview",
+          "path": "topics/README.md",
+          "tags": ["overview"]
+        }
+      ]
+    },
+    {
+      "id": "papers",
+      "title": "Papers",
+      "description": "Notes on individual papers and technical publications.",
+      "documents": [
+        {
+          "title": "Papers overview",
+          "path": "papers/README.md",
+          "tags": ["overview"]
+        }
+      ]
+    },
+    {
+      "id": "notes",
+      "title": "Notes",
+      "description": "Working notes, questions, and synthesis.",
+      "documents": [
+        {
+          "title": "Notes overview",
+          "path": "notes/README.md",
+          "tags": ["overview"]
+        }
+      ]
+    },
+    {
+      "id": "references",
+      "title": "References",
+      "description": "Consolidated bibliography and external links.",
+      "documents": [
+        {
+          "title": "References",
+          "path": "references.md",
+          "tags": ["bibliography"]
+        }
+      ]
+    }
+  ]
+}
