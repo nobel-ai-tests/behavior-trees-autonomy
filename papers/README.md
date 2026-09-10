@@ -54,6 +54,6 @@ Survey/review notes should emphasize the paper's own organizing logic rather tha
 - one or more **methodology/workflow figures** that show how the reviewed methods are organized or how a representative approach proceeds;
 - the paper's **taxonomy, synthesis, or open-challenge structure**, so later topic nodes can link back to the survey's categories.
 
-Do not duplicate publisher-controlled text or figures beyond what their license permits. For permissively licensed papers, prefer keeping the abstract inline so the reader does not need to leave the knowledge base for basic paper context.
+Do not duplicate publisher-controlled text or figures beyond what their license permits. For permissively licensed papers, keep the complete abstract inline so the reader never needs to leave the knowledge base for the abstract.
 
 Each paper must also be registered in `../kb-manifest.json` with a one-sentence `description` and explicit `topics` IDs so the graph inspector can present a useful summary and topic list. Add `authors`, `year`, `venue`, `doi`, `abstractUrl`, `pdf`, `keywords`, `related`, and `tags` when available. The `abstractUrl` field should point to the raw abstract source; `pdf` should point directly to the best lawful reading copy available.
