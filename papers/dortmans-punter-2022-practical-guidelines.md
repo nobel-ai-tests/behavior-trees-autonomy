@@ -2,11 +2,11 @@
 
 ## Abstract
 
-Verbatim excerpt from the paper's abstract:
+Behavior Trees are a promising approach to model the autonomous behaviour of robots in dynamic environments. Behavior Trees represent action selection decisions as a tree of decision nodes. The hierarchy of these decision nodes provides the planning of actions of the robot including its reactions on exceptions. Behavior Trees enable flexible planning and replanning of robot behavior while supporting better maintainable decision-making than traditional Finite State Machines. This paper presents an overview of lessons, which we have learned when applying Behavior Trees to various autonomous robots. We present these lessons as a sequence of steps that is meant to support robot software practitioners to develop their systems.
 
-> “Behavior Trees are a promising approach to model the autonomous behaviour of robots in dynamic environments.”
+*Verbatim abstract. The article is licensed CC BY 4.0.*
 
-[Read the complete source abstract and full article](https://onlinelibrary.wiley.com/doi/full/10.1155/2022/3314084).
+[Source abstract and full article](https://onlinelibrary.wiley.com/doi/full/10.1155/2022/3314084).
 
 ## Full text
 
