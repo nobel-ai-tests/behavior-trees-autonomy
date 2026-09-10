@@ -128,6 +128,29 @@
     return item;
   }
 
+  function navigationSnapshot(node) {
+    return {
+      id: node.id,
+      type: node.type,
+      label: node.label,
+      fullTitle: node.fullTitle,
+      topicId: node.topicId,
+      sectionId: node.sectionId,
+      summary: node.summary
+    };
+  }
+
+  function announceGeneratedContent(node) {
+    window.dispatchEvent(new CustomEvent('kb:content-opened', {
+      detail: {
+        kind: 'node',
+        key: `node:${node.id}`,
+        title: node.fullTitle || node.label,
+        node: navigationSnapshot(node)
+      }
+    }));
+  }
+
   function renderGeneratedContent(node) {
     if (!manifest) return;
     const linkedDocs = documentsForNode(node);
@@ -196,6 +219,7 @@
     }
 
     history.replaceState(null, '', `#node=${encodeURIComponent(node.id)}`);
+    announceGeneratedContent(node);
   }
 
   function openNodeContent(node) {
@@ -221,6 +245,12 @@
     if (!node) return;
     setTimeout(() => openNodeContent(node), 0);
   }, true);
+
+  window.KBNodeContent = {
+    open(node) {
+      openNodeContent(node);
+    }
+  };
 
   fetch('kb-manifest.json', { cache: 'no-cache' })
     .then(response => {
