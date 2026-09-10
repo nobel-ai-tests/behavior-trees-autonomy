@@ -1,15 +1,15 @@
 :root {
-  color-scheme: light dark;
-  --bg: #f5f6f8;
+  color-scheme: light;
+  --bg: #f8fafc;
   --panel: #ffffff;
-  --panel-2: #f9fafb;
-  --text: #17191d;
-  --muted: #6b7280;
-  --line: #dde1e7;
-  --line-strong: #c5cad3;
-  --accent: #2458a6;
-  --accent-soft: #e8effa;
-  --shadow: 0 8px 30px rgba(18, 25, 38, .08);
+  --panel-2: #f6f8fb;
+  --text: #172033;
+  --muted: #64748b;
+  --line: #e2e8f0;
+  --line-strong: #cbd5e1;
+  --accent: #2563eb;
+  --accent-soft: #dbeafe;
+  --shadow: 0 8px 30px rgba(15, 23, 42, .08);
   --topic: #315f9b;
   --knowledge: #287a63;
   --paper: #9b5d2d;
@@ -18,31 +18,7 @@
   --venue: #68717f;
   --year: #89751d;
   --section: #4f5968;
-  --code: #eef0f3;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0e1116;
-    --panel: #151922;
-    --panel-2: #11151c;
-    --text: #edf0f4;
-    --muted: #9ba3af;
-    --line: #2a303a;
-    --line-strong: #3a424f;
-    --accent: #8bb8ff;
-    --accent-soft: #172943;
-    --shadow: 0 8px 30px rgba(0, 0, 0, .26);
-    --topic: #74a5e6;
-    --knowledge: #66c3a6;
-    --paper: #e3a16d;
-    --keyword: #b49be4;
-    --author: #df8db5;
-    --venue: #aab2bf;
-    --year: #d4bf63;
-    --section: #97a2b2;
-    --code: #202631;
-  }
+  --code: #f1f5f9;
 }
 
 * { box-sizing: border-box; }
@@ -176,9 +152,9 @@ button:disabled { opacity: .5; cursor: default; }
 }
 .graph-empty[hidden] { display: none; }
 
-.edge { stroke: var(--line-strong); stroke-opacity: .48; vector-effect: non-scaling-stroke; }
-.edge.subtopic { stroke-opacity: .8; stroke-width: 1.6; }
-.edge.about { stroke-opacity: .65; }
+.edge { stroke: var(--line-strong); stroke-opacity: .55; vector-effect: non-scaling-stroke; }
+.edge.subtopic { stroke-opacity: .82; stroke-width: 1.6; }
+.edge.about { stroke-opacity: .68; }
 .edge.related { stroke-dasharray: 4 3; stroke-opacity: .8; }
 .node circle { stroke: var(--panel); stroke-width: 1.8px; vector-effect: non-scaling-stroke; }
 .node.topic circle { fill: var(--topic); }
@@ -222,7 +198,7 @@ button:disabled { opacity: .5; cursor: default; }
   padding: 8px 10px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: color-mix(in srgb, var(--panel) 92%, transparent);
+  background: color-mix(in srgb, var(--panel) 94%, transparent);
   color: var(--muted);
   font-size: .73rem;
 }
