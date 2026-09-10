@@ -1,0 +1,56 @@
+.inspector #inspectorContent {
+  display: flex;
+  flex-direction: column;
+  min-height: 150px;
+}
+
+.inspector .inspector-summary {
+  margin: 8px 0 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.45;
+}
+
+.inspector-topics {
+  margin: 0 0 12px;
+}
+
+.inspector-topics h3,
+.connections-bottom h3 {
+  margin: 0 0 7px;
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--muted);
+}
+
+.topic-pills {
+  gap: 5px;
+}
+
+.topic-pill {
+  background: var(--accent-soft);
+  border-color: #bfdbfe;
+  color: #1e40af;
+}
+
+.topics-empty {
+  color: var(--muted);
+  font-size: .78rem;
+}
+
+.inspector .meta {
+  margin-top: 4px;
+}
+
+.inspector .connections-bottom {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.inspector .connections-bottom .neighbor-button:last-child {
+  margin-bottom: 0;
+}
