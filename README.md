@@ -23,11 +23,13 @@ The robotics taxonomy is designed to expand incrementally. Current first-class t
 
 The page uses a full-width configuration bar above a resizable content/graph workspace. The content reader is the primary left pane and the graph is the exploration pane on the right. A **single click on any graph node brings its best available content into the left pane** while also selecting it for the inspector. Document-backed paper and knowledge nodes open their Markdown. Topic nodes show their description, subtopics/keywords, and related documents. Authors, keywords, venues, years, and sections generate a compact content view from their linked repository metadata.
 
-The left content pane includes browser-style navigation. **Back** and **Forward** maintain independent stacks of up to 100 entries each, and the history strip shows up to the five most recent unique content items on one line for quick jumping. Opening new content pushes the previous page onto the Back stack and clears Forward, matching normal browser behavior. `Alt+Left` and `Alt+Right` provide keyboard Back/Forward navigation.
+The left content pane includes browser-style navigation implemented as one ordered history timeline plus a current cursor. Back moves the cursor one item earlier, Forward moves it one item later, and opening new content while positioned in older history discards the forward branch before appending the new item. Up to 100 navigation steps are retained, while the history strip shows up to five recently visited unique content items on one line. `Alt+Left` and `Alt+Right` provide keyboard Back/Forward navigation.
 
 Selecting a graph node also populates the inspector with a one-line summary, its associated topic list, metadata, actions, and connections; connections are always presented last. Paper nodes expose Abstract and PDF actions when those resources are registered. For non-document entities such as authors, keywords, venues, years, and sections, inspector topics are derived from the documents associated with that entity.
 
-The reading surface uses an academic serif typography stack and narrower measure, while navigation, filtering, and graph controls use a modern sans-serif interface. Rectangular UI elements use sharp corners, shadows are minimized, and the graph uses a light-theme palette with distinct restrained colors for topics, knowledge pages, papers, keywords, authors, venues, years, and sections.
+The reading surface uses an academic serif typography stack and occupies about 94% of the left reader width, while navigation, filtering, and graph controls use a modern sans-serif interface. Rectangular UI elements use sharp corners, shadows are minimized, and the graph uses a light-theme palette with distinct restrained colors for topics, knowledge pages, papers, keywords, authors, venues, years, and sections.
+
+Static technical diagrams in Markdown are rendered from structured Mermaid definitions instead of hand-positioned SVG whenever the content is naturally a tree, graph, workflow, state diagram, sequence, or dependency structure. This keeps the source editable and lets the renderer handle node placement, edge routing, and responsive sizing automatically. Custom animated scenarios remain appropriate when the visual depends on temporal state changes or physical motion; those should be driven from structured state/scene data where practical.
 
 The graph can be explored using concept, literature, paper, taxonomy, or all-entity presets. Controls expose node and relationship filters, search highlighting/focus, neighborhood depth, node limits, keyword-frequency pruning, multiple layouts, label density, connectivity-based sizing, and force-physics tuning.
 
@@ -42,10 +44,12 @@ The graph can be explored using concept, literature, paper, taxonomy, or all-ent
 - `assets/kb-graph.js` — manifest-to-graph model, filtering, layouts, and interaction
 - `assets/kb-node-content.js` — single-click routing from graph nodes into the content pane
 - `assets/kb-node-content.css` — generated node-content presentation
-- `assets/kb-history.js` — 100-entry Back/Forward stacks and five-item recent-content navigation
+- `assets/kb-history.js` — browser-style history timeline/cursor and five-item recent-content navigation
 - `assets/kb-history.css` — history bar and recent-item presentation
 - `assets/kb-inspector.js` — summary/topic enrichment, paper resource actions, and inspector ordering
-- `assets/kb-reader-links.js` — directory-aware Markdown and asset links in the reader
+- `assets/kb-reader-links.js` — directory-aware Markdown/assets plus reader diagram bootstrap
+- `assets/kb-diagrams.js` — Mermaid-based structured diagram rendering for dynamically loaded Markdown
+- `assets/kb-diagrams.css` — responsive technical-diagram presentation
 - `assets/kb-reader-viewport.js` — keeps content navigation anchored in the left reader instead of scrolling the page
 - `assets/kb-reader-viewport.css` — isolated left-reader scrolling and viewport sizing
 - `assets/kb-layout.js` — resizable content/graph layout and panel state
@@ -62,6 +66,8 @@ Initial areas of interest include behavior-tree theory, planning and execution, 
 Add Markdown documents under `papers/`, `topics/`, or `notes/`, then register them in `kb-manifest.json`. The web explorer loads the manifest at runtime, constructs the graph, and renders referenced Markdown without a build step.
 
 Every registered document should provide a concise `description` suitable for the inspector and one or more stable `topics` IDs. Also add `kind`, `shortTitle`, `keywords`, and—where applicable—`authors`, `year`, `venue`, `doi`, and `related`. Paper entries should additionally provide `abstractUrl` for the raw abstract source and `pdf` for the best lawful public reading copy when one is available.
+
+For structured figures, use fenced `mermaid` blocks in Markdown when automatic layout is suitable. Hand-authored SVG should be reserved for cases Mermaid cannot express well, especially temporal or physically grounded animations. Keep any custom animation driven by explicit scenario/state data rather than embedding diagram structure as arbitrary drawing coordinates whenever practical.
 
 Paper briefs follow the repository order documented in `papers/README.md`: Abstract first, then full-text access, reusable images/figures when appropriate, Contents, paper-derived material, repository-only notes near the bottom, and Citation as the final section. Do not copy copyrighted abstracts, figures, or full text when redistribution rights are unclear; link the source and summarize instead.
 
