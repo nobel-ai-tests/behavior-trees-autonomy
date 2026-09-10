@@ -11,6 +11,8 @@ Topic-oriented pages connect concepts and findings across sources.
 
 Register every topic-oriented Markdown page in `../kb-manifest.json` with a one-sentence `description`, explicit stable `topics` IDs, and useful `keywords`/`tags`. Stable topic definitions belong under `graph.taxonomy`; each taxonomy node should also carry a concise description so selecting that conceptual node produces a meaningful inspector summary.
 
+For technical figures, prefer fenced `mermaid` blocks over hand-positioned SVG whenever the visual can be represented as a graph, tree, flowchart, state diagram, sequence diagram, dependency structure, or workflow. Mermaid keeps the diagram source declarative and lets the renderer manage node placement, edge routing, and responsive sizing automatically. Use custom animation only where temporal behavior or a realistic physical scenario requires it; those animations should increasingly be driven from structured state/scene data rather than fixed drawing coordinates.
+
 ## Robotics taxonomy now represented
 
 - Robot task planning
