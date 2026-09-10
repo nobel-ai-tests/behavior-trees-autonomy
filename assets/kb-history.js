@@ -11,23 +11,15 @@
 
   if (!article || !backButton || !forwardButton || !trail) return;
 
-  const STACK_LIMIT = 100;
+  const NAV_LIMIT = 100;
   const TRAIL_LIMIT = 5;
 
-  const backStack = [];
-  const forwardStack = [];
-  let currentEntry = null;
+  // Browser-style model: one ordered history plus a cursor.
+  // Opening new content truncates the forward branch, then appends.
+  const entries = [];
+  let currentIndex = -1;
   let pendingNavigationKey = null;
-
-  function trimStack(stack) {
-    if (stack.length > STACK_LIMIT) stack.splice(0, stack.length - STACK_LIMIT);
-  }
-
-  function pushStack(stack, entry) {
-    if (!entry) return;
-    stack.push(entry);
-    trimStack(stack);
-  }
+  const recentKeys = [];
 
   function cleanTitle(value, fallback) {
     const title = String(value || '').replace(/\s+/g, ' ').trim();
@@ -57,29 +49,61 @@
     };
   }
 
+  function currentEntry() {
+    return currentIndex >= 0 ? entries[currentIndex] : null;
+  }
+
   function sameEntry(a, b) {
     return Boolean(a && b && a.key === b.key);
+  }
+
+  function rememberRecent(entry) {
+    if (!entry?.key) return;
+    const existing = recentKeys.indexOf(entry.key);
+    if (existing >= 0) recentKeys.splice(existing, 1);
+    recentKeys.push(entry.key);
+    if (recentKeys.length > TRAIL_LIMIT) recentKeys.splice(0, recentKeys.length - TRAIL_LIMIT);
+  }
+
+  function trimPast() {
+    // A newly created branch keeps at most 100 reachable Back steps.
+    if (currentIndex <= NAV_LIMIT) return;
+    const removeCount = currentIndex - NAV_LIMIT;
+    entries.splice(0, removeCount);
+    currentIndex -= removeCount;
   }
 
   function recordEntry(entry) {
     if (!entry?.key) return;
 
-    if (pendingNavigationKey === entry.key) {
-      currentEntry = { ...currentEntry, ...entry };
+    const current = currentEntry();
+
+    // During Back/Forward, async document loading briefly mutates the reader
+    // before the target document is fully rendered. Ignore any intermediate
+    // capture until the requested target arrives.
+    if (pendingNavigationKey) {
+      if (entry.key !== pendingNavigationKey) return;
+      entries[currentIndex] = { ...current, ...entry };
       pendingNavigationKey = null;
+      rememberRecent(entries[currentIndex]);
       render();
       return;
     }
 
-    if (sameEntry(currentEntry, entry)) {
-      currentEntry = { ...currentEntry, ...entry };
+    if (sameEntry(current, entry)) {
+      entries[currentIndex] = { ...current, ...entry };
+      rememberRecent(entries[currentIndex]);
       render();
       return;
     }
 
-    pushStack(backStack, currentEntry);
-    currentEntry = entry;
-    forwardStack.length = 0;
+    // Standard browser rule: copy the current branch up to the cursor,
+    // discard anything ahead, then append the newly opened item.
+    if (currentIndex < entries.length - 1) entries.splice(currentIndex + 1);
+    entries.push(entry);
+    currentIndex = entries.length - 1;
+    trimPast();
+    rememberRecent(entry);
     render();
   }
 
@@ -103,55 +127,59 @@
     return false;
   }
 
-  function goBack() {
-    if (!backStack.length) return;
-    const previous = backStack.pop();
-    pushStack(forwardStack, currentEntry);
-    currentEntry = previous;
-    pendingNavigationKey = previous.key;
+  function navigateToIndex(nextIndex) {
+    if (nextIndex < 0 || nextIndex >= entries.length || nextIndex === currentIndex) return;
+    const target = entries[nextIndex];
+    currentIndex = nextIndex;
+    pendingNavigationKey = target.key;
+    rememberRecent(target);
     render();
-    if (!openEntry(previous)) pendingNavigationKey = null;
+
+    if (!openEntry(target)) {
+      pendingNavigationKey = null;
+      render();
+    }
+  }
+
+  function goBack() {
+    if (currentIndex <= 0) return;
+    navigateToIndex(currentIndex - 1);
   }
 
   function goForward() {
-    if (!forwardStack.length) return;
-    const next = forwardStack.pop();
-    pushStack(backStack, currentEntry);
-    currentEntry = next;
-    pendingNavigationKey = next.key;
-    render();
-    if (!openEntry(next)) pendingNavigationKey = null;
+    if (currentIndex < 0 || currentIndex >= entries.length - 1) return;
+    navigateToIndex(currentIndex + 1);
   }
 
   function jumpTo(entry) {
-    if (!entry || sameEntry(currentEntry, entry)) return;
-    pushStack(backStack, currentEntry);
-    currentEntry = entry;
-    forwardStack.length = 0;
-    pendingNavigationKey = entry.key;
-    render();
-    if (!openEntry(entry)) pendingNavigationKey = null;
+    if (!entry?.key) return;
+    let targetIndex = -1;
+    for (let index = entries.length - 1; index >= 0; index -= 1) {
+      if (entries[index]?.key === entry.key) {
+        targetIndex = index;
+        break;
+      }
+    }
+    if (targetIndex >= 0) navigateToIndex(targetIndex);
   }
 
   function recentEntries() {
-    const result = [];
-    const seen = new Set();
-    const source = [...backStack, currentEntry].filter(Boolean);
-
-    for (let index = source.length - 1; index >= 0 && result.length < TRAIL_LIMIT; index -= 1) {
-      const entry = source[index];
-      if (!entry?.key || seen.has(entry.key)) continue;
-      seen.add(entry.key);
-      result.unshift(entry);
-    }
-    return result;
+    return recentKeys
+      .map(key => {
+        for (let index = entries.length - 1; index >= 0; index -= 1) {
+          if (entries[index]?.key === key) return entries[index];
+        }
+        return null;
+      })
+      .filter(Boolean)
+      .slice(-TRAIL_LIMIT);
   }
 
   function renderTrail() {
     trail.replaceChildren();
-    const entries = recentEntries();
+    const recent = recentEntries();
 
-    if (!entries.length) {
+    if (!recent.length) {
       const empty = document.createElement('span');
       empty.className = 'content-history-empty';
       empty.textContent = 'History appears as you browse the graph and documents.';
@@ -159,29 +187,30 @@
       return;
     }
 
-    entries.forEach(entry => {
+    recent.forEach(entry => {
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'content-history-item';
       button.textContent = entry.title;
       button.title = entry.title;
-      if (sameEntry(entry, currentEntry)) button.setAttribute('aria-current', 'page');
+      if (sameEntry(entry, currentEntry())) button.setAttribute('aria-current', 'page');
       button.addEventListener('click', () => jumpTo(entry));
       trail.appendChild(button);
     });
   }
 
   function render() {
-    backButton.disabled = backStack.length === 0;
-    forwardButton.disabled = forwardStack.length === 0;
-    backButton.title = backStack.length
-      ? `Back to ${backStack[backStack.length - 1].title} (${backStack.length} in stack)`
-      : 'No previous content';
-    forwardButton.title = forwardStack.length
-      ? `Forward to ${forwardStack[forwardStack.length - 1].title} (${forwardStack.length} in stack)`
-      : 'No forward content';
-    backButton.setAttribute('aria-label', `Back${backStack.length ? `, ${backStack.length} item${backStack.length === 1 ? '' : 's'} available` : ''}`);
-    forwardButton.setAttribute('aria-label', `Forward${forwardStack.length ? `, ${forwardStack.length} item${forwardStack.length === 1 ? '' : 's'} available` : ''}`);
+    const backCount = Math.min(NAV_LIMIT, Math.max(0, currentIndex));
+    const forwardCount = Math.min(NAV_LIMIT, Math.max(0, entries.length - currentIndex - 1));
+    const previous = currentIndex > 0 ? entries[currentIndex - 1] : null;
+    const next = currentIndex >= 0 && currentIndex < entries.length - 1 ? entries[currentIndex + 1] : null;
+
+    backButton.disabled = !previous;
+    forwardButton.disabled = !next;
+    backButton.title = previous ? `Back to ${previous.title} (${backCount} available)` : 'No previous content';
+    forwardButton.title = next ? `Forward to ${next.title} (${forwardCount} available)` : 'No forward content';
+    backButton.setAttribute('aria-label', `Back${backCount ? `, ${backCount} item${backCount === 1 ? '' : 's'} available` : ''}`);
+    forwardButton.setAttribute('aria-label', `Forward${forwardCount ? `, ${forwardCount} item${forwardCount === 1 ? '' : 's'} available` : ''}`);
     renderTrail();
   }
 
@@ -214,10 +243,10 @@
 
   window.addEventListener('keydown', event => {
     if (!event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
-    if (event.key === 'ArrowLeft' && backStack.length) {
+    if (event.key === 'ArrowLeft' && currentIndex > 0) {
       event.preventDefault();
       goBack();
-    } else if (event.key === 'ArrowRight' && forwardStack.length) {
+    } else if (event.key === 'ArrowRight' && currentIndex >= 0 && currentIndex < entries.length - 1) {
       event.preventDefault();
       goForward();
     }
