@@ -10,7 +10,19 @@
         {
           "title": "Topics overview",
           "path": "topics/README.md",
-          "tags": ["overview"]
+          "tags": [
+            "overview"
+          ]
+        },
+        {
+          "title": "Behavior tree foundations: what BTs are and how they differ from decision trees",
+          "path": "topics/behavior-tree-foundations.md",
+          "tags": [
+            "foundations",
+            "semantics",
+            "decision-trees",
+            "comparison"
+          ]
         }
       ]
     },
@@ -22,7 +34,59 @@
         {
           "title": "Papers overview",
           "path": "papers/README.md",
-          "tags": ["overview"]
+          "tags": [
+            "overview"
+          ]
+        },
+        {
+          "title": "Marzinotto et al. (2014) — Unified BT framework for robot control",
+          "path": "papers/marzinotto-et-al-2014-unified-bt-framework.md",
+          "tags": [
+            "foundations",
+            "semantics",
+            "robot-control",
+            "ICRA"
+          ]
+        },
+        {
+          "title": "Colledanchise & Ögren (2017) — BT modularity and generalization",
+          "path": "papers/colledanchise-ogren-2017-bt-modularity.md",
+          "tags": [
+            "modularity",
+            "decision-trees",
+            "FSM",
+            "hybrid-control"
+          ]
+        },
+        {
+          "title": "Iovino et al. (2022) — Survey of Behavior Trees in robotics and AI",
+          "path": "papers/iovino-et-al-2022-survey.md",
+          "tags": [
+            "survey",
+            "robotics",
+            "AI",
+            "literature-review"
+          ]
+        },
+        {
+          "title": "Ögren & Sprague (2022) — Behavior Trees in robot control systems",
+          "path": "papers/ogren-sprague-2022-robot-control-systems.md",
+          "tags": [
+            "review",
+            "control",
+            "feedback",
+            "modularity"
+          ]
+        },
+        {
+          "title": "Quinlan (1986) — Induction of Decision Trees",
+          "path": "papers/quinlan-1986-induction-decision-trees.md",
+          "tags": [
+            "decision-trees",
+            "machine-learning",
+            "comparison",
+            "ID3"
+          ]
         }
       ]
     },
@@ -34,7 +98,9 @@
         {
           "title": "Notes overview",
           "path": "notes/README.md",
-          "tags": ["overview"]
+          "tags": [
+            "overview"
+          ]
         }
       ]
     },
@@ -46,7 +112,9 @@
         {
           "title": "References",
           "path": "references.md",
-          "tags": ["bibliography"]
+          "tags": [
+            "bibliography"
+          ]
         }
       ]
     }
