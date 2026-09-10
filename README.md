@@ -16,6 +16,8 @@ The repository collects and connects papers, implementation notes, conceptual su
 
 The page uses a full-width configuration bar above a resizable content/graph workspace. The content reader is the primary left pane and the graph is the exploration pane on the right. A **single click on any graph node brings its best available content into the left pane** while also selecting it for the inspector. Document-backed paper and knowledge nodes open their Markdown. Topic nodes show their description, subtopics/keywords, and related documents. Authors, keywords, venues, years, and sections generate a compact content view from their linked repository metadata.
 
+The left content pane includes browser-style navigation. **Back** and **Forward** maintain independent stacks of up to 100 entries each, and the history strip shows up to the five most recent unique content items on one line for quick jumping. Opening new content pushes the previous page onto the Back stack and clears Forward, matching normal browser behavior. `Alt+Left` and `Alt+Right` provide keyboard Back/Forward navigation.
+
 Selecting a graph node also populates the inspector with a one-line summary, its associated topic list, metadata, actions, and connections; connections are always presented last. Paper nodes expose Abstract and PDF actions when those resources are registered. For non-document entities such as authors, keywords, venues, years, and sections, inspector topics are derived from the documents associated with that entity.
 
 The graph can be explored using concept, literature, paper, taxonomy, or all-entity presets. Controls expose node and relationship filters, search highlighting/focus, neighborhood depth, node limits, keyword-frequency pruning, multiple layouts, label density, connectivity-based sizing, and force-physics tuning.
@@ -31,6 +33,8 @@ The graph can be explored using concept, literature, paper, taxonomy, or all-ent
 - `assets/kb-graph.js` — manifest-to-graph model, filtering, layouts, and interaction
 - `assets/kb-node-content.js` — single-click routing from graph nodes into the content pane
 - `assets/kb-node-content.css` — generated node-content presentation
+- `assets/kb-history.js` — 100-entry Back/Forward stacks and five-item recent-content navigation
+- `assets/kb-history.css` — history bar and recent-item presentation
 - `assets/kb-inspector.js` — summary/topic enrichment, paper resource actions, and inspector ordering
 - `assets/kb-reader-links.js` — directory-aware Markdown and asset links in the reader
 - `assets/kb-layout.js` — resizable content/graph layout and panel state
