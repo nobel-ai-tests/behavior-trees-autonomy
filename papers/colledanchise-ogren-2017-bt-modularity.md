@@ -2,7 +2,18 @@
 
 ## Citation
 
-Michele Colledanchise and Petter Ögren. **How Behavior Trees Modularize Hybrid Control Systems and Generalize Sequential Behavior Compositions, the Subsumption Architecture, and Decision Trees.** *IEEE Transactions on Robotics*, 33(2), 372–389, 2017. DOI: [10.1109/TRO.2016.2633567](https://doi.org/10.1109/TRO.2016.2633567). [KTH accepted version](https://www.diva-portal.org/smash/get/diva2:1078931/FULLTEXT01.pdf).
+Michele Colledanchise and Petter Ögren. **How Behavior Trees Modularize Hybrid Control Systems and Generalize Sequential Behavior Compositions, the Subsumption Architecture, and Decision Trees.** *IEEE Transactions on Robotics*, 33(2), 372–389, 2017. DOI: [10.1109/TRO.2016.2633567](https://doi.org/10.1109/TRO.2016.2633567).
+
+## Abstract and full text
+
+- **Raw abstract source:** [Accepted manuscript PDF, first page](https://www.diva-portal.org/smash/get/diva2:1078931/FULLTEXT01.pdf)
+- **Abstract summary:** The paper treats behavior trees as switching structures for hybrid dynamical systems, analyzes why BT composition improves modularity and preserves useful properties, and shows how BTs generalize several earlier control structures, including decision trees and subsumption.
+- **Full-text PDF:** [KTH/DiVA accepted manuscript](https://www.diva-portal.org/smash/get/diva2:1078931/FULLTEXT01.pdf)
+- **Version of record:** [IEEE DOI](https://doi.org/10.1109/TRO.2016.2633567)
+
+## Paper contents
+
+The paper reviews the classical BT formulation, introduces a compact functional formulation, develops the modularity analysis for hybrid control systems, studies how BTs generalize sequential behavior compositions, subsumption, and decision trees, applies the analysis to a larger robot-control example, and concludes with the implications of the unified representation.
 
 ## Problem / motivation
 
