@@ -41,7 +41,8 @@ Current requirements:
 - prefer ELK layout for complex flowcharts;
 - keep node/rank spacing compact enough for the reading pane;
 - preserve square-corner visual styling;
-- render inside a dedicated interactive viewport rather than shrinking complex diagrams to unreadable size.
+- render inside a dedicated viewport rather than shrinking complex diagrams to unreadable size;
+- do not let Mermaid's own SVG/DOM mutations trigger semantic reader-navigation behavior.
 
 ### Interaction
 
@@ -56,14 +57,16 @@ Normal article scrolling must always remain the default interaction.
 
 Rules:
 
-- ordinary mouse-wheel scrolling scrolls the reader;
-- ordinary touch drag scrolls the reader;
-- ordinary pointer drag must not be captured by a diagram;
-- `Ctrl/Command + wheel` may zoom the diagram;
-- `Shift + drag` may pan the diagram;
-- enabling the visible **Pan** control may allow direct drag/touch panning;
-- disabling Pan must immediately restore normal page scrolling;
-- keyboard access should support zoom, fit, and optional pan controls when the viewport has focus.
+- ordinary mouse-wheel scrolling scrolls the reader, including while the pointer is over the diagram;
+- ordinary touch drag scrolls the reader, including when the gesture starts over the diagram;
+- the diagram viewport must be non-interactive for pointer hit-testing while Pan mode is off;
+- `Ctrl/Command + wheel` may zoom through the outer diagram shell without changing ordinary-wheel behavior;
+- direct pointer/touch panning is available only after enabling the visible **Pan** control;
+- disabling Pan must immediately restore pointer pass-through and normal page scrolling;
+- when Pan mode is active, keyboard arrows may pan and Escape should leave Pan mode;
+- zoom and Fit must remain available through toolbar buttons even when the diagram viewport itself is non-interactive.
+
+Do not use implicit drag-to-pan or modifier-drag behavior as the default. A large diagram occupies enough screen area that any implicit pointer capture can make the page feel locked.
 
 Never make a diagram interaction trap the reader's scroll position.
 
@@ -190,7 +193,10 @@ A visualization must never:
 - capture ordinary touch scrolling;
 - set persistent document/body scroll locks;
 - leave pointer capture active after interaction ends;
-- force the reader to remain at a particular scroll position.
+- force the reader to remain at a particular scroll position;
+- use a generic article `MutationObserver` to reset `reader.scrollTop`.
+
+Reader scroll reset is a semantic navigation action, not a DOM-rendering side effect. Reset to the top only on explicit content navigation/open events such as a new document, Back, Forward, or recent-history selection. Diagram rendering, syntax highlighting, simulation updates, or any other DOM mutation inside the article must never reset the reader position.
 
 When zoom/pan is necessary, interaction must be explicit and reversible.
 
@@ -203,10 +209,12 @@ Before considering a visualization complete, verify all of the following:
 - diagram renders without Mermaid/parser errors;
 - labels do not overlap or extend outside nodes;
 - the first fitted view is readable;
-- zoom in/out works;
+- zoom in/out works from visible controls;
 - Fit works;
-- Pan can be intentionally enabled;
-- normal wheel/touch scrolling still moves the reader;
+- Pan can be intentionally enabled and disabled;
+- ordinary wheel scrolling moves the reader while the pointer is directly over the diagram;
+- ordinary touch scrolling moves the reader when the gesture starts directly over the diagram;
+- disabling Pan restores scrolling immediately;
 - resizing the left/right split does not break the diagram.
 
 ### Simulations
@@ -225,7 +233,8 @@ Before considering a visualization complete, verify all of the following:
 
 - Back/Forward navigation still works;
 - selecting another graph node destroys/stops the previous simulation cleanly;
-- reader scrolling remains usable above, inside, and below visualization blocks;
+- reader scrolling remains usable above, directly over, inside, and below visualization blocks;
+- post-render DOM mutations do not change the reader scroll position;
 - GitHub Pages builds successfully;
 - where possible, perform a real browser interaction check rather than relying only on deployment success.
 
