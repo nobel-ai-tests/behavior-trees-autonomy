@@ -7,17 +7,10 @@
   const d3 = window.d3;
   const simulations = new Set();
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const STATUS = Object.freeze({
-    SUCCESS: 'SUCCESS',
-    FAILURE: 'FAILURE',
-    RUNNING: 'RUNNING',
-    HALTED: 'HALTED',
-    IDLE: 'IDLE'
-  });
-
+  const STATUS = Object.freeze({ SUCCESS: 'SUCCESS', FAILURE: 'FAILURE', RUNNING: 'RUNNING', HALTED: 'HALTED', IDLE: 'IDLE' });
   const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
-  const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
   const lerp = (a, b, t) => a + (b - a) * t;
+  const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
   const angleDelta = (target, current) => Math.atan2(Math.sin(target - current), Math.cos(target - current));
 
   function textElement(tag, className, value = '') {
@@ -79,8 +72,7 @@
           x: left,
           y: top,
           width: Math.max(4, right - left),
-          height: Math.max(4, bottom - top),
-          district: row === 0 ? 'north' : row === horizontalYs.length - 2 ? 'south' : 'central'
+          height: Math.max(4, bottom - top)
         });
       }
     }
@@ -133,7 +125,6 @@
         addEdge(`r${row}c${col}`, `r${row}c${col + 1}`, road, `h${row}-${col}-${col + 1}`);
       }
     });
-
     city.verticalXs.forEach((_, col) => {
       const road = city.roads.find(item => item.id === `street-${col}`);
       for (let row = 0; row < city.horizontalYs.length - 1; row += 1) {
@@ -142,12 +133,6 @@
     });
 
     return { nodes, edges, adjacency };
-  }
-
-  function edgeDirection(graph, edgeId, fromId, toId) {
-    const a = graph.nodes.get(fromId);
-    const b = graph.nodes.get(toId);
-    return Math.atan2(b.y - a.y, b.x - a.x);
   }
 
   function routeEdgeCost(graph, edgeId, previousEdgeId, turnPenalty) {
@@ -164,12 +149,11 @@
   function planRoute(graph, startNode, goalNode, options = {}) {
     if (!graph.nodes.has(startNode) || !graph.nodes.has(goalNode)) return null;
     const turnPenalty = Number(options.turnPenalty) || 0;
+    const goal = graph.nodes.get(goalNode);
     const heuristic = id => {
-      const a = graph.nodes.get(id);
-      const b = graph.nodes.get(goalNode);
-      return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+      const node = graph.nodes.get(id);
+      return Math.abs(node.x - goal.x) + Math.abs(node.y - goal.y);
     };
-
     const open = [{ nodeId: startNode, previousEdgeId: null, g: 0, f: heuristic(startNode), serial: 0 }];
     const best = new Map([[`${startNode}|`, 0]]);
     const cameFrom = new Map();
@@ -181,33 +165,21 @@
       const current = open.shift();
       const currentKey = `${current.nodeId}|${current.previousEdgeId || ''}`;
       if (current.g > (best.get(currentKey) ?? Infinity) + 1e-9) continue;
-      if (current.nodeId === goalNode) {
-        goalStateKey = currentKey;
-        break;
-      }
+      if (current.nodeId === goalNode) { goalStateKey = currentKey; break; }
 
       for (const next of graph.adjacency.get(current.nodeId) || []) {
-        const edge = graph.edges.get(next.edgeId);
-        if (!edge || edge.blocked) continue;
-        const stepCost = routeEdgeCost(graph, next.edgeId, current.previousEdgeId, turnPenalty);
-        if (!Number.isFinite(stepCost)) continue;
-        const nextG = current.g + stepCost;
+        const cost = routeEdgeCost(graph, next.edgeId, current.previousEdgeId, turnPenalty);
+        if (!Number.isFinite(cost)) continue;
+        const nextG = current.g + cost;
         const nextKey = `${next.nodeId}|${next.edgeId}`;
         if (nextG + 1e-9 >= (best.get(nextKey) ?? Infinity)) continue;
         best.set(nextKey, nextG);
         cameFrom.set(nextKey, { previousKey: currentKey, edgeId: next.edgeId, nodeId: current.nodeId });
-        open.push({
-          nodeId: next.nodeId,
-          previousEdgeId: next.edgeId,
-          g: nextG,
-          f: nextG + heuristic(next.nodeId),
-          serial: serial++
-        });
+        open.push({ nodeId: next.nodeId, previousEdgeId: next.edgeId, g: nextG, f: nextG + heuristic(next.nodeId), serial: serial++ });
       }
     }
 
     if (!goalStateKey) return null;
-
     const reverseNodes = [goalNode];
     const reverseEdges = [];
     let cursor = goalStateKey;
@@ -217,13 +189,9 @@
       reverseNodes.push(step.nodeId);
       cursor = step.previousKey;
     }
-
     const nodes = reverseNodes.reverse();
     const edges = reverseEdges.reverse();
-    const cost = edges.reduce((sum, edgeId, index) => {
-      return sum + routeEdgeCost(graph, edgeId, index ? edges[index - 1] : null, turnPenalty);
-    }, 0);
-
+    const cost = edges.reduce((sum, edgeId, index) => sum + routeEdgeCost(graph, edgeId, index ? edges[index - 1] : null, turnPenalty), 0);
     return { nodes, edges, cost };
   }
 
@@ -236,25 +204,34 @@
     return true;
   }
 
-  function routePolyline(route, graph) {
-    if (!route) return [];
-    return route.nodes.map(id => graph.nodes.get(id)).filter(Boolean);
+  function routeGeometry(route, graph) {
+    if (!route) return { points: [], cumulative: [], total: 0 };
+    const points = route.nodes.map(id => graph.nodes.get(id)).filter(Boolean);
+    const cumulative = [0];
+    let total = 0;
+    for (let i = 0; i < points.length - 1; i += 1) {
+      total += distance(points[i], points[i + 1]);
+      cumulative.push(total);
+    }
+    return { points, cumulative, total };
   }
 
-  function samplePolyline(points, progress) {
-    if (!points.length) return { x: 0, y: 0, heading: 0 };
-    let remaining = Math.max(0, progress);
-    for (let index = 0; index < points.length - 1; index += 1) {
-      const a = points[index];
-      const b = points[index + 1];
-      const length = distance(a, b);
-      if (remaining <= length || index === points.length - 2) {
-        const t = length ? clamp(remaining / length, 0, 1) : 0;
-        return { x: lerp(a.x, b.x, t), y: lerp(a.y, b.y, t), heading: Math.atan2(b.y - a.y, b.x - a.x) };
-      }
-      remaining -= length;
+  function sampleRouteGeometry(geometry, progress) {
+    const { points, cumulative, total } = geometry;
+    if (!points.length) return { x: 0, y: 0, heading: 0, segmentIndex: 0 };
+    const p = clamp(progress, 0, total);
+    let index = 0;
+    while (index < cumulative.length - 1 && p > cumulative[index + 1]) index += 1;
+    if (index >= points.length - 1) {
+      const a = points[Math.max(0, points.length - 2)];
+      const b = points[points.length - 1];
+      return { x: b.x, y: b.y, heading: Math.atan2(b.y - a.y, b.x - a.x), segmentIndex: Math.max(0, points.length - 2) };
     }
-    return { ...points[points.length - 1], heading: 0 };
+    const a = points[index];
+    const b = points[index + 1];
+    const span = Math.max(1e-6, cumulative[index + 1] - cumulative[index]);
+    const t = clamp((p - cumulative[index]) / span, 0, 1);
+    return { x: lerp(a.x, b.x, t), y: lerp(a.y, b.y, t), heading: Math.atan2(b.y - a.y, b.x - a.x), segmentIndex: index };
   }
 
   function createCityEngine(config) {
@@ -265,11 +242,11 @@
     const eventConfig = {
       pedestrianStart: Number(config.events?.pedestrianStart) || 17,
       pedestrianEnd: Number(config.events?.pedestrianEnd) || 23,
+      pedestrianNode: config.events?.pedestrianNode || 'r2c2',
       closureTime: Number(config.events?.closureTime) || 28,
       closureEdge: config.events?.closureEdge || 'h1-3-4',
-      crossStart: Number(config.events?.crossStart) || 32,
-      crossEnd: Number(config.events?.crossEnd) || 40,
-      pedestrianNode: config.events?.pedestrianNode || 'r2c2',
+      crossStart: Number(config.events?.crossStart) || 43,
+      crossEnd: Number(config.events?.crossEnd) || 51,
       crossNode: config.events?.crossNode || 'r0c3'
     };
     const egoConfig = {
@@ -287,14 +264,17 @@
       goalTolerance: Number(config.control?.goalTolerance) || 1.4,
       intersectionRange: Number(config.control?.intersectionRange) || 15,
       conflictHorizon: Number(config.control?.conflictHorizon) || 2.4,
-      leadRange: Number(config.control?.leadRange) || 17,
-      safeFollowingDistance: Number(config.control?.safeFollowingDistance) || 8,
+      leadRange: Math.max(24, Number(config.control?.leadRange) || 17),
+      safeFollowingDistance: Math.max(7, Number(config.control?.safeFollowingDistance) || 8),
+      timeHeadway: 1.45,
+      hardGap: Math.max(8, Number(config.control?.safeFollowingDistance) || 8),
+      stopBuffer: 3.2,
       resetDelay: Number(config.control?.resetDelay) || 3,
       plannerTicks: Math.max(1, Number(config.control?.plannerTicks) || 2)
     };
 
     const initialPlan = planRoute(graph, startNode, goalNode, config.planner) || { nodes: [startNode], edges: [], cost: 0 };
-    const initialPolyline = routePolyline(initialPlan, graph);
+    const initialGeometry = routeGeometry(initialPlan, graph);
     let state;
     let previousActiveAction = null;
     let lastBtTickTime = -Infinity;
@@ -323,17 +303,68 @@
       };
     }
 
-    function segmentRemaining() {
-      const segment = currentSegment();
-      return segment ? distance(state.ego, segment.to) : 0;
+    function segmentLength(segment = currentSegment()) {
+      return segment ? distance(segment.from, segment.to) : 0;
     }
 
-    function updateActors() {
-      state.lead.progress += state.lead.speed * control.dt;
-      const leadPose = samplePolyline(initialPolyline, state.lead.progress);
-      state.lead.x = leadPose.x;
-      state.lead.y = leadPose.y;
-      state.lead.heading = leadPose.heading;
+    function segmentRemaining() {
+      const segment = currentSegment();
+      return segment ? Math.max(0, segmentLength(segment) - state.ego.segmentProgress) : 0;
+    }
+
+    function updateEgoPose() {
+      const segment = currentSegment();
+      if (!segment) return;
+      const length = Math.max(1e-6, segmentLength(segment));
+      const t = clamp(state.ego.segmentProgress / length, 0, 1);
+      state.ego.x = lerp(segment.from.x, segment.to.x, t);
+      state.ego.y = lerp(segment.from.y, segment.to.y, t);
+      const segmentHeading = Math.atan2(segment.to.y - segment.from.y, segment.to.x - segment.from.x);
+      const route = state.route;
+      if (route && segment.index > 0 && state.ego.segmentProgress < 5) {
+        const previousFrom = graph.nodes.get(route.nodes[segment.index - 1]);
+        const previousTo = graph.nodes.get(route.nodes[segment.index]);
+        const previousHeading = Math.atan2(previousTo.y - previousFrom.y, previousTo.x - previousFrom.x);
+        state.ego.heading = previousHeading + angleDelta(segmentHeading, previousHeading) * clamp(state.ego.segmentProgress / 5, 0, 1);
+      } else {
+        state.ego.heading = segmentHeading;
+      }
+    }
+
+    function routeProgressFromStart() {
+      const route = state.route;
+      if (!route) return 0;
+      let progress = 0;
+      for (let i = 0; i < route.currentSegmentIndex; i += 1) {
+        const a = graph.nodes.get(route.nodes[i]);
+        const b = graph.nodes.get(route.nodes[i + 1]);
+        progress += distance(a, b);
+      }
+      return progress + state.ego.segmentProgress;
+    }
+
+    function distanceAheadToNode(nodeId) {
+      const route = state.route;
+      if (!route) return Infinity;
+      const current = route.currentSegmentIndex;
+      const targetIndex = route.nodes.indexOf(nodeId, current + 1);
+      if (targetIndex < 0) return Infinity;
+      let ahead = segmentRemaining();
+      for (let i = current + 1; i < targetIndex; i += 1) {
+        const a = graph.nodes.get(route.nodes[i]);
+        const b = graph.nodes.get(route.nodes[i + 1]);
+        ahead += distance(a, b);
+      }
+      return ahead;
+    }
+
+    function updateActors(dt) {
+      state.lead.active = state.time < 18;
+      if (state.lead.active) {
+        state.lead.progress += state.lead.speed * dt;
+        const pose = sampleRouteGeometry(initialGeometry, state.lead.progress);
+        Object.assign(state.lead, pose);
+      }
 
       const pedestrianNode = graph.nodes.get(eventConfig.pedestrianNode);
       const pedWindow = Math.max(0.1, eventConfig.pedestrianEnd - eventConfig.pedestrianStart);
@@ -367,49 +398,56 @@
     function perceive() {
       const segment = currentSegment();
       const targetNode = segment?.to || null;
-      const distanceToIntersection = targetNode ? distance(state.ego, targetNode) : Infinity;
+      const distanceToIntersection = segmentRemaining();
       const approachingIntersection = Boolean(targetNode && distanceToIntersection <= control.intersectionRange);
 
-      const leadDistance = distance(state.ego, state.lead);
-      const headingDifference = Math.abs(angleDelta(state.lead.heading, state.ego.heading));
-      const leadVehicleDetected = leadDistance <= control.leadRange && headingDifference < 0.8 && state.time < 18;
+      const egoInitialProgress = routeProgressFromStart();
+      const sameEarlyRoute = state.lead.active && state.route?.version === 1 && state.route?.nodes.join('|') === initialPlan.nodes.join('|');
+      const leadCenterGap = sameEarlyRoute ? state.lead.progress - egoInitialProgress : Infinity;
+      const leadBumperGap = leadCenterGap - (egoConfig.length + state.lead.length) / 2;
+      const leadVehicleDetected = sameEarlyRoute && leadCenterGap > 0 && leadBumperGap <= control.leadRange;
+      const desiredGap = control.safeFollowingDistance + control.timeHeadway * state.ego.speed;
+      const closingSpeed = Math.max(0, state.ego.speed - state.lead.speed);
+      const requiredBrakingGap = desiredGap + (closingSpeed * closingSpeed) / Math.max(0.5, 2 * egoConfig.comfortBrake);
 
-      const pedestrianDistance = state.pedestrian.active ? distance(state.ego, state.pedestrian) : Infinity;
-      const pedestrianDetected = state.pedestrian.active && pedestrianDistance < 22;
-      const pedestrianInLane = pedestrianDetected && pedestrianDistance < 15;
+      const pedestrianAhead = distanceAheadToNode(eventConfig.pedestrianNode);
+      const pedestrianDetected = state.pedestrian.active && pedestrianAhead < 30;
+      const pedestrianInLane = pedestrianDetected && pedestrianAhead < 24;
 
       const crossNode = graph.nodes.get(eventConfig.crossNode);
+      const crossAhead = distanceAheadToNode(eventConfig.crossNode);
       const crossDistanceToNode = state.cross.active && crossNode ? distance(state.cross, crossNode) : Infinity;
-      const egoTti = approachingIntersection ? distanceToIntersection / Math.max(state.ego.speed, 1.2) : Infinity;
-      const crossTti = state.cross.active ? crossDistanceToNode / 7 : Infinity;
+      const egoTti = Number.isFinite(crossAhead) ? Math.max(0, crossAhead - control.stopBuffer) / Math.max(state.ego.speed, 1.2) : Infinity;
+      const crossSpeed = 56 / Math.max(0.1, eventConfig.crossEnd - eventConfig.crossStart);
+      const crossTti = state.cross.active ? crossDistanceToNode / Math.max(0.1, crossSpeed) : Infinity;
       const intersectionConflict = Boolean(
-        state.cross.active &&
-        targetNode?.id === eventConfig.crossNode &&
-        (crossDistanceToNode < 9 || Math.abs(egoTti - crossTti) <= control.conflictHorizon)
+        state.cross.active && Number.isFinite(crossAhead) && crossAhead < 24 &&
+        (crossDistanceToNode < 11 || Math.abs(egoTti - crossTti) <= control.conflictHorizon)
       );
 
-      const actorDistances = [
-        leadVehicleDetected ? leadDistance : Infinity,
-        pedestrianDetected ? pedestrianDistance : Infinity,
-        state.cross.active ? distance(state.ego, state.cross) : Infinity
-      ];
-      const collisionImminent = Math.min(...actorDistances) < 3.2 && state.ego.speed > 0.8;
       const blockedEdge = [...graph.edges.values()].find(edge => edge.blocked && state.route?.edges.slice(state.route.currentSegmentIndex).includes(edge.id));
+      const leadEmergency = leadVehicleDetected && leadBumperGap < Math.max(control.hardGap + 0.5, state.ego.speed * 0.45);
+      const pedEmergency = state.pedestrian.active && Number.isFinite(pedestrianAhead) && pedestrianAhead < 2.8 && state.ego.speed > 0.5;
+      const crossEmergency = state.cross.active && Number.isFinite(crossAhead) && crossAhead < 2.8 && crossDistanceToNode < 7 && state.ego.speed > 0.5;
 
       return {
         leadVehicleDetected,
-        leadDistance,
+        leadDistance: leadVehicleDetected ? leadBumperGap : Infinity,
+        leadCenterGap,
         leadSpeed: state.lead.speed,
+        desiredFollowingGap: desiredGap,
+        requiredBrakingGap,
         pedestrianDetected,
         pedestrianInLane,
-        pedestrianDistance,
+        pedestrianAhead,
         approachingIntersection,
         intersectionConflict,
         hasRightOfWay: !intersectionConflict,
         distanceToIntersection,
         egoTti,
         crossTti,
-        collisionImminent,
+        crossAhead,
+        collisionImminent: leadEmergency || pedEmergency || crossEmergency,
         laneBlocked: Boolean(blockedEdge),
         blockedSegment: blockedEdge?.id || null
       };
@@ -423,7 +461,6 @@
       const routeAvailable = Boolean(state.route?.edges.length);
       const valid = routeAvailable && routeIsValid(state.route, graph);
       if (state.route) state.route.valid = valid;
-
       state.blackboard = {
         destination_valid: graph.nodes.has(goalNode),
         destination_reached: destinationDistance <= control.goalTolerance,
@@ -432,7 +469,7 @@
         route_version: state.route?.version || 0,
         current_segment: segment?.edgeId || '—',
         distance_to_goal: destinationDistance,
-        segment_complete: Boolean(segment && distance(state.ego, segment.to) <= control.goalTolerance),
+        segment_complete: Boolean(segment && segmentRemaining() <= 0.08),
         ego_speed: state.ego.speed,
         target_speed: state.command.targetSpeed,
         approaching_intersection: state.perception.approachingIntersection,
@@ -441,7 +478,8 @@
         lead_vehicle_detected: state.perception.leadVehicleDetected,
         lead_vehicle_distance: state.perception.leadDistance,
         lead_vehicle_speed: state.perception.leadSpeed,
-        lead_vehicle_too_close: state.perception.leadVehicleDetected && state.perception.leadDistance < control.safeFollowingDistance + state.ego.speed * 0.65,
+        lead_vehicle_too_close: state.perception.leadVehicleDetected && state.perception.leadDistance < state.perception.requiredBrakingGap,
+        safe_following_distance: state.perception.desiredFollowingGap,
         lane_blocked: state.perception.laneBlocked,
         blocked_segment: state.perception.blockedSegment || '—',
         pedestrian_detected: state.perception.pedestrianDetected,
@@ -457,15 +495,13 @@
     }
 
     function reset() {
-      graph.edges.forEach(edge => {
-        edge.blocked = (config.planner?.initiallyBlockedEdges || []).includes(edge.id);
-      });
+      graph.edges.forEach(edge => { edge.blocked = (config.planner?.initiallyBlockedEdges || []).includes(edge.id); });
       const start = graph.nodes.get(startNode);
       state = {
         time: 0,
         tick: 0,
-        ego: { x: start.x, y: start.y, heading: 0, speed: 0, acceleration: 0 },
-        lead: { progress: 30, speed: 3.2, x: start.x, y: start.y, heading: 0 },
+        ego: { x: start.x, y: start.y, heading: 0, speed: 0, acceleration: 0, segmentProgress: 0 },
+        lead: { active: true, progress: 27, speed: 3.2, length: 4.5, width: 2, x: start.x, y: start.y, heading: 0 },
         pedestrian: { active: false, x: 0, y: 0 },
         cross: { active: false, x: 0, y: 0, heading: 0 },
         route: null,
@@ -474,7 +510,7 @@
         traversedEdges: new Set(),
         activeAction: 'none',
         rootStatus: STATUS.IDLE,
-        command: { targetSpeed: 0, braking: 'none' },
+        command: { targetSpeed: 0, braking: 'none', stopDistance: Infinity },
         blackboard: {},
         perception: {},
         events: [],
@@ -487,16 +523,24 @@
       lastBtTickTime = -Infinity;
       terminalAt = null;
       eventSequence = 0;
-      updateActors();
+      updateActors(0);
       updateBlackboard();
       logEvent('Mission initialized; no route is available, so the BT must invoke the planner.');
       tickBehaviorTree(true);
       return state;
     }
 
-    function setStatus(id, status) {
-      state.statuses.set(id, status);
-      return status;
+    function setStatus(id, status) { state.statuses.set(id, status); return status; }
+
+    function turnRequired() {
+      const route = state.route;
+      const segment = currentSegment();
+      if (!route || !segment || segment.index === 0) return false;
+      const previousFrom = graph.nodes.get(route.nodes[segment.index - 1]);
+      const previousTo = graph.nodes.get(route.nodes[segment.index]);
+      const previousHeading = Math.atan2(previousTo.y - previousFrom.y, previousTo.x - previousFrom.x);
+      const currentHeading = Math.atan2(segment.to.y - segment.from.y, segment.to.x - segment.from.x);
+      return Math.abs(angleDelta(currentHeading, previousHeading)) > 0.35 && state.ego.segmentProgress < 7;
     }
 
     function conditionStatus(name) {
@@ -519,43 +563,23 @@
       return conditions[name] ? STATUS.SUCCESS : STATUS.FAILURE;
     }
 
-    function turnRequired() {
-      const route = state.route;
-      const segment = currentSegment();
-      if (!route || !segment || segment.index === 0) return false;
-      const previousFrom = route.nodes[segment.index - 1];
-      const previousTo = route.nodes[segment.index];
-      const previousHeading = edgeDirection(graph, route.edges[segment.index - 1], previousFrom, previousTo);
-      const currentHeading = edgeDirection(graph, segment.edgeId, segment.fromId, segment.toId);
-      return Math.abs(angleDelta(currentHeading, previousHeading)) > 0.35 && distance(state.ego, segment.from) < 10;
-    }
-
     function planningStart() {
       const segment = currentSegment();
-      if (!segment) return { prefixNodes: [startNode], prefixEdges: [], start: startNode, currentSegmentIndex: 0 };
+      if (!segment) return { prefixNodes: [startNode], prefixEdges: [], start: startNode, segmentProgress: 0 };
       if (segment.edge && !segment.edge.blocked) {
-        return {
-          prefixNodes: [segment.fromId, segment.toId],
-          prefixEdges: [segment.edgeId],
-          start: segment.toId,
-          currentSegmentIndex: 0
-        };
+        return { prefixNodes: [segment.fromId, segment.toId], prefixEdges: [segment.edgeId], start: segment.toId, segmentProgress: state.ego.segmentProgress };
       }
-      return { prefixNodes: [segment.fromId], prefixEdges: [], start: segment.fromId, currentSegmentIndex: 0 };
+      return { prefixNodes: [segment.fromId], prefixEdges: [], start: segment.fromId, segmentProgress: 0 };
     }
 
     function computeRouteAction() {
       state.activeAction = 'ComputeGlobalRoute';
-      state.command.targetSpeed = 0;
       if (state.plannerProgress === 0) {
         state.plannerProgress = 1;
         logEvent(`Global replanning started from ${planningStart().start}.`);
         return STATUS.RUNNING;
       }
-      if (state.plannerProgress < control.plannerTicks) {
-        state.plannerProgress += 1;
-        return STATUS.RUNNING;
-      }
+      if (state.plannerProgress < control.plannerTicks) { state.plannerProgress += 1; return STATUS.RUNNING; }
 
       const start = planningStart();
       const plan = planRoute(graph, start.start, goalNode, config.planner);
@@ -565,18 +589,12 @@
         logEvent('A* could not find a route; mission enters safe-stop failure handling.');
         return STATUS.FAILURE;
       }
-
       state.routeVersion += 1;
       const nodes = start.prefixEdges.length ? [...start.prefixNodes, ...plan.nodes.slice(1)] : plan.nodes;
       const edges = start.prefixEdges.length ? [...start.prefixEdges, ...plan.edges] : plan.edges;
-      state.route = {
-        nodes,
-        edges,
-        cost: plan.cost,
-        version: state.routeVersion,
-        valid: true,
-        currentSegmentIndex: start.currentSegmentIndex
-      };
+      state.route = { nodes, edges, cost: plan.cost, version: state.routeVersion, valid: true, currentSegmentIndex: 0 };
+      state.ego.segmentProgress = start.prefixEdges.length ? start.segmentProgress : 0;
+      updateEgoPose();
       state.planningFailed = false;
       logEvent(`A* accepted route version ${state.routeVersion}: ${nodes.join(' → ')}.`);
       return STATUS.SUCCESS;
@@ -587,6 +605,8 @@
       if (!route) return STATUS.FAILURE;
       if (route.currentSegmentIndex < route.edges.length - 1) {
         route.currentSegmentIndex += 1;
+        state.ego.segmentProgress = 0;
+        updateEgoPose();
         state.activeAction = 'AdvanceRouteSegment';
         const segment = currentSegment();
         if (segment) logEvent(`Route advanced to ${segment.edge.roadName} (${segment.edgeId}).`);
@@ -597,38 +617,22 @@
 
     function motionAction(actionName) {
       state.activeAction = actionName;
-      if (state.blackboard.segment_complete) return STATUS.SUCCESS;
-      return STATUS.RUNNING;
+      return state.blackboard.segment_complete ? STATUS.SUCCESS : STATUS.RUNNING;
     }
 
     function actionStatus(name) {
-      if (name === 'emergencyBrake') {
-        state.activeAction = 'EmergencyBrake';
-        return STATUS.RUNNING;
-      }
-      if (name === 'stopForPedestrian') {
-        state.activeAction = 'StopForPedestrian';
-        return STATUS.RUNNING;
-      }
-      if (name === 'stopAtDestination') {
-        state.activeAction = 'StopAtDestination';
-        return state.ego.speed <= 0.08 ? STATUS.SUCCESS : STATUS.RUNNING;
-      }
+      if (name === 'emergencyBrake') { state.activeAction = 'EmergencyBrake'; return STATUS.RUNNING; }
+      if (name === 'stopForPedestrian') { state.activeAction = 'StopForPedestrian'; return STATUS.RUNNING; }
+      if (name === 'stopAtDestination') { state.activeAction = 'StopAtDestination'; return state.ego.speed <= 0.08 ? STATUS.SUCCESS : STATUS.RUNNING; }
       if (name === 'applyLocalDetour') return STATUS.FAILURE;
       if (name === 'computeGlobalRoute') return computeRouteAction();
-      if (name === 'yieldAtStopLine') {
-        state.activeAction = 'YieldAtStopLine';
-        return STATUS.RUNNING;
-      }
+      if (name === 'yieldAtStopLine') { state.activeAction = 'YieldAtStopLine'; return STATUS.RUNNING; }
       if (name === 'proceedThroughIntersection') return motionAction('ProceedThroughIntersection');
       if (name === 'followLeadVehicle') return motionAction('FollowLeadVehicle');
       if (name === 'executeTurn') return motionAction('ExecuteTurn');
       if (name === 'driveSegment') return motionAction('DriveSegment');
       if (name === 'advanceRouteSegment') return advanceRouteAction();
-      if (name === 'safeStopMissionFailure') {
-        state.activeAction = 'SafeStopMissionFailure';
-        return STATUS.FAILURE;
-      }
+      if (name === 'safeStopMissionFailure') { state.activeAction = 'SafeStopMissionFailure'; return STATUS.FAILURE; }
       return STATUS.FAILURE;
     }
 
@@ -636,57 +640,33 @@
       if (!node) return STATUS.FAILURE;
       if (parentId) state.traversedEdges.add(`${parentId}->${node.id}`);
       const kind = node.kind || 'action';
-
       if (kind === 'condition') return setStatus(node.id, conditionStatus(node.condition));
       if (kind === 'action') return setStatus(node.id, actionStatus(node.action));
-
       if (kind === 'sequence') {
         for (const child of node.children || []) {
-          const childStatus = evaluate(child, node.id);
-          if (childStatus === STATUS.FAILURE || childStatus === STATUS.RUNNING) return setStatus(node.id, childStatus);
+          const status = evaluate(child, node.id);
+          if (status === STATUS.FAILURE || status === STATUS.RUNNING) return setStatus(node.id, status);
         }
         return setStatus(node.id, STATUS.SUCCESS);
       }
-
       if (kind === 'fallback' || kind === 'control') {
         for (const child of node.children || []) {
-          const childStatus = evaluate(child, node.id);
-          if (childStatus === STATUS.SUCCESS || childStatus === STATUS.RUNNING) return setStatus(node.id, childStatus);
+          const status = evaluate(child, node.id);
+          if (status === STATUS.SUCCESS || status === STATUS.RUNNING) return setStatus(node.id, status);
         }
         return setStatus(node.id, STATUS.FAILURE);
       }
-
       return setStatus(node.id, STATUS.FAILURE);
     }
 
-    function updateCommand() {
-      const segment = currentSegment();
-      const speedLimit = segment?.edge?.speedLimit || egoConfig.maxSpeed;
-      let targetSpeed = 0;
-      let braking = 'none';
-      if (state.activeAction === 'EmergencyBrake') {
-        targetSpeed = 0;
-        braking = 'emergency';
-      } else if (state.activeAction === 'StopForPedestrian' || state.activeAction === 'YieldAtStopLine' || state.activeAction === 'ComputeGlobalRoute' || state.activeAction === 'SafeStopMissionFailure' || state.activeAction === 'StopAtDestination') {
-        targetSpeed = 0;
-        braking = 'comfort';
-      } else if (state.activeAction === 'FollowLeadVehicle') {
-        targetSpeed = Math.min(speedLimit, state.blackboard.lead_vehicle_speed);
-      } else if (state.activeAction === 'ExecuteTurn') {
-        targetSpeed = Math.min(3.4, speedLimit);
-      } else if (state.activeAction === 'ProceedThroughIntersection') {
-        targetSpeed = Math.min(4.5, speedLimit);
-      } else if (state.activeAction === 'DriveSegment' || state.activeAction === 'AdvanceRouteSegment') {
-        targetSpeed = Math.min(egoConfig.maxSpeed, speedLimit);
-      }
-
-      if (segment) {
-        const remaining = segmentRemaining();
-        if (remaining < 7 && routeTurnAhead()) targetSpeed = Math.min(targetSpeed, 3.5);
-        if (state.route?.currentSegmentIndex === state.route?.edges.length - 1 && remaining < 8) targetSpeed = Math.min(targetSpeed, Math.max(0.8, remaining * 0.75));
-      }
-      state.command = { targetSpeed, braking };
-      state.blackboard.target_speed = targetSpeed;
+    function actionNameForLabel(label) {
+      const map = {
+        EmergencyBrake: 'emergencyBrake', StopForPedestrian: 'stopForPedestrian', StopAtDestination: 'stopAtDestination',
+        ComputeGlobalRoute: 'computeGlobalRoute', YieldAtStopLine: 'yieldAtStopLine', ProceedThroughIntersection: 'proceedThroughIntersection',
+        FollowLeadVehicle: 'followLeadVehicle', ExecuteTurn: 'executeTurn', DriveSegment: 'driveSegment',
+        AdvanceRouteSegment: 'advanceRouteSegment', SafeStopMissionFailure: 'safeStopMissionFailure'
+      };
+      return map[label] || label;
     }
 
     function routeTurnAhead() {
@@ -697,6 +677,58 @@
       const a = graph.edges.get(route.edges[index]);
       const b = graph.edges.get(route.edges[index + 1]);
       return Boolean(a && b && a.roadId !== b.roadId);
+    }
+
+    function stopSpeedForDistance(distanceToStop, brake = egoConfig.comfortBrake) {
+      if (!Number.isFinite(distanceToStop)) return egoConfig.maxSpeed;
+      return Math.sqrt(Math.max(0, 2 * brake * Math.max(0, distanceToStop)));
+    }
+
+    function updateCommand() {
+      const segment = currentSegment();
+      const speedLimit = segment?.edge?.speedLimit || egoConfig.maxSpeed;
+      let targetSpeed = 0;
+      let braking = 'none';
+      let stopDistance = Infinity;
+
+      if (state.activeAction === 'EmergencyBrake') {
+        targetSpeed = 0;
+        braking = 'emergency';
+      } else if (state.activeAction === 'ComputeGlobalRoute' || state.activeAction === 'SafeStopMissionFailure' || state.activeAction === 'StopAtDestination') {
+        targetSpeed = 0;
+        braking = 'comfort';
+      } else if (state.activeAction === 'StopForPedestrian') {
+        stopDistance = Math.max(0, state.perception.pedestrianAhead - control.stopBuffer);
+        targetSpeed = Math.min(speedLimit, stopSpeedForDistance(stopDistance));
+        braking = targetSpeed < state.ego.speed ? 'comfort' : 'none';
+      } else if (state.activeAction === 'YieldAtStopLine') {
+        stopDistance = Math.max(0, state.perception.crossAhead - control.stopBuffer);
+        targetSpeed = Math.min(speedLimit, stopSpeedForDistance(stopDistance));
+        braking = targetSpeed < state.ego.speed ? 'comfort' : 'none';
+      } else if (state.activeAction === 'FollowLeadVehicle') {
+        const gap = state.blackboard.lead_vehicle_distance;
+        const desiredGap = state.blackboard.safe_following_distance;
+        const gapError = gap - desiredGap;
+        const recovery = clamp(gapError * 0.45, -state.lead.speed, 2.0);
+        targetSpeed = clamp(state.lead.speed + recovery, 0, speedLimit);
+        if (gap < desiredGap) braking = 'comfort';
+      } else if (state.activeAction === 'ExecuteTurn') {
+        targetSpeed = Math.min(3.2, speedLimit);
+      } else if (state.activeAction === 'ProceedThroughIntersection') {
+        targetSpeed = Math.min(4.2, speedLimit);
+      } else if (state.activeAction === 'DriveSegment' || state.activeAction === 'AdvanceRouteSegment') {
+        targetSpeed = Math.min(egoConfig.maxSpeed, speedLimit);
+      }
+
+      if (segment) {
+        const remaining = segmentRemaining();
+        if (remaining < 8 && routeTurnAhead()) targetSpeed = Math.min(targetSpeed, 3.2);
+        if (state.route?.currentSegmentIndex === state.route?.edges.length - 1 && remaining < 10) {
+          targetSpeed = Math.min(targetSpeed, stopSpeedForDistance(Math.max(0, remaining - control.goalTolerance * 0.5)));
+        }
+      }
+      state.command = { targetSpeed, braking, stopDistance };
+      state.blackboard.target_speed = targetSpeed;
     }
 
     function tickBehaviorTree(force = false) {
@@ -714,7 +746,6 @@
         const haltedNode = findActionNode(config.tree, actionNameForLabel(previousActiveAction));
         if (haltedNode && !state.statuses.has(haltedNode.id)) state.statuses.set(haltedNode.id, STATUS.HALTED);
       }
-
       if (state.activeAction !== 'none') previousActiveAction = state.activeAction;
       updateCommand();
       updateBlackboard();
@@ -723,69 +754,56 @@
 
       if (state.blackboard.lead_vehicle_detected && !state.flags.leadLogged) {
         state.flags.leadLogged = true;
-        logEvent('Slower lead vehicle detected; following policy is eligible.');
+        logEvent('Slower lead vehicle detected; headway controller begins preserving a safe bumper gap.');
       }
       if (state.blackboard.pedestrian_in_lane && !state.flags.pedestrianLogged) {
         state.flags.pedestrianLogged = true;
-        logEvent('Pedestrian entered the ego lane; safety subtree preempts road execution.');
+        logEvent('Pedestrian entered the crossing; the ego car brakes to a stop before the crosswalk.');
       }
       if (state.flags.pedestrianLogged && !state.blackboard.pedestrian_in_lane && !state.flags.pedestrianClearLogged && state.time > eventConfig.pedestrianStart) {
         state.flags.pedestrianClearLogged = true;
-        logEvent('Pedestrian cleared the lane; nominal navigation can resume on the next tick.');
+        logEvent('Pedestrian cleared the crossing; route execution resumes.');
       }
       if (state.blackboard.intersection_conflict && !state.flags.crossLogged) {
         state.flags.crossLogged = true;
-        logEvent('Cross traffic creates an intersection arrival conflict; ego yields.');
+        logEvent('Cross traffic conflicts with the planned arrival; ego yields before the intersection.');
       }
     }
 
-    function actionNameForLabel(label) {
-      const map = {
-        EmergencyBrake: 'emergencyBrake',
-        StopForPedestrian: 'stopForPedestrian',
-        StopAtDestination: 'stopAtDestination',
-        ComputeGlobalRoute: 'computeGlobalRoute',
-        YieldAtStopLine: 'yieldAtStopLine',
-        ProceedThroughIntersection: 'proceedThroughIntersection',
-        FollowLeadVehicle: 'followLeadVehicle',
-        ExecuteTurn: 'executeTurn',
-        DriveSegment: 'driveSegment',
-        AdvanceRouteSegment: 'advanceRouteSegment',
-        SafeStopMissionFailure: 'safeStopMissionFailure'
-      };
-      return map[label] || label;
+    function enforceLeadSafety(nextProgress) {
+      if (!state.perception.leadVehicleDetected) return nextProgress;
+      const route = state.route;
+      if (!route || route.version !== 1 || route.nodes.join('|') !== initialPlan.nodes.join('|')) return nextProgress;
+      let completed = 0;
+      for (let i = 0; i < route.currentSegmentIndex; i += 1) {
+        completed += distance(graph.nodes.get(route.nodes[i]), graph.nodes.get(route.nodes[i + 1]));
+      }
+      const maxGlobalProgress = state.lead.progress - (egoConfig.length + state.lead.length) / 2 - control.hardGap;
+      return Math.min(nextProgress, Math.max(0, maxGlobalProgress - completed));
     }
 
     function integrateEgo(dt) {
       const segment = currentSegment();
       const desired = state.command.targetSpeed;
       const braking = desired < state.ego.speed;
-      const rate = braking
-        ? (state.command.braking === 'emergency' ? egoConfig.emergencyBrake : egoConfig.comfortBrake)
-        : egoConfig.accel;
+      const rate = braking ? (state.command.braking === 'emergency' ? egoConfig.emergencyBrake : egoConfig.comfortBrake) : egoConfig.accel;
       const delta = clamp(desired - state.ego.speed, -rate * dt, rate * dt);
       state.ego.acceleration = delta / Math.max(dt, 1e-6);
       state.ego.speed = clamp(state.ego.speed + delta, 0, egoConfig.maxSpeed);
-
       if (!segment || state.activeAction === 'ComputeGlobalRoute' || state.activeAction === 'SafeStopMissionFailure') return;
-      const desiredHeading = Math.atan2(segment.to.y - state.ego.y, segment.to.x - state.ego.x);
-      const turn = clamp(angleDelta(desiredHeading, state.ego.heading), -egoConfig.turnRate * dt, egoConfig.turnRate * dt);
-      state.ego.heading += turn;
 
-      const maxStep = state.ego.speed * dt;
-      const remaining = distance(state.ego, segment.to);
-      if (remaining <= maxStep + 0.05) {
-        state.ego.x = segment.to.x;
-        state.ego.y = segment.to.y;
-      } else {
-        state.ego.x += Math.cos(state.ego.heading) * maxStep;
-        state.ego.y += Math.sin(state.ego.heading) * maxStep;
-      }
+      let movement = state.ego.speed * dt;
+      if (Number.isFinite(state.command.stopDistance)) movement = Math.min(movement, Math.max(0, state.command.stopDistance));
+      let nextProgress = Math.min(segmentLength(segment), state.ego.segmentProgress + movement);
+      nextProgress = enforceLeadSafety(nextProgress);
+      if (nextProgress <= state.ego.segmentProgress + 1e-6 && state.perception.leadVehicleDetected) state.ego.speed = Math.min(state.ego.speed, state.lead.speed);
+      state.ego.segmentProgress = nextProgress;
+      updateEgoPose();
     }
 
     function step(dt = control.dt) {
       state.time += dt;
-      updateActors();
+      updateActors(dt);
       updateBlackboard();
       tickBehaviorTree();
       integrateEgo(dt);
@@ -821,25 +839,18 @@
       canvas.height = Math.round(cssHeight * dpr);
       context.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
-
     const observer = new ResizeObserver(resize);
     observer.observe(canvas);
     resize();
 
     const worldToCanvas = point => {
       const pad = 18;
-      return {
-        x: pad + point.x / engine.city.width * (cssWidth - pad * 2),
-        y: pad + point.y / engine.city.height * (cssHeight - pad * 2)
-      };
+      return { x: pad + point.x / engine.city.width * (cssWidth - pad * 2), y: pad + point.y / engine.city.height * (cssHeight - pad * 2) };
     };
     const pxX = value => value / engine.city.width * (cssWidth - 36);
     const pxY = value => value / engine.city.height * (cssHeight - 36);
 
-    function drawBackground() {
-      context.fillStyle = '#edf2ed';
-      context.fillRect(0, 0, cssWidth, cssHeight);
-    }
+    function drawBackground() { context.fillStyle = '#edf2ed'; context.fillRect(0, 0, cssWidth, cssHeight); }
 
     function drawBuildings() {
       engine.city.buildings.forEach((building, index) => {
@@ -860,41 +871,21 @@
     function drawRoads() {
       engine.city.roads.forEach(road => {
         context.fillStyle = '#d7dce1';
-        context.strokeStyle = '#c0c7ce';
-        context.lineWidth = 1;
         if (road.orientation === 'horizontal') {
           const a = worldToCanvas({ x: 0, y: road.center - road.width / 2 });
           const b = worldToCanvas({ x: engine.city.width, y: road.center + road.width / 2 });
           context.fillRect(a.x, a.y, b.x - a.x, b.y - a.y);
-          const centerA = worldToCanvas({ x: 0, y: road.center });
-          const centerB = worldToCanvas({ x: engine.city.width, y: road.center });
-          context.setLineDash([9, 8]);
-          context.strokeStyle = '#ffffff';
-          context.beginPath();
-          context.moveTo(centerA.x, centerA.y);
-          context.lineTo(centerB.x, centerB.y);
-          context.stroke();
-          context.setLineDash([]);
+          const c1 = worldToCanvas({ x: 0, y: road.center });
+          const c2 = worldToCanvas({ x: engine.city.width, y: road.center });
+          context.setLineDash([9, 8]); context.strokeStyle = '#fff'; context.beginPath(); context.moveTo(c1.x, c1.y); context.lineTo(c2.x, c2.y); context.stroke(); context.setLineDash([]);
         } else {
           const a = worldToCanvas({ x: road.center - road.width / 2, y: 0 });
           const b = worldToCanvas({ x: road.center + road.width / 2, y: engine.city.height });
           context.fillRect(a.x, a.y, b.x - a.x, b.y - a.y);
-          const centerA = worldToCanvas({ x: road.center, y: 0 });
-          const centerB = worldToCanvas({ x: road.center, y: engine.city.height });
-          context.setLineDash([9, 8]);
-          context.strokeStyle = '#ffffff';
-          context.beginPath();
-          context.moveTo(centerA.x, centerA.y);
-          context.lineTo(centerB.x, centerB.y);
-          context.stroke();
-          context.setLineDash([]);
+          const c1 = worldToCanvas({ x: road.center, y: 0 });
+          const c2 = worldToCanvas({ x: road.center, y: engine.city.height });
+          context.setLineDash([9, 8]); context.strokeStyle = '#fff'; context.beginPath(); context.moveTo(c1.x, c1.y); context.lineTo(c2.x, c2.y); context.stroke(); context.setLineDash([]);
         }
-      });
-
-      engine.city.intersections.forEach(node => {
-        const p = worldToCanvas(node);
-        context.fillStyle = 'rgba(255,255,255,.1)';
-        context.fillRect(p.x - pxX(engine.city.roadWidth / 2), p.y - pxY(engine.city.roadWidth / 2), pxX(engine.city.roadWidth), pxY(engine.city.roadWidth));
       });
     }
 
@@ -902,422 +893,217 @@
       const state = engine.state();
       const route = state.route;
       if (!route) return;
-      const points = route.nodes.map(id => engine.graph.nodes.get(id)).filter(Boolean);
-      if (points.length < 2) return;
-
+      const points = route.nodes.map(id => engine.graph.nodes.get(id));
       context.lineCap = 'round';
-      context.lineJoin = 'round';
-      for (let index = 0; index < route.edges.length; index += 1) {
-        const a = worldToCanvas(points[index]);
-        const b = worldToCanvas(points[index + 1]);
-        const edge = engine.graph.edges.get(route.edges[index]);
-        context.beginPath();
-        context.moveTo(a.x, a.y);
-        context.lineTo(b.x, b.y);
-        if (edge?.blocked) {
-          context.strokeStyle = '#c94a4a';
-          context.lineWidth = 6;
-          context.setLineDash([5, 5]);
-        } else if (index < route.currentSegmentIndex) {
-          context.strokeStyle = '#6d8f79';
-          context.lineWidth = 4;
-          context.setLineDash([]);
-        } else if (index === route.currentSegmentIndex) {
-          context.strokeStyle = '#245b88';
-          context.lineWidth = 6;
-          context.setLineDash([]);
-        } else {
-          context.strokeStyle = '#4f82b1';
-          context.lineWidth = 4;
-          context.setLineDash([8, 6]);
-        }
-        context.stroke();
-        context.setLineDash([]);
+      for (let i = 0; i < route.edges.length; i += 1) {
+        const a = worldToCanvas(points[i]);
+        const b = worldToCanvas(points[i + 1]);
+        const edge = engine.graph.edges.get(route.edges[i]);
+        context.beginPath(); context.moveTo(a.x, a.y); context.lineTo(b.x, b.y);
+        if (edge?.blocked) { context.strokeStyle = '#c94a4a'; context.lineWidth = 6; context.setLineDash([5, 5]); }
+        else if (i < route.currentSegmentIndex) { context.strokeStyle = '#6d8f79'; context.lineWidth = 4; context.setLineDash([]); }
+        else if (i === route.currentSegmentIndex) { context.strokeStyle = '#245b88'; context.lineWidth = 6; context.setLineDash([]); }
+        else { context.strokeStyle = '#4f82b1'; context.lineWidth = 4; context.setLineDash([8, 6]); }
+        context.stroke(); context.setLineDash([]);
       }
     }
 
     function drawBarricades() {
       engine.graph.edges.forEach(edge => {
         if (!edge.blocked) return;
-        const a = engine.graph.nodes.get(edge.from);
-        const b = engine.graph.nodes.get(edge.to);
+        const a = engine.graph.nodes.get(edge.from); const b = engine.graph.nodes.get(edge.to);
         const p = worldToCanvas({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 });
-        context.save();
-        context.translate(p.x, p.y);
-        context.rotate(Math.atan2(b.y - a.y, b.x - a.x));
-        context.fillStyle = '#fff5e6';
-        context.strokeStyle = '#b14c35';
-        context.lineWidth = 2;
-        context.fillRect(-13, -6, 26, 12);
-        context.strokeRect(-13, -6, 26, 12);
-        context.beginPath();
-        context.moveTo(-10, 5);
-        context.lineTo(-3, -5);
-        context.moveTo(0, 5);
-        context.lineTo(7, -5);
-        context.stroke();
-        context.restore();
+        context.save(); context.translate(p.x, p.y); context.rotate(Math.atan2(b.y - a.y, b.x - a.x));
+        context.fillStyle = '#fff5e6'; context.strokeStyle = '#b14c35'; context.lineWidth = 2;
+        context.fillRect(-13, -6, 26, 12); context.strokeRect(-13, -6, 26, 12);
+        context.beginPath(); context.moveTo(-10, 5); context.lineTo(-3, -5); context.moveTo(0, 5); context.lineTo(7, -5); context.stroke(); context.restore();
       });
     }
 
     function drawDestination() {
-      const node = engine.graph.nodes.get(engine.goalNode);
-      const p = worldToCanvas(node);
-      context.fillStyle = '#28775f';
-      context.strokeStyle = '#1f5b48';
-      context.lineWidth = 2;
-      context.fillRect(p.x - 8, p.y - 8, 16, 16);
-      context.strokeRect(p.x - 8, p.y - 8, 16, 16);
-      context.fillStyle = '#1f5b48';
-      context.font = '11px system-ui, sans-serif';
-      context.fillText('loading goal', p.x - 28, p.y - 13);
+      const p = worldToCanvas(engine.graph.nodes.get(engine.goalNode));
+      context.fillStyle = '#28775f'; context.strokeStyle = '#1f5b48'; context.lineWidth = 2;
+      context.fillRect(p.x - 8, p.y - 8, 16, 16); context.strokeRect(p.x - 8, p.y - 8, 16, 16);
+      context.fillStyle = '#1f5b48'; context.font = '11px system-ui, sans-serif'; context.fillText('loading goal', p.x - 28, p.y - 13);
     }
 
     function drawCar(actor, fill, stroke, label, length = 4.5, width = 2) {
       const p = worldToCanvas(actor);
-      const lengthPx = Math.max(18, pxX(length));
-      const widthPx = Math.max(10, pxY(width));
-      context.save();
-      context.translate(p.x, p.y);
-      context.rotate(actor.heading || 0);
-      context.fillStyle = fill;
-      context.strokeStyle = stroke;
-      context.lineWidth = 1.6;
-      context.fillRect(-lengthPx / 2, -widthPx / 2, lengthPx, widthPx);
-      context.strokeRect(-lengthPx / 2, -widthPx / 2, lengthPx, widthPx);
-      context.restore();
-      context.fillStyle = stroke;
-      context.font = '10px system-ui, sans-serif';
-      context.fillText(label, p.x + 8, p.y - 9);
+      const lengthPx = Math.max(18, pxX(length)); const widthPx = Math.max(10, pxY(width));
+      context.save(); context.translate(p.x, p.y); context.rotate(actor.heading || 0);
+      context.fillStyle = fill; context.strokeStyle = stroke; context.lineWidth = 1.6;
+      context.fillRect(-lengthPx / 2, -widthPx / 2, lengthPx, widthPx); context.strokeRect(-lengthPx / 2, -widthPx / 2, lengthPx, widthPx); context.restore();
+      context.fillStyle = stroke; context.font = '10px system-ui, sans-serif'; context.fillText(label, p.x + 8, p.y - 9);
     }
 
     function drawActors() {
       const state = engine.state();
-      drawCar(state.lead, '#f3dfc2', '#915d1f', 'lead');
+      if (state.lead.active) drawCar(state.lead, '#f3dfc2', '#915d1f', 'lead', state.lead.length, state.lead.width);
       if (state.cross.active) drawCar(state.cross, '#f2cdcf', '#a84451', 'cross traffic', 4.6, 2);
       if (state.pedestrian.active) {
         const p = worldToCanvas(state.pedestrian);
-        context.fillStyle = '#7a426f';
-        context.beginPath();
-        context.arc(p.x, p.y, 5, 0, Math.PI * 2);
-        context.fill();
-        context.fillStyle = '#63335a';
-        context.font = '10px system-ui, sans-serif';
-        context.fillText('pedestrian', p.x + 7, p.y - 7);
+        context.fillStyle = '#7a426f'; context.beginPath(); context.arc(p.x, p.y, 5, 0, Math.PI * 2); context.fill();
+        context.fillStyle = '#63335a'; context.font = '10px system-ui, sans-serif'; context.fillText('pedestrian', p.x + 7, p.y - 7);
       }
       drawCar(state.ego, '#dce9f6', '#245b88', 'ego', engine.egoConfig.length, engine.egoConfig.width);
     }
 
     function drawTelemetry() {
       const state = engine.state();
-      context.fillStyle = 'rgba(255,255,255,.93)';
-      context.strokeStyle = '#cbd2da';
-      context.lineWidth = 1;
-      context.fillRect(10, 10, 238, 72);
-      context.strokeRect(10, 10, 238, 72);
-      context.fillStyle = '#273445';
-      context.font = '11px ui-monospace, monospace';
+      context.fillStyle = 'rgba(255,255,255,.94)'; context.strokeStyle = '#cbd2da'; context.lineWidth = 1;
+      context.fillRect(10, 10, 260, 88); context.strokeRect(10, 10, 260, 88);
+      context.fillStyle = '#273445'; context.font = '11px ui-monospace, monospace';
       context.fillText(`route v${state.route?.version || 0} · ${state.blackboard.current_segment}`, 20, 29);
       context.fillText(`ego ${state.ego.speed.toFixed(1)} → ${state.command.targetSpeed.toFixed(1)} m/s`, 20, 46);
       context.fillText(`skill ${state.activeAction}`, 20, 63);
-      context.fillText(`goal ${state.blackboard.distance_to_goal.toFixed(1)} m`, 20, 78);
+      context.fillText(`goal ${state.blackboard.distance_to_goal.toFixed(1)} m`, 20, 80);
+      if (state.blackboard.lead_vehicle_detected) context.fillText(`lead gap ${state.blackboard.lead_vehicle_distance.toFixed(1)} m`, 20, 95);
     }
 
     function render() {
       context.clearRect(0, 0, cssWidth, cssHeight);
-      drawBackground();
-      drawBuildings();
-      drawRoads();
-      drawRoute();
-      drawBarricades();
-      drawDestination();
-      drawActors();
-      drawTelemetry();
+      drawBackground(); drawBuildings(); drawRoads(); drawRoute(); drawBarricades(); drawDestination(); drawActors(); drawTelemetry();
     }
-
     return { render, stop: () => observer.disconnect() };
   }
 
   function createTreeRenderer(host, tree, engine, inspector) {
-    if (!d3) {
-      host.textContent = 'Live tree view requires D3.';
-      return { update() {}, stop() {} };
-    }
+    if (!d3) { host.textContent = 'Live tree view requires D3.'; return { update() {}, fit() {}, stop() {} }; }
 
     const toolbar = document.createElement('div');
     toolbar.className = 'kb-sim-tree-toolbar';
-    const fit = document.createElement('button');
-    const zoomOut = document.createElement('button');
-    const zoomIn = document.createElement('button');
-    const pan = document.createElement('button');
+    const fit = document.createElement('button'); const zoomOut = document.createElement('button'); const zoomIn = document.createElement('button'); const pan = document.createElement('button');
     [fit, zoomOut, zoomIn, pan].forEach(button => { button.type = 'button'; });
-    fit.textContent = 'Fit';
-    zoomOut.textContent = '−';
-    zoomIn.textContent = '+';
-    pan.textContent = 'Pan';
-    pan.setAttribute('aria-pressed', 'false');
-    toolbar.append(fit, zoomOut, zoomIn, pan);
-    host.appendChild(toolbar);
+    fit.textContent = 'Fit'; zoomOut.textContent = '−'; zoomIn.textContent = '+'; pan.textContent = 'Pan'; pan.setAttribute('aria-pressed', 'false');
+    toolbar.append(fit, zoomOut, zoomIn, pan); host.appendChild(toolbar);
 
-    const shell = document.createElement('div');
-    shell.className = 'kb-sim-tree-shell';
-    host.appendChild(shell);
-
-    const svg = d3.select(shell)
-      .append('svg')
-      .attr('class', 'kb-sim-tree-svg')
-      .attr('role', 'img')
-      .attr('aria-label', 'Live behavior tree execution state');
+    const shell = document.createElement('div'); shell.className = 'kb-sim-tree-shell'; host.appendChild(shell);
+    const svg = d3.select(shell).append('svg').attr('class', 'kb-sim-tree-svg').attr('role', 'img').attr('aria-label', 'Live behavior tree execution state');
     const viewport = svg.append('g').attr('class', 'kb-sim-tree-viewport');
-
     const hierarchy = d3.hierarchy(tree);
-    const leaves = Math.max(1, hierarchy.leaves().length);
-    const levels = hierarchy.height + 1;
-    const width = Math.max(1040, leaves * 170);
-    const height = Math.max(620, levels * 96);
-    const layout = d3.tree().size([width - 180, height - 110]).separation((a, b) => a.parent === b.parent ? 1.1 : 1.35);
+    const layout = d3.tree().nodeSize([84, 190]).separation((a, b) => a.parent === b.parent ? 1 : 1.08);
     layout(hierarchy);
-    const nodes = hierarchy.descendants();
-    const links = hierarchy.links();
-    const shiftX = 90 - Math.min(...nodes.map(node => node.x));
-    const viewWidth = Math.max(width, Math.max(...nodes.map(node => node.x)) - Math.min(...nodes.map(node => node.x)) + 180);
-    svg.attr('viewBox', `0 0 ${viewWidth} ${height}`);
+    const nodes = hierarchy.descendants(); const links = hierarchy.links();
 
-    const linkViews = viewport.append('g')
-      .attr('class', 'kb-sim-tree-links')
-      .selectAll('path')
-      .data(links)
-      .join('path')
+    const linkViews = viewport.append('g').attr('class', 'kb-sim-tree-links').selectAll('path').data(links).join('path')
       .attr('data-edge-id', link => `${link.source.data.id}->${link.target.data.id}`)
       .attr('d', link => {
-        const sx = link.source.x + shiftX;
-        const sy = link.source.y + 48;
-        const tx = link.target.x + shiftX;
-        const ty = link.target.y + 48;
-        const mid = (sy + ty) / 2;
-        return `M${sx},${sy} C${sx},${mid} ${tx},${mid} ${tx},${ty}`;
+        const sx = link.source.y; const sy = link.source.x; const tx = link.target.y; const ty = link.target.x; const mid = (sx + tx) / 2;
+        return `M${sx + 84},${sy} C${mid},${sy} ${mid},${ty} ${tx - 84},${ty}`;
       });
 
     const nodeViews = new Map();
-    const nodeGroups = viewport.append('g')
-      .attr('class', 'kb-sim-tree-nodes')
-      .selectAll('g')
-      .data(nodes)
-      .join('g')
-      .attr('class', 'kb-sim-tree-node')
-      .attr('data-kind', node => node.data.kind || 'action')
-      .attr('transform', node => `translate(${node.x + shiftX},${node.y + 48})`)
-      .attr('tabindex', 0)
-      .attr('role', 'button');
-
-    nodeGroups.append('rect')
-      .attr('x', -72)
-      .attr('y', -27)
-      .attr('width', 144)
-      .attr('height', 54);
+    const nodeGroups = viewport.append('g').attr('class', 'kb-sim-tree-nodes').selectAll('g').data(nodes).join('g')
+      .attr('class', 'kb-sim-tree-node').attr('data-kind', node => node.data.kind || 'action')
+      .attr('transform', node => `translate(${node.y},${node.x})`).attr('tabindex', 0).attr('role', 'button');
+    nodeGroups.append('rect').attr('x', -84).attr('y', -31).attr('width', 168).attr('height', 62);
 
     nodeGroups.each(function(node) {
-      const group = d3.select(this);
-      const labelText = String(node.data.label || node.data.id);
-      const words = labelText.split(/\s+/);
-      let first = labelText;
-      let second = '';
-      if (labelText.length > 20 && words.length > 1) {
-        const cut = Math.ceil(words.length / 2);
-        first = words.slice(0, cut).join(' ');
-        second = words.slice(cut).join(' ');
-      }
+      const group = d3.select(this); const labelText = String(node.data.label || node.data.id); const words = labelText.split(/\s+/);
+      let first = labelText; let second = '';
+      if (labelText.length > 22 && words.length > 1) { const cut = Math.ceil(words.length / 2); first = words.slice(0, cut).join(' '); second = words.slice(cut).join(' '); }
       const label = group.append('text').attr('class', 'kb-sim-tree-label').attr('text-anchor', 'middle');
-      label.append('tspan').attr('x', 0).attr('dy', second ? '-.35em' : '.15em').text(first);
-      if (second) label.append('tspan').attr('x', 0).attr('dy', '1.1em').text(second);
-      const meta = group.append('text').attr('class', 'kb-sim-tree-meta').attr('text-anchor', 'middle').attr('y', 40);
-      meta.text(`${String(node.data.kind || 'action').toUpperCase()} · depth ${node.depth}`);
-      const status = group.append('text').attr('class', 'kb-sim-tree-status').attr('text-anchor', 'middle').attr('y', 53).text(STATUS.IDLE);
+      label.append('tspan').attr('x', 0).attr('dy', second ? '-.28em' : '.15em').text(first);
+      if (second) label.append('tspan').attr('x', 0).attr('dy', '1.15em').text(second);
+      group.append('text').attr('class', 'kb-sim-tree-meta').attr('text-anchor', 'middle').attr('y', 45).text(`${String(node.data.kind || 'action').toUpperCase()} · depth ${node.depth}`);
+      const status = group.append('text').attr('class', 'kb-sim-tree-status').attr('text-anchor', 'middle').attr('y', 61).text(STATUS.IDLE);
       nodeViews.set(node.data.id, { group, status, node });
     });
 
     function showInspector(node) {
-      const state = engine.state();
-      const status = state.statuses.get(node.data.id) || STATUS.IDLE;
+      const state = engine.state(); const status = state.statuses.get(node.data.id) || STATUS.IDLE;
       inspector.replaceChildren();
       const title = textElement('strong', 'kb-sim-inspector-title', node.data.label || node.data.id);
-      const grid = document.createElement('div');
-      grid.className = 'kb-sim-inspector-grid';
-      const rows = [
-        ['Type', String(node.data.kind || 'action').toUpperCase()],
-        ['Depth', String(node.depth)],
-        ['Status', status],
-        ['Reads', (node.data.reads || []).join(', ') || '—'],
-        ['Writes', (node.data.writes || []).join(', ') || '—']
-      ];
-      rows.forEach(([key, value]) => {
-        const row = document.createElement('div');
-        row.append(textElement('span', 'kb-sim-inspector-key', key).element, textElement('span', 'kb-sim-inspector-value', value).element);
-        grid.appendChild(row);
+      const grid = document.createElement('div'); grid.className = 'kb-sim-inspector-grid';
+      [['Type', String(node.data.kind || 'action').toUpperCase()], ['Depth', String(node.depth)], ['Status', status], ['Reads', (node.data.reads || []).join(', ') || '—'], ['Writes', (node.data.writes || []).join(', ') || '—']].forEach(([key, value]) => {
+        const row = document.createElement('div'); row.append(textElement('span', 'kb-sim-inspector-key', key).element, textElement('span', 'kb-sim-inspector-value', value).element); grid.appendChild(row);
       });
-      const purpose = textElement('p', 'kb-sim-inspector-purpose', node.data.purpose || 'Structured node evaluated by the live behavior-tree runtime.');
-      inspector.append(title.element, grid, purpose.element);
+      inspector.append(title.element, grid, textElement('p', 'kb-sim-inspector-purpose', node.data.purpose || 'Structured node evaluated by the live behavior-tree runtime.').element);
     }
-
     nodeGroups.on('click', (_, node) => showInspector(node));
-    nodeGroups.on('keydown', (event, node) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        showInspector(node);
-      }
-    });
+    nodeGroups.on('keydown', (event, node) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); showInspector(node); } });
 
     let panEnabled = false;
-    const zoom = d3.zoom()
-      .scaleExtent([0.45, 2.5])
-      .filter(event => {
-        if (event.type === 'wheel') return Boolean(event.ctrlKey || event.metaKey);
-        return panEnabled;
-      })
+    const zoom = d3.zoom().scaleExtent([0.2, 3.5]).filter(event => event.type === 'wheel' ? Boolean(event.ctrlKey || event.metaKey) : panEnabled)
       .on('zoom', event => viewport.attr('transform', event.transform));
     svg.call(zoom);
-    svg.on('wheel.kb-scroll-safety', event => {
-      if (!(event.ctrlKey || event.metaKey)) return;
-      event.preventDefault();
-    }, { passive: false });
+    svg.on('wheel.kb-scroll-safety', event => { if (event.ctrlKey || event.metaKey) event.preventDefault(); }, { passive: false });
+
+    function syncSvgSize() {
+      const width = Math.max(320, shell.clientWidth || 640); const height = Math.max(320, shell.clientHeight || 520);
+      svg.attr('width', width).attr('height', height).attr('viewBox', `0 0 ${width} ${height}`);
+      return { width, height };
+    }
 
     function fitTree() {
+      const size = syncSvgSize();
       const bounds = viewport.node().getBBox();
-      const shellWidth = Math.max(320, shell.clientWidth || 640);
-      const shellHeight = Math.max(280, shell.clientHeight || 420);
       if (!bounds.width || !bounds.height) return;
-      const scale = Math.min(1, 0.9 / Math.max(bounds.width / shellWidth, bounds.height / shellHeight));
-      const tx = shellWidth / 2 - scale * (bounds.x + bounds.width / 2);
-      const ty = shellHeight / 2 - scale * (bounds.y + bounds.height / 2);
+      const pad = 28;
+      const scale = clamp(Math.min((size.width - pad * 2) / bounds.width, (size.height - pad * 2) / bounds.height), 0.2, 1.15);
+      const tx = size.width / 2 - scale * (bounds.x + bounds.width / 2);
+      const ty = size.height / 2 - scale * (bounds.y + bounds.height / 2);
       svg.call(zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(scale));
     }
 
     fit.addEventListener('click', fitTree);
     zoomIn.addEventListener('click', () => svg.transition().duration(160).call(zoom.scaleBy, 1.25));
     zoomOut.addEventListener('click', () => svg.transition().duration(160).call(zoom.scaleBy, 0.8));
-    pan.addEventListener('click', () => {
-      panEnabled = !panEnabled;
-      pan.setAttribute('aria-pressed', String(panEnabled));
-      pan.classList.toggle('active', panEnabled);
-      shell.classList.toggle('pan-enabled', panEnabled);
-    });
+    pan.addEventListener('click', () => { panEnabled = !panEnabled; pan.setAttribute('aria-pressed', String(panEnabled)); pan.classList.toggle('active', panEnabled); shell.classList.toggle('pan-enabled', panEnabled); });
+
+    const resizeObserver = new ResizeObserver(() => requestAnimationFrame(fitTree));
+    resizeObserver.observe(shell);
 
     function update() {
       const state = engine.state();
-      nodeViews.forEach((view, id) => {
-        const status = state.statuses.get(id) || STATUS.IDLE;
-        view.group.attr('data-status', status);
-        view.status.text(status);
-      });
+      nodeViews.forEach((view, id) => { const status = state.statuses.get(id) || STATUS.IDLE; view.group.attr('data-status', status); view.status.text(status); });
       linkViews.attr('data-active', link => state.traversedEdges.has(`${link.source.data.id}->${link.target.data.id}`) ? 'true' : 'false');
     }
 
-    requestAnimationFrame(fitTree);
+    requestAnimationFrame(() => requestAnimationFrame(fitTree));
     update();
-    return { update, fit: fitTree, stop() { svg.on('.zoom', null); } };
+    return { update, fit: fitTree, stop() { resizeObserver.disconnect(); svg.on('.zoom', null); } };
   }
 
   function createSimulation(config, sourceBlock) {
     if (!config?.tree || !config?.city) return null;
     const engine = createCityEngine(config);
-    const wrapper = document.createElement('section');
-    wrapper.className = 'kb-sim kb-sim-city';
-    wrapper.setAttribute('aria-label', config.title || 'City behavior-tree simulation');
+    const wrapper = document.createElement('section'); wrapper.className = 'kb-sim kb-sim-city'; wrapper.setAttribute('aria-label', config.title || 'City behavior-tree simulation');
+    const header = document.createElement('div'); header.className = 'kb-sim-header';
+    const title = textElement('div', 'kb-sim-title', config.title || 'City navigation simulation'); const clock = textElement('div', 'kb-sim-phase', ''); header.append(title.element, clock.element);
 
-    const header = document.createElement('div');
-    header.className = 'kb-sim-header';
-    const title = textElement('div', 'kb-sim-title', config.title || 'City navigation simulation');
-    const clock = textElement('div', 'kb-sim-phase', '');
-    header.append(title.element, clock.element);
-
-    const layout = document.createElement('div');
-    layout.className = 'kb-sim-layout';
-
-    const scenePanel = document.createElement('section');
-    scenePanel.className = 'kb-sim-panel kb-sim-scene-panel';
-    const sceneHeading = textElement('h4', '', 'City / road simulation');
-    const canvas = document.createElement('canvas');
-    canvas.className = 'kb-sim-canvas';
-    canvas.setAttribute('role', 'img');
-    canvas.setAttribute('aria-label', 'City road network with twelve building blocks, route overlay, ego vehicle, traffic, pedestrian, road closure, and destination');
-    const eventHeading = textElement('h4', 'kb-sim-event-heading', 'Significant events');
-    const eventLog = document.createElement('ol');
-    eventLog.className = 'kb-sim-event-log';
+    const topLayout = document.createElement('div'); topLayout.className = 'kb-sim-layout';
+    const scenePanel = document.createElement('section'); scenePanel.className = 'kb-sim-panel kb-sim-scene-panel';
+    const sceneHeading = textElement('h4', '', 'City / road simulation'); const canvas = document.createElement('canvas'); canvas.className = 'kb-sim-canvas'; canvas.setAttribute('role', 'img');
+    canvas.setAttribute('aria-label', 'City road network with twelve building blocks, planner route, ego vehicle, traffic, pedestrian, road closure, and destination');
+    const eventHeading = textElement('h4', 'kb-sim-event-heading', 'Significant events'); const eventLog = document.createElement('ol'); eventLog.className = 'kb-sim-event-log';
     scenePanel.append(sceneHeading.element, canvas, eventHeading.element, eventLog);
 
-    const decisionPanel = document.createElement('section');
-    decisionPanel.className = 'kb-sim-panel kb-sim-decision-panel';
-    const blackboardHeading = textElement('h4', '', 'Blackboard — perception + planner state');
-    const blackboard = document.createElement('div');
-    blackboard.className = 'kb-sim-blackboard';
-    const blackboardKeys = ['route_version', 'current_segment', 'route_valid', 'ego_speed', 'target_speed', 'intersection_conflict', 'pedestrian_in_lane', 'lane_blocked', 'active_skill', 'root_status', 'tick'];
+    const decisionPanel = document.createElement('section'); decisionPanel.className = 'kb-sim-panel kb-sim-decision-panel';
+    const blackboardHeading = textElement('h4', '', 'Blackboard — perception + planner state'); const blackboard = document.createElement('div'); blackboard.className = 'kb-sim-blackboard';
+    const blackboardKeys = ['route_version', 'current_segment', 'route_valid', 'ego_speed', 'target_speed', 'lead_vehicle_distance', 'safe_following_distance', 'intersection_conflict', 'pedestrian_in_lane', 'lane_blocked', 'active_skill', 'root_status', 'tick'];
     const blackboardViews = new Map();
-    blackboardKeys.forEach(key => {
-      const row = document.createElement('div');
-      row.className = 'kb-sim-blackboard-row';
-      const keyView = textElement('span', 'kb-sim-blackboard-key', key);
-      const valueView = textElement('span', 'kb-sim-blackboard-value', '—');
-      row.append(keyView.element, valueView.element);
-      blackboard.appendChild(row);
-      blackboardViews.set(key, valueView.node);
-    });
+    blackboardKeys.forEach(key => { const row = document.createElement('div'); row.className = 'kb-sim-blackboard-row'; const k = textElement('span', 'kb-sim-blackboard-key', key); const v = textElement('span', 'kb-sim-blackboard-value', '—'); row.append(k.element, v.element); blackboard.appendChild(row); blackboardViews.set(key, v.node); });
+    const inspectorHeading = textElement('h4', 'kb-sim-inspector-heading', 'Node inspector'); const inspector = document.createElement('div'); inspector.className = 'kb-sim-inspector'; inspector.textContent = 'Select a BT node to inspect its type, depth, status, inputs, outputs, and purpose.';
+    decisionPanel.append(blackboardHeading.element, blackboard, inspectorHeading.element, inspector);
+    topLayout.append(scenePanel, decisionPanel);
 
-    const treeHeading = textElement('h4', '', 'Live BT — recursive hierarchy and active path');
-    const treeHost = document.createElement('div');
-    treeHost.className = 'kb-sim-tree-host';
-    const inspectorHeading = textElement('h4', 'kb-sim-inspector-heading', 'Node inspector');
-    const inspector = document.createElement('div');
-    inspector.className = 'kb-sim-inspector';
-    inspector.textContent = 'Select a BT node to inspect its type, depth, status, inputs, outputs, and purpose.';
-    decisionPanel.append(blackboardHeading.element, blackboard, treeHeading.element, treeHost, inspectorHeading.element, inspector);
-    layout.append(scenePanel, decisionPanel);
+    const treePanel = document.createElement('section'); treePanel.className = 'kb-sim-panel kb-sim-tree-panel';
+    const treeHeading = textElement('h4', '', 'Live BT — recursive hierarchy and active path'); const treeHost = document.createElement('div'); treeHost.className = 'kb-sim-tree-host'; treePanel.append(treeHeading.element, treeHost);
 
-    const footer = document.createElement('div');
-    footer.className = 'kb-sim-footer';
-    const controls = document.createElement('div');
-    controls.className = 'kb-sim-controls';
-    const reset = document.createElement('button');
-    reset.type = 'button';
-    reset.textContent = 'Reset';
-    const play = document.createElement('button');
-    play.type = 'button';
-    const playText = document.createTextNode(reducedMotion.matches ? 'Play' : 'Pause');
-    play.appendChild(playText);
-    const step = document.createElement('button');
-    step.type = 'button';
-    step.textContent = 'Step';
-    const speed = document.createElement('select');
-    speed.className = 'kb-sim-speed';
-    speed.setAttribute('aria-label', 'Simulation speed');
-    [[0.5, '0.5×'], [1, '1×'], [2, '2×']].forEach(([value, label]) => {
-      const option = document.createElement('option');
-      option.value = String(value);
-      option.textContent = label;
-      if (value === 1) option.selected = true;
-      speed.appendChild(option);
-    });
+    const footer = document.createElement('div'); footer.className = 'kb-sim-footer'; const controls = document.createElement('div'); controls.className = 'kb-sim-controls';
+    const reset = document.createElement('button'); reset.type = 'button'; reset.textContent = 'Reset';
+    const play = document.createElement('button'); play.type = 'button'; const playText = document.createTextNode(reducedMotion.matches ? 'Play' : 'Pause'); play.appendChild(playText);
+    const step = document.createElement('button'); step.type = 'button'; step.textContent = 'Step';
+    const speed = document.createElement('select'); speed.className = 'kb-sim-speed'; speed.setAttribute('aria-label', 'Simulation speed');
+    [[0.5, '0.5×'], [1, '1×'], [2, '2×']].forEach(([value, label]) => { const option = document.createElement('option'); option.value = String(value); option.textContent = label; if (value === 1) option.selected = true; speed.appendChild(option); });
     controls.append(reset, play, step, speed);
+    const legend = document.createElement('div'); legend.className = 'kb-sim-legend';
+    [['#3f8b57', 'Success'], ['#c94a4a', 'Failure'], ['#2f6fbd', 'Running'], ['#8a6a16', 'Halted'], ['#aeb8c3', 'Idle']].forEach(([color, labelText]) => { const item = document.createElement('span'); const swatch = document.createElement('i'); swatch.style.background = color; item.append(swatch, document.createTextNode(labelText)); legend.appendChild(item); });
+    footer.append(controls, legend); wrapper.append(header, topLayout, treePanel, footer); sourceBlock.replaceWith(wrapper);
 
-    const legend = document.createElement('div');
-    legend.className = 'kb-sim-legend';
-    [['#3f8b57', 'Success'], ['#c94a4a', 'Failure'], ['#2f6fbd', 'Running'], ['#8a6a16', 'Halted'], ['#aeb8c3', 'Idle']].forEach(([color, labelText]) => {
-      const item = document.createElement('span');
-      const swatch = document.createElement('i');
-      swatch.style.background = color;
-      item.append(swatch, document.createTextNode(labelText));
-      legend.appendChild(item);
-    });
-    footer.append(controls, legend);
-    wrapper.append(header, layout, footer);
-    sourceBlock.replaceWith(wrapper);
-
-    const cityRenderer = createCityRenderer(canvas, engine);
-    const treeRenderer = createTreeRenderer(treeHost, config.tree, engine, inspector);
-    let playing = !reducedMotion.matches;
-    let raf = null;
-    let lastFrame = performance.now();
-    let accumulator = 0;
-    const fixedDt = engine.control.dt;
+    const cityRenderer = createCityRenderer(canvas, engine); const treeRenderer = createTreeRenderer(treeHost, config.tree, engine, inspector);
+    let playing = !reducedMotion.matches; let raf = null; let lastFrame = performance.now(); let accumulator = 0; const fixedDt = engine.control.dt;
 
     function formatValue(key, value) {
       if (typeof value !== 'number') return String(value);
@@ -1325,81 +1111,34 @@
       if (!Number.isFinite(value)) return '∞';
       return value.toFixed(2);
     }
-
     function updateEventLog(state) {
       eventLog.replaceChildren();
-      state.events.slice().reverse().forEach(entry => {
-        const item = document.createElement('li');
-        const time = document.createElement('time');
-        time.textContent = `t=${entry.time.toFixed(1)}`;
-        item.append(time, document.createTextNode(` ${entry.message}`));
-        eventLog.appendChild(item);
-      });
+      state.events.slice().reverse().forEach(entry => { const item = document.createElement('li'); const time = document.createElement('time'); time.textContent = `t=${entry.time.toFixed(1)}`; item.append(time, document.createTextNode(` ${entry.message}`)); eventLog.appendChild(item); });
     }
-
     function updateView() {
       const state = engine.state();
       clock.node.data = `t=${state.time.toFixed(1)} s · tick ${state.tick} · route v${state.route?.version || 0} · ${state.activeAction}`;
-      blackboardKeys.forEach(key => {
-        const value = state.blackboard[key];
-        blackboardViews.get(key).data = value === undefined ? '—' : formatValue(key, value);
-      });
-      updateEventLog(state);
-      cityRenderer.render();
-      treeRenderer.update();
-      playText.data = playing ? 'Pause' : 'Play';
+      blackboardKeys.forEach(key => { const value = state.blackboard[key]; blackboardViews.get(key).data = value === undefined ? '—' : formatValue(key, value); });
+      updateEventLog(state); cityRenderer.render(); treeRenderer.update(); playText.data = playing ? 'Pause' : 'Play';
     }
-
     function frame(now) {
       if (!wrapper.isConnected) return;
-      const elapsed = Math.min(0.2, Math.max(0, (now - lastFrame) / 1000));
-      lastFrame = now;
+      const elapsed = Math.min(0.2, Math.max(0, (now - lastFrame) / 1000)); lastFrame = now;
       if (playing) {
-        accumulator += elapsed * Number(speed.value || 1);
-        let guard = 0;
-        while (accumulator >= fixedDt && guard < 12) {
-          engine.step(fixedDt);
-          accumulator -= fixedDt;
-          guard += 1;
-        }
+        accumulator += elapsed * Number(speed.value || 1); let guard = 0;
+        while (accumulator >= fixedDt && guard < 12) { engine.step(fixedDt); accumulator -= fixedDt; guard += 1; }
         updateView();
       }
       raf = requestAnimationFrame(frame);
     }
-
-    reset.addEventListener('click', () => {
-      engine.reset();
-      accumulator = 0;
-      updateView();
-    });
-    play.addEventListener('click', () => {
-      playing = !playing;
-      lastFrame = performance.now();
-      updateView();
-    });
-    step.addEventListener('click', () => {
-      playing = false;
-      engine.step(fixedDt);
-      updateView();
-    });
+    reset.addEventListener('click', () => { engine.reset(); accumulator = 0; updateView(); requestAnimationFrame(treeRenderer.fit); });
+    play.addEventListener('click', () => { playing = !playing; lastFrame = performance.now(); updateView(); });
+    step.addEventListener('click', () => { playing = false; engine.step(fixedDt); updateView(); });
     speed.addEventListener('change', () => { lastFrame = performance.now(); });
-    const onReducedMotion = event => {
-      if (event.matches) playing = false;
-      updateView();
-    };
+    const onReducedMotion = event => { if (event.matches) playing = false; updateView(); };
     reducedMotion.addEventListener?.('change', onReducedMotion);
-
-    updateView();
-    raf = requestAnimationFrame(frame);
-    return {
-      wrapper,
-      stop() {
-        if (raf !== null) cancelAnimationFrame(raf);
-        reducedMotion.removeEventListener?.('change', onReducedMotion);
-        cityRenderer.stop();
-        treeRenderer.stop();
-      }
-    };
+    updateView(); raf = requestAnimationFrame(frame);
+    return { wrapper, stop() { if (raf !== null) cancelAnimationFrame(raf); reducedMotion.removeEventListener?.('change', onReducedMotion); cityRenderer.stop(); treeRenderer.stop(); } };
   }
 
   function convertSimulationBlocks() {
@@ -1407,32 +1146,18 @@
       const pre = code.parentElement;
       if (!pre || pre.dataset.kbSimulationConverted === 'true') return;
       pre.dataset.kbSimulationConverted = 'true';
-      try {
-        const simulation = createSimulation(JSON.parse(code.textContent || '{}'), pre);
-        if (simulation) simulations.add(simulation);
-      } catch (error) {
-        console.warn('Simulation definition could not be parsed:', error);
-      }
+      try { const simulation = createSimulation(JSON.parse(code.textContent || '{}'), pre); if (simulation) simulations.add(simulation); }
+      catch (error) { console.warn('Simulation definition could not be parsed:', error); }
     });
-
-    simulations.forEach(simulation => {
-      if (!simulation.wrapper.isConnected) {
-        simulation.stop();
-        simulations.delete(simulation);
-      }
-    });
+    simulations.forEach(simulation => { if (!simulation.wrapper.isConnected) { simulation.stop(); simulations.delete(simulation); } });
   }
 
   let scheduled = false;
   function scheduleConversion() {
     if (scheduled) return;
     scheduled = true;
-    queueMicrotask(() => {
-      scheduled = false;
-      convertSimulationBlocks();
-    });
+    queueMicrotask(() => { scheduled = false; convertSimulationBlocks(); });
   }
-
   new MutationObserver(scheduleConversion).observe(article, { childList: true, subtree: true });
   scheduleConversion();
   window.KBSimulations = { refresh: convertSimulationBlocks };
