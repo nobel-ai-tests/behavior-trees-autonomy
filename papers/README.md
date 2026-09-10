@@ -37,7 +37,7 @@ See [Behavior Trees in Robotics: Core Research Topics](../topics/robotics-behavi
 
 Paper briefs should follow a consistent academic reading order:
 
-1. **Abstract** — use the paper's own wording, not a repository-written abstract summary. Include a short verbatim excerpt from the source abstract and link the complete canonical abstract. Put repository interpretation in later sections such as Problem / motivation, Contribution, or Method rather than inside `Abstract`.
+1. **Abstract** — show the paper's complete verbatim abstract directly in the note whenever the source carries an explicit reuse license that permits redistribution, and identify that license. Do not replace it with a repository-written summary. If the source is under standard publisher copyright or its reuse permission is unclear, include only a short exact source excerpt, state that the full abstract is not reproduced because of source copyright, and keep all repository interpretation in later sections.
 2. **Full text** — direct PDF or accepted-manuscript access first, followed by the version of record when applicable.
 3. **Images / figures, when appropriate** — prioritize figures that explain the paper's overview, methodology, architecture, or workflow. Repository redraws should preserve the information structure of a specific source figure and identify its figure number; generic decorative diagrams should not substitute for the paper's visual argument. Embed source figures directly only when there is a stable source and clear reuse permission.
 4. **Contents** — follow the paper's section structure closely enough that the note can be used as a reading map.
@@ -54,6 +54,6 @@ Survey/review notes should emphasize the paper's own organizing logic rather tha
 - one or more **methodology/workflow figures** that show how the reviewed methods are organized or how a representative approach proceeds;
 - the paper's **taxonomy, synthesis, or open-challenge structure**, so later topic nodes can link back to the survey's categories.
 
-Do not duplicate a publisher's full copyrighted abstract, figures, or paper text into the repository when redistribution rights are unclear. Link the source and keep interpretation outside the `Abstract` section.
+Do not duplicate publisher-controlled text or figures beyond what their license permits. For permissively licensed papers, prefer keeping the abstract inline so the reader does not need to leave the knowledge base for basic paper context.
 
 Each paper must also be registered in `../kb-manifest.json` with a one-sentence `description` and explicit `topics` IDs so the graph inspector can present a useful summary and topic list. Add `authors`, `year`, `venue`, `doi`, `abstractUrl`, `pdf`, `keywords`, `related`, and `tags` when available. The `abstractUrl` field should point to the raw abstract source; `pdf` should point directly to the best lawful reading copy available.
