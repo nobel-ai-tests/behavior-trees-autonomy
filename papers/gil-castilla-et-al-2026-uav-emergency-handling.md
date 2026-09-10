@@ -6,6 +6,16 @@ Unmanned Aerial Vehicles (UAVs) require reliable and adaptable autonomy framewor
 
 *Verbatim abstract. The article is licensed CC BY 4.0.*
 
+**Contribution / method.** The paper defines a ROS-based BT actuation layer for heterogeneous UAV inspection systems. High-level mission decisions remain outside the BT, while the tree handles reusable task execution and prioritized emergency response. Platform-specific interfaces allow the same executive structure to sit above different autopilot ecosystems, and emergency branches are arranged so critical conditions can interrupt nominal mission behavior deterministically.
+
+**Quantitative evidence.** The paper validates the framework in both **simulation and real-world flight scenarios**, but its headline evidence is architectural and scenario-based rather than a statistical benchmark. It does not report a single aggregate success rate, latency distribution, mission-time improvement, fleet-size scaling curve, or controlled numerical comparison against a state-machine baseline that can be used as a general performance figure. The evidence therefore supports feasibility and cross-platform applicability more strongly than it supports a quantified claim of superiority.
+
+**Advantages.** Separating high-level decision making from BT-based actuation reduces coupling between mission logic and low-level execution. Prioritized emergency branches make interruption behavior explicit and inspectable, while modular task subtrees can be reused across missions and hardware variants. The ROS integration and support for heterogeneous UAV stacks make the contribution directly relevant to field robotics rather than only to a toy controller example.
+
+**Disadvantages / trade-offs.** The architecture deliberately keeps strategic mission planning outside the BT, so it is not a complete end-to-end autonomy solution by itself. Platform abstraction requires maintained adapters for each autopilot/hardware family, and emergency behavior is still dependent on hand-designed detection conditions, priorities, and recovery actions. More emergency branches and platform-specific exceptions can increase tree complexity, while aggressive preemption can interrupt useful work or produce repeated recovery cycles if thresholds and priorities are poorly tuned.
+
+**Limitations.** The validation demonstrates that the architecture can work in simulated and real inspection scenarios, but it does not provide broad repeated-trial statistics or a large controlled comparison against alternative autonomy executives. The paper does not establish formal safety guarantees for missed detections, false emergency triggers, communication loss, degraded GPS, sensor faults, actuator faults, or simultaneous emergencies; deterministic tree priority is not equivalent to proving safe closed-loop behavior. Scalability is argued architecturally rather than measured over large heterogeneous fleets, high network load, or long-duration missions, and runtime overhead/latency of the BT layer is not characterized as a hard real-time bound. Generalization therefore depends on the quality of platform adapters, emergency detectors, task implementations, and external high-level decision logic.
+
 [Source abstract and full article](https://link.springer.com/article/10.1007/s10846-026-02367-z).
 
 ## Full text
