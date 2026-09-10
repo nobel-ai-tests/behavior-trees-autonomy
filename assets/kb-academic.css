@@ -12,6 +12,7 @@
   --topic: #245b9b;
   --knowledge: #28775f;
   --paper: #a95a13;
+  --survey: #7f4f78;
   --keyword: #6847a5;
   --author: #9a3f67;
   --venue: #586674;
@@ -223,6 +224,23 @@ body.resizing-columns .splitter span {
   height: auto;
   margin: 1.4rem auto;
   border: 1px solid var(--line);
+}
+
+/* Survey/review nodes are first-class graph entities, distinct from ordinary papers. */
+.dot.survey {
+  background: var(--survey);
+}
+
+.node.survey circle {
+  fill: var(--survey);
+}
+
+.reader article .survey-figure-note {
+  margin-top: -1rem;
+  color: var(--muted);
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: .82rem;
+  line-height: 1.5;
 }
 
 /* Modern graph treatment tuned for a light canvas. */

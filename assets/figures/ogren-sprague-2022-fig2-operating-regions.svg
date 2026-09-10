@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" role="img" aria-labelledby="title desc">
+  <title id="title">Operating regions for behavior-tree analysis</title>
+  <desc id="desc">Repository redraw of Figure 2 from Ogren and Sprague 2022, showing a state space partitioned into operating regions with success and failure sets and a representative execution trajectory.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#245b88"/></marker>
+    <style>
+      .space{fill:#fbfcfd;stroke:#334155;stroke-width:3}.region{fill:none;stroke:#7c8794;stroke-width:2}.success{fill:#eef8f3;stroke:#28775f;stroke-width:2}.failure{fill:#fff2f2;stroke:#9b3d3d;stroke-width:2}.label{font:20px Georgia,serif;fill:#17202a;text-anchor:middle}.small{font:15px ui-sans-serif,system-ui,sans-serif;fill:#475569}.trajectory{fill:none;stroke:#245b88;stroke-width:4;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <path class="space" d="M95 90 C235 25, 460 35, 615 90 C790 150, 925 265, 875 445 C830 575, 615 585, 420 550 C245 520, 75 440, 55 290 C42 195, 50 120, 95 90 Z"/>
+  <path class="region" d="M245 65 C270 170,250 265,185 355 C145 410,135 470,170 510"/>
+  <path class="region" d="M405 55 C425 160,390 260,335 330 C290 385,275 470,310 535"/>
+  <path class="region" d="M585 82 C555 180,555 265,610 335 C660 400,690 485,655 560"/>
+  <path class="region" d="M760 145 C675 205,645 270,675 345 C700 410,770 445,835 460"/>
+  <ellipse class="success" cx="800" cy="260" rx="78" ry="56"/><text class="label" x="800" y="266">S₀</text>
+  <ellipse class="failure" cx="155" cy="245" rx="70" ry="50"/><text class="label" x="155" y="251">F₀</text>
+  <text class="label" x="315" y="180">Ω₁</text><text class="label" x="485" y="170">Ω₂</text><text class="label" x="595" y="225">Ω₄</text><text class="label" x="355" y="405">Ω₅</text><text class="label" x="555" y="450">Ω₇</text><text class="label" x="735" y="420">Ω₈</text>
+  <path class="trajectory" d="M300 210 C410 245,485 260,545 300 C625 350,690 315,735 282"/>
+  <circle cx="300" cy="210" r="7" fill="#245b88"/>
+  <text class="small" x="290" y="198">x(0)</text>
+  <text class="small" x="90" y="592">State-space view used in the review: feedback selects behaviors in operating regions Ωᵢ until execution reaches success S₀ or failure F₀.</text>
+</svg>

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 760" role="img" aria-labelledby="title desc">
+  <title id="title">Behavior-tree robot control system overview</title>
+  <desc id="desc">Condensed repository redraw of Figure 1 from Ogren and Sprague 2022, showing four top-level robot goals and representative condition-action subtrees.</desc>
+  <defs>
+    <style>
+      .edge{stroke:#64748b;stroke-width:2;fill:none}.sequence{fill:#eef4f8;stroke:#245b88;stroke-width:2}.fallback{fill:#f4eef8;stroke:#704a8a;stroke-width:2}.condition{fill:#fff;stroke:#28775f;stroke-width:2}.action{fill:#fff7e8;stroke:#a95a13;stroke-width:2}.label{font:15px ui-sans-serif,system-ui,sans-serif;fill:#17202a;text-anchor:middle}.small{font-size:13px}.symbol{font:bold 24px Georgia,serif;fill:#17202a;text-anchor:middle}.caption{font:14px ui-sans-serif,system-ui,sans-serif;fill:#475569}
+    </style>
+  </defs>
+  <path class="edge" d="M630 70 V125 M630 125 H165 V185 M630 125 H475 V185 M630 125 H785 V185 M630 125 H1095 V185"/>
+  <path class="edge" d="M165 225 V285 M165 285 H85 V345 M165 285 H245 V345"/>
+  <path class="edge" d="M475 225 V285 M475 285 H395 V345 M475 285 H555 V345"/>
+  <path class="edge" d="M785 225 V285 M785 285 H690 V345 M785 285 H880 V345"/>
+  <path class="edge" d="M1095 225 V285 M1095 285 H1015 V345 M1095 285 H1175 V345"/>
+  <path class="edge" d="M880 397 V455 M880 455 H800 V515 M880 455 H960 V515"/>
+
+  <circle class="sequence" cx="630" cy="50" r="29"/><text class="symbol" x="630" y="59">→</text>
+  <text class="label" x="630" y="105">Make sure top-level goals are achieved</text>
+
+  <circle class="fallback" cx="165" cy="205" r="28"/><text class="symbol" x="165" y="214">?</text>
+  <text class="label small" x="165" y="255">Safe area</text>
+  <circle class="fallback" cx="475" cy="205" r="28"/><text class="symbol" x="475" y="214">?</text>
+  <text class="label small" x="475" y="255">Battery / charger range</text>
+  <circle class="fallback" cx="785" cy="205" r="28"/><text class="symbol" x="785" y="214">?</text>
+  <text class="label small" x="785" y="255">Object at goal</text>
+  <circle class="fallback" cx="1095" cy="205" r="28"/><text class="symbol" x="1095" y="214">?</text>
+  <text class="label small" x="1095" y="255">Robot at charger</text>
+
+  <rect class="condition" x="20" y="345" width="130" height="52"/><text class="label small" x="85" y="376">In Safe Area?</text>
+  <rect class="action" x="175" y="345" width="140" height="52"/><text class="label small" x="245" y="369">Move to Safe</text><text class="label small" x="245" y="386">Area</text>
+
+  <rect class="condition" x="325" y="345" width="140" height="52"/><text class="label small" x="395" y="369">Proper Battery</text><text class="label small" x="395" y="386">Level?</text>
+  <rect class="action" x="485" y="345" width="140" height="52"/><text class="label small" x="555" y="376">Recharge</text>
+
+  <rect class="condition" x="620" y="345" width="140" height="52"/><text class="label small" x="690" y="376">Object at Goal?</text>
+  <circle class="fallback" cx="880" cy="371" r="27"/><text class="symbol" x="880" y="380">?</text>
+  <rect class="condition" x="945" y="345" width="140" height="52"/><text class="label small" x="1015" y="376">At Charger?</text>
+  <rect class="action" x="1105" y="345" width="140" height="52"/><text class="label small" x="1175" y="376">Move to Charger</text>
+
+  <rect class="action" x="710" y="515" width="180" height="58"/><text class="label small" x="800" y="538">Place Object at Goal</text><text class="label small" x="800" y="556">if Possible</text>
+  <rect class="action" x="900" y="515" width="120" height="58"/><text class="label small" x="960" y="538">Ask Other</text><text class="label small" x="960" y="556">Agent</text>
+
+  <text class="caption" x="55" y="675">Condensed repository redraw of the paper’s Figure 1. It preserves the system-level idea: prioritized goal checks route execution into modular recovery/action subtrees.</text>
+  <text class="caption" x="55" y="704">The original figure contains additional detail; use the linked paper for the complete tree.</text>
+</svg>

@@ -5,6 +5,7 @@
     topic: 'Topics',
     knowledge: 'General knowledge',
     paper: 'Papers',
+    survey: 'Survey papers',
     keyword: 'Keywords',
     author: 'Authors',
     venue: 'Venues',
@@ -41,20 +42,20 @@
 
   const presetDefs = {
     concepts: {
-      types: ['topic', 'knowledge', 'paper', 'keyword'],
-      relations: ['subtopic', 'about', 'keyword', 'related'],
+      types: ['topic', 'knowledge', 'paper', 'survey'],
+      relations: ['subtopic', 'about', 'related'],
       layout: 'force',
       labelMode: 'smart'
     },
     literature: {
-      types: ['topic', 'paper', 'author', 'venue', 'year'],
+      types: ['topic', 'paper', 'survey', 'author', 'venue', 'year'],
       relations: ['about', 'authored-by', 'published-in', 'published', 'related', 'subtopic'],
       layout: 'layered',
       labelMode: 'smart'
     },
     papers: {
-      types: ['paper', 'author', 'venue', 'year', 'keyword'],
-      relations: ['authored-by', 'published-in', 'published', 'keyword', 'related'],
+      types: ['paper', 'survey', 'author', 'venue', 'year'],
+      relations: ['authored-by', 'published-in', 'published', 'related'],
       layout: 'force',
       labelMode: 'smart'
     },
@@ -108,6 +109,12 @@
     return created;
   }
 
+  function documentNodeType(kind, meta) {
+    if (kind === 'survey') return 'survey';
+    if (kind === 'paper' && (meta.topics || []).includes('surveys')) return 'survey';
+    return kind === 'paper' ? 'paper' : 'knowledge';
+  }
+
   function buildGraph(manifest) {
     const nodeMap = new Map();
     const links = [];
@@ -155,9 +162,9 @@
         const meta = { ...(doc.graph || {}), ...doc };
         const inferredKind = section.id === 'papers' ? 'paper' : 'knowledge';
         const kind = meta.kind || inferredKind;
-        const nodeType = kind === 'paper' ? 'paper' : 'knowledge';
+        const nodeType = documentNodeType(kind, meta);
         const docId = `doc:${doc.path}`;
-        const docNode = addNode(nodeMap, {
+        addNode(nodeMap, {
           id: docId,
           type: nodeType,
           label: doc.shortTitle || doc.title,
@@ -394,7 +401,7 @@
   }
 
   function nodeRadius(node) {
-    const base = { topic: 8, knowledge: 8, paper: 9, keyword: 5, author: 6, venue: 6, year: 6, section: 8 }[node.type] || 6;
+    const base = { topic: 8, knowledge: 8, paper: 9, survey: 10, keyword: 5, author: 6, venue: 6, year: 6, section: 8 }[node.type] || 6;
     if (els.nodeSizeMode.value === 'fixed') return base;
     return Math.min(base + Math.sqrt(Math.max(0, node.degree)) * 1.7, 18);
   }
@@ -404,7 +411,7 @@
     if (mode === 'none') return false;
     if (mode === 'all') return true;
     if (node.id === state.selectedId || searchMatches.has(node.id)) return true;
-    return ['topic', 'paper', 'knowledge'].includes(node.type) && node.degree >= 2;
+    return ['topic', 'paper', 'survey', 'knowledge'].includes(node.type) && node.degree >= 2;
   }
 
   function initializeSvg() {
@@ -515,12 +522,12 @@
 
     if (layout === 'radial') {
       const radius = Math.min(width, height) * .36;
-      const rings = { section: .12, topic: .28, knowledge: .5, paper: .55, keyword: .76, author: .78, venue: .9, year: .9 };
+      const rings = { section: .12, topic: .28, knowledge: .5, paper: .55, survey: .58, keyword: .76, author: .78, venue: .9, year: .9 };
       simulation
         .force('radial', d3.forceRadial(d => radius * (rings[d.type] || .6), width / 2, height / 2).strength(.8))
         .force('center', d3.forceCenter(width / 2, height / 2).strength(.08));
     } else if (layout === 'layered') {
-      const layers = { section: 0, topic: 1, knowledge: 2, paper: 2, keyword: 3, author: 3, venue: 4, year: 4 };
+      const layers = { section: 0, topic: 1, knowledge: 2, paper: 2, survey: 2, keyword: 3, author: 3, venue: 4, year: 4 };
       simulation
         .force('x', d3.forceX(d => 70 + (layers[d.type] || 2) * ((width - 140) / 4)).strength(.72))
         .force('y', d3.forceY(height / 2).strength(.07));
@@ -583,7 +590,7 @@
     if (!node) {
       const p = document.createElement('p');
       p.className = 'inspector-placeholder';
-      p.textContent = 'Select a node to inspect its metadata and relationships. Double-click a paper or knowledge node to open its Markdown document.';
+      p.textContent = 'Select a node to inspect its metadata and relationships. Double-click a paper, survey, or knowledge node to open its Markdown document.';
       els.inspectorContent.appendChild(p);
       return;
     }
