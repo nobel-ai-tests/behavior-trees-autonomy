@@ -4,6 +4,17 @@
 
 J. R. Quinlan. **Induction of Decision Trees.** *Machine Learning*, 1, 81–106, 1986. DOI: [10.1007/BF00116251](https://doi.org/10.1007/BF00116251).
 
+## Abstract and full text
+
+- **Raw abstract source:** [Springer Nature](https://doi.org/10.1007/BF00116251)
+- **Abstract summary:** The paper explains a practical methodology for inducing decision trees from examples, presents ID3 in detail, studies noisy and incomplete information, compares remedies for a known weakness of the basic method, and closes with directions for further research.
+- **Publicly hosted reading copy:** [PDF hosted by Oregon State University](https://web.engr.oregonstate.edu/~xfern/classes/cs434/decisiontree-quinlan.pdf)
+- **Version of record:** [Springer DOI](https://doi.org/10.1007/BF00116251)
+
+## Paper contents
+
+The paper introduces inductive learning from examples, develops the ID3 decision-tree approach and its information-based attribute selection criterion, demonstrates the method on examples, examines noise and incomplete attribute values, discusses shortcomings and modifications, and concludes with current research directions.
+
 ## Problem / motivation
 
 The paper studies how a predictive decision tree can be induced from examples and presents the ID3 system in detail. It is a canonical source for the machine-learning meaning of "decision tree."
