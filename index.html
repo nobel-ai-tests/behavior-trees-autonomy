@@ -19,176 +19,188 @@
       <span class="search-hint">/ to focus</span>
     </div>
     <div class="header-actions">
-      <button id="openControls" class="mobile-panel-buttons" type="button">Filters</button>
-      <button id="openInspector" class="mobile-panel-buttons" type="button">Inspect</button>
+      <button id="openControls" class="mobile-panel-buttons" type="button" aria-expanded="false">Filters</button>
       <button id="resetView" type="button">Reset</button>
     </div>
   </header>
 
-  <div class="workspace">
-    <aside id="controls" class="controls" aria-label="Graph configuration">
-      <div class="panel-inner">
-        <div class="panel-title">
+  <aside id="controls" class="controls" aria-label="Graph configuration">
+    <div class="panel-inner filter-strip">
+      <div class="panel-title filter-heading">
+        <div>
           <h2>Explore</h2>
-          <span>multi-level controls</span>
-        </div>
-
-        <section class="control-group">
-          <h3>Presets</h3>
-          <div class="preset-grid">
-            <button type="button" data-preset="concepts">Concept map</button>
-            <button type="button" data-preset="literature">Literature</button>
-            <button type="button" data-preset="papers">Papers</button>
-            <button type="button" data-preset="taxonomy">Taxonomy</button>
-            <button type="button" data-preset="everything">Everything</button>
-          </div>
-        </section>
-
-        <section class="control-group">
-          <h3>Search behavior</h3>
-          <div class="control-row">
-            <label for="searchMode">Mode</label>
-            <select id="searchMode">
-              <option value="highlight">Highlight matches</option>
-              <option value="focus">Show matches + neighbors</option>
-            </select>
-          </div>
-          <div class="control-row">
-            <label for="depth">Neighborhood depth</label>
-            <input id="depth" type="range" min="1" max="5" step="1" value="2" />
-            <span id="depthValue" class="range-value">2</span>
-          </div>
-          <div class="check">
-            <input id="localOnly" type="checkbox" />
-            <label for="localOnly">Only selected node neighborhood</label>
-          </div>
-        </section>
-
-        <section class="control-group">
-          <h3>Node types</h3>
-          <div id="typeFilters" class="check-grid"></div>
-        </section>
-
-        <section class="control-group">
-          <h3>Relationship types</h3>
-          <div id="edgeFilters"></div>
-        </section>
-
-        <section class="control-group">
-          <h3>Complexity</h3>
-          <div class="control-row">
-            <label for="maxNodes">Maximum nodes</label>
-            <input id="maxNodes" type="range" min="20" max="300" step="10" value="160" />
-            <span id="maxNodesValue" class="range-value">160</span>
-          </div>
-          <div class="control-row">
-            <label for="minKeywordFrequency">Min. keyword docs</label>
-            <input id="minKeywordFrequency" type="range" min="1" max="8" step="1" value="1" />
-            <span id="minKeywordFrequencyValue" class="range-value">1</span>
-          </div>
-        </section>
-
-        <section class="control-group">
-          <h3>Layout</h3>
-          <div class="control-row">
-            <label for="layout">Geometry</label>
-            <select id="layout">
-              <option value="force">Force network</option>
-              <option value="radial">Radial rings</option>
-              <option value="layered">Layered entities</option>
-            </select>
-          </div>
-          <div class="control-row">
-            <label for="labelMode">Labels</label>
-            <select id="labelMode">
-              <option value="smart">Smart</option>
-              <option value="all">All</option>
-              <option value="none">None</option>
-            </select>
-          </div>
-          <div class="control-row">
-            <label for="nodeSizeMode">Node size</label>
-            <select id="nodeSizeMode">
-              <option value="degree">By connectivity</option>
-              <option value="fixed">Fixed by type</option>
-            </select>
-          </div>
-        </section>
-
-        <section class="control-group">
-          <h3>Physics</h3>
-          <div class="control-row">
-            <label for="linkDistance">Link distance</label>
-            <input id="linkDistance" type="range" min="35" max="180" step="5" value="80" />
-            <span id="linkDistanceValue" class="range-value">80</span>
-          </div>
-          <div class="control-row">
-            <label for="charge">Repulsion</label>
-            <input id="charge" type="range" min="-500" max="-40" step="10" value="-190" />
-            <span id="chargeValue" class="range-value">-190</span>
-          </div>
-        </section>
-
-        <section class="control-group">
-          <h3>Document library</h3>
-          <div class="control-row" style="display:block">
-            <label for="docSelect" style="display:block; margin-bottom:6px">Jump directly to a knowledge page or paper note</label>
-            <select id="docSelect" style="width:100%"></select>
-          </div>
-          <button id="openSelectedDoc" type="button">Open selected document</button>
-        </section>
-      </div>
-    </aside>
-
-    <main class="graph-stage">
-      <div class="graph-toolbar">
-        <span id="graphStatus" class="status">Building graph…</span>
-        <button id="fitGraph" type="button">Fit graph</button>
-      </div>
-      <div class="graph-wrap">
-        <svg id="graph" role="img" aria-label="Interactive knowledge graph"></svg>
-        <div id="graphEmpty" class="graph-empty" hidden>No nodes match the current filters.</div>
-        <div class="legend" aria-label="Node legend">
-          <span><i class="dot topic"></i>topic/subtopic</span>
-          <span><i class="dot knowledge"></i>general knowledge</span>
-          <span><i class="dot paper"></i>paper</span>
-          <span><i class="dot keyword"></i>keyword</span>
-          <span><i class="dot author"></i>author</span>
-          <span><i class="dot venue"></i>venue</span>
-          <span><i class="dot year"></i>year</span>
-        </div>
-        <div class="zoom-controls" aria-label="Zoom controls">
-          <button id="zoomIn" type="button" title="Zoom in">+</button>
-          <button id="zoomOut" type="button" title="Zoom out">−</button>
+          <span>graph filters and configuration</span>
         </div>
       </div>
-    </main>
 
-    <aside id="inspector" class="inspector" aria-label="Selected node details">
-      <div class="panel-inner">
-        <div class="panel-title">
-          <h2>Inspector</h2>
-          <span>click a node</span>
+      <section class="control-group presets-group">
+        <h3>Presets</h3>
+        <div class="preset-grid">
+          <button type="button" data-preset="concepts">Concept map</button>
+          <button type="button" data-preset="literature">Literature</button>
+          <button type="button" data-preset="papers">Papers</button>
+          <button type="button" data-preset="taxonomy">Taxonomy</button>
+          <button type="button" data-preset="everything">Everything</button>
         </div>
-        <div id="inspectorContent">
-          <p class="inspector-placeholder">Select a node to inspect its metadata and relationships.</p>
-        </div>
-      </div>
-    </aside>
-  </div>
+      </section>
 
-  <section id="reader" class="reader" hidden aria-label="Markdown document reader">
-    <div class="reader-head">
-      <strong id="readerTitle">Document</strong>
-      <button id="closeReader" type="button">Close reader</button>
+      <section class="control-group search-group">
+        <h3>Search behavior</h3>
+        <div class="control-row">
+          <label for="searchMode">Mode</label>
+          <select id="searchMode">
+            <option value="highlight">Highlight matches</option>
+            <option value="focus">Show matches + neighbors</option>
+          </select>
+        </div>
+        <div class="control-row">
+          <label for="depth">Depth</label>
+          <input id="depth" type="range" min="1" max="5" step="1" value="2" />
+          <span id="depthValue" class="range-value">2</span>
+        </div>
+        <div class="check">
+          <input id="localOnly" type="checkbox" />
+          <label for="localOnly">Selected neighborhood only</label>
+        </div>
+      </section>
+
+      <section class="control-group types-group">
+        <h3>Node types</h3>
+        <div id="typeFilters" class="check-grid"></div>
+      </section>
+
+      <section class="control-group edges-group">
+        <h3>Relationships</h3>
+        <div id="edgeFilters" class="edge-grid"></div>
+      </section>
+
+      <section class="control-group complexity-group">
+        <h3>Complexity</h3>
+        <div class="control-row">
+          <label for="maxNodes">Max nodes</label>
+          <input id="maxNodes" type="range" min="20" max="300" step="10" value="160" />
+          <span id="maxNodesValue" class="range-value">160</span>
+        </div>
+        <div class="control-row">
+          <label for="minKeywordFrequency">Keyword docs</label>
+          <input id="minKeywordFrequency" type="range" min="1" max="8" step="1" value="1" />
+          <span id="minKeywordFrequencyValue" class="range-value">1</span>
+        </div>
+      </section>
+
+      <section class="control-group layout-group">
+        <h3>Layout</h3>
+        <div class="control-row">
+          <label for="layout">Geometry</label>
+          <select id="layout">
+            <option value="force">Force network</option>
+            <option value="radial">Radial rings</option>
+            <option value="layered">Layered entities</option>
+          </select>
+        </div>
+        <div class="control-row">
+          <label for="labelMode">Labels</label>
+          <select id="labelMode">
+            <option value="smart">Smart</option>
+            <option value="all">All</option>
+            <option value="none">None</option>
+          </select>
+        </div>
+        <div class="control-row">
+          <label for="nodeSizeMode">Node size</label>
+          <select id="nodeSizeMode">
+            <option value="degree">By connectivity</option>
+            <option value="fixed">Fixed by type</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="control-group physics-group">
+        <h3>Physics</h3>
+        <div class="control-row">
+          <label for="linkDistance">Distance</label>
+          <input id="linkDistance" type="range" min="35" max="180" step="5" value="80" />
+          <span id="linkDistanceValue" class="range-value">80</span>
+        </div>
+        <div class="control-row">
+          <label for="charge">Repulsion</label>
+          <input id="charge" type="range" min="-500" max="-40" step="10" value="-190" />
+          <span id="chargeValue" class="range-value">-190</span>
+        </div>
+      </section>
+
+      <section class="control-group library-group">
+        <h3>Document library</h3>
+        <div class="library-controls">
+          <select id="docSelect" aria-label="Select a knowledge page or paper note"></select>
+          <button id="openSelectedDoc" type="button">Open</button>
+        </div>
+      </section>
     </div>
-    <article id="article"></article>
-  </section>
+  </aside>
+
+  <div id="splitWorkspace" class="split-workspace">
+    <section class="content-pane" aria-label="Knowledge-base content">
+      <section id="reader" class="reader" aria-label="Markdown document reader">
+        <div class="reader-head">
+          <strong id="readerTitle">Knowledge base content</strong>
+          <button id="closeReader" type="button">Close reader</button>
+        </div>
+        <article id="article">
+          <p class="reader-placeholder">Select a document from the library or open a paper/topic node from the graph.</p>
+        </article>
+      </section>
+    </section>
+
+    <div id="splitter" class="splitter" role="separator" aria-orientation="vertical" aria-label="Resize content and graph columns" tabindex="0" title="Drag to resize; double-click to reset to 70/30">
+      <span aria-hidden="true"></span>
+    </div>
+
+    <section id="graphPane" class="graph-pane" aria-label="Knowledge graph panel">
+      <main class="graph-stage">
+        <div class="graph-toolbar">
+          <span id="graphStatus" class="status">Building graph…</span>
+          <button id="fitGraph" type="button">Fit graph</button>
+          <button id="openInspector" type="button" aria-expanded="false">Inspector</button>
+        </div>
+        <div class="graph-wrap">
+          <svg id="graph" role="img" aria-label="Interactive knowledge graph"></svg>
+          <div id="graphEmpty" class="graph-empty" hidden>No nodes match the current filters.</div>
+          <div class="legend" aria-label="Node legend">
+            <span><i class="dot topic"></i>topic/subtopic</span>
+            <span><i class="dot knowledge"></i>general knowledge</span>
+            <span><i class="dot paper"></i>paper</span>
+            <span><i class="dot keyword"></i>keyword</span>
+            <span><i class="dot author"></i>author</span>
+            <span><i class="dot venue"></i>venue</span>
+            <span><i class="dot year"></i>year</span>
+          </div>
+          <div class="zoom-controls" aria-label="Zoom controls">
+            <button id="zoomIn" type="button" title="Zoom in">+</button>
+            <button id="zoomOut" type="button" title="Zoom out">−</button>
+          </div>
+        </div>
+      </main>
+
+      <aside id="inspector" class="inspector" aria-label="Selected node details">
+        <div class="panel-inner">
+          <div class="panel-title">
+            <h2>Inspector</h2>
+            <span>selected graph node</span>
+          </div>
+          <div id="inspectorContent">
+            <p class="inspector-placeholder">Select a node to inspect its metadata and relationships.</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
   <script src="assets/kb-graph.js"></script>
   <script src="assets/kb-reader-links.js"></script>
+  <script src="assets/kb-layout.js"></script>
 </body>
 </html>
