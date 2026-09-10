@@ -7,6 +7,19 @@
 
   if (!article) return;
 
+  function loadDiagramSupport() {
+    if (!document.querySelector('link[data-kb-diagrams]')) {
+      const stylesheet = document.createElement('link');
+      stylesheet.rel = 'stylesheet';
+      stylesheet.href = new URL('assets/kb-diagrams.css', document.baseURI).href;
+      stylesheet.dataset.kbDiagrams = 'true';
+      document.head.appendChild(stylesheet);
+    }
+
+    const moduleUrl = new URL('assets/kb-diagrams.js', document.baseURI).href;
+    import(moduleUrl).catch(error => console.warn('Structured diagram support unavailable:', error));
+  }
+
   function currentDocumentPath() {
     try {
       const value = decodeURIComponent(location.hash.slice(1));
@@ -100,4 +113,5 @@
   observer.observe(article, { childList: true, subtree: true });
 
   rewriteLinks();
+  loadDiagramSupport();
 })();
