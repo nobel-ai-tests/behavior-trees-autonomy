@@ -18,13 +18,8 @@
   background: #f6f8fa;
 }
 
-.kb-sim-header {
-  border-bottom: 1px solid var(--line);
-}
-
-.kb-sim-footer {
-  border-top: 1px solid var(--line);
-}
+.kb-sim-header { border-bottom: 1px solid var(--line); }
+.kb-sim-footer { border-top: 1px solid var(--line); }
 
 .kb-sim-title {
   font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
@@ -84,9 +79,7 @@
   border: 1px solid #aeb8c3;
 }
 
-.kb-sim-object {
-  transform: translate(-50%, -50%);
-}
+.kb-sim-object { transform: translate(-50%, -50%); }
 
 .kb-sim-robot {
   width: 36px;
@@ -170,12 +163,11 @@
   font-size: 11px;
 }
 
-.kb-sim-blackboard-key {
-  color: #64748b;
-}
+.kb-sim-blackboard-key { color: #64748b; }
 
 .kb-sim-tree,
 .kb-sim-tree ul {
+  position: relative;
   margin: 0 !important;
   padding: 0 !important;
   list-style: none !important;
@@ -185,36 +177,57 @@
   display: flex;
   justify-content: center;
   overflow-x: auto;
-  padding-bottom: 4px !important;
+  padding: 2px 0 5px !important;
 }
 
 .kb-sim-tree li {
   position: relative;
   min-width: 0;
-  padding: 0 4px;
+  padding: 0 3px;
   text-align: center;
 }
 
 .kb-sim-tree ul {
   display: flex;
   justify-content: center;
-  gap: 4px;
-  margin-top: 13px !important;
+  gap: 2px;
+  margin-top: 16px !important;
 }
 
-.kb-sim-tree ul::before {
+.kb-sim-tree li > ul::before {
   content: "";
   position: absolute;
-  top: -8px;
+  top: -16px;
   left: 50%;
-  width: 1px;
-  height: 8px;
-  background: #aeb8c3;
+  height: 16px;
+  border-left: 1px solid #aeb8c3;
 }
 
+.kb-sim-tree ul > li::before {
+  content: "";
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  height: 16px;
+  border-left: 1px solid #aeb8c3;
+}
+
+.kb-sim-tree ul > li::after {
+  content: "";
+  position: absolute;
+  top: -16px;
+  left: 0;
+  right: 0;
+  border-top: 1px solid #aeb8c3;
+}
+
+.kb-sim-tree ul > li:first-child::after { left: 50%; }
+.kb-sim-tree ul > li:last-child::after { right: 50%; }
+.kb-sim-tree ul > li:only-child::after { display: none; }
+
 .kb-sim-tree-node {
-  min-width: 88px;
-  max-width: 142px;
+  min-width: 92px;
+  max-width: 148px;
   padding: 6px 7px;
   border: 1px solid #8d99a5;
   background: #f8fafc;
