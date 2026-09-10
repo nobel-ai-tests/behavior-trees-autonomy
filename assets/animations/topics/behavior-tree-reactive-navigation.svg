@@ -1,109 +1,162 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="690" viewBox="0 0 1200 690" role="img" aria-labelledby="title desc">
-  <title id="title">Animated behavior tree execution for reactive mobile-robot navigation</title>
-  <desc id="desc">A twelve-second loop in which a mobile robot navigates toward a goal, detects an obstacle, preempts navigation to run an avoidance action, then resumes navigation and succeeds. Corresponding behavior-tree nodes are highlighted through the same phases.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="860" viewBox="0 0 1400 860" role="img" aria-labelledby="title desc">
+  <title id="title">Practical reactive navigation behavior-tree execution</title>
+  <desc id="desc">Animated mobile robot mission showing nominal navigation, dynamic obstacle detection, preemption, obstacle avoidance, replanning, and resumed navigation while the behavior tree, blackboard state, and event timeline update in synchronization.</desc>
   <defs>
-    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0 0 L0 6 L9 3 z" fill="#718096"/></marker>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0 0 L0 6 L9 3 z" fill="#64748b"/></marker>
     <style>
-      .serif{font-family:Georgia,'Times New Roman',serif;fill:#17202a}.sans{font-family:Arial,Helvetica,sans-serif;fill:#27313b}.title{font-size:28px;font-weight:700}.subtitle{font-size:17px;fill:#5f6b78}.label{font-size:15px;font-weight:700}.small{font-size:13px}.muted{fill:#687582}.edge{stroke:#718096;stroke-width:1.6;fill:none}.node{stroke-width:1.5}.phase{opacity:0}.statusline{font-size:16px;font-weight:700}
-      @media (prefers-reduced-motion: reduce){.animated{display:none}.reduced{display:block!important}}
+      .serif{font-family:Georgia,'Times New Roman',serif;fill:#17202a}.sans{font-family:Arial,Helvetica,sans-serif;fill:#27313b}.title{font-size:29px;font-weight:700}.subtitle{font-size:17px;fill:#5f6b78}.h2{font-size:19px;font-weight:700}.label{font-size:13px;font-weight:700}.small{font-size:11px}.body{font-size:13px}.muted{fill:#66727f}.panel{fill:#fbfcfd;stroke:#cbd2da}.edge{stroke:#7b8794;stroke-width:1.5;fill:none}.node{stroke-width:1.3}.mono{font-family:'Courier New',monospace;font-size:11px;fill:#26323d}.phase{opacity:0}.hi{fill:none;stroke-width:4}.event{font-family:Arial,Helvetica,sans-serif;font-size:12px}.animated{}
+      @media (prefers-reduced-motion: reduce){.animated{display:none}.reduced{display:inline!important}}
     </style>
-    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#e6eaee" stroke-width="1"/></pattern>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#e7ebef" stroke-width="1"/></pattern>
   </defs>
-  <rect width="1200" height="690" fill="#fff"/>
-  <text x="42" y="48" class="serif title">Reactive execution over repeated ticks</text>
-  <text x="42" y="77" class="sans subtitle">Example: navigation is interrupted by obstacle avoidance, then resumes when the higher-priority condition clears.</text>
 
-  <g transform="translate(42 112)">
-    <rect width="545" height="500" fill="#fbfcfd" stroke="#cbd2da"/>
-    <text x="20" y="31" class="serif" font-size="19" font-weight="700">Robot/environment state</text>
-    <g transform="translate(20 54)">
-      <rect width="505" height="334" fill="url(#grid)" stroke="#d7dde4"/>
-      <path d="M52 272 C112 230 156 223 205 217 C244 212 266 184 290 149 C327 96 384 83 455 73" fill="none" stroke="#b6c1cc" stroke-width="4" stroke-dasharray="9 8"/>
-      <rect x="244" y="145" width="72" height="68" fill="#f7d7d7" stroke="#b84d5d" stroke-width="2"/>
-      <text x="280" y="181" text-anchor="middle" class="sans small" fill="#8f3543">obstacle</text>
-      <circle cx="458" cy="69" r="16" fill="#d9f0df" stroke="#28775f" stroke-width="2"/>
-      <text x="458" y="42" text-anchor="middle" class="sans small" fill="#28775f">goal</text>
+  <rect width="1400" height="860" fill="#fff"/>
+  <text x="36" y="46" class="serif title">Reactive mobile-robot execution: tick, preempt, recover, resume</text>
+  <text x="36" y="75" class="sans subtitle">A realistic control-cycle example linking environment state, blackboard updates, active BT nodes, action halting, and replanning.</text>
 
+  <!-- Environment -->
+  <g transform="translate(36 108)">
+    <rect width="690" height="530" class="panel"/>
+    <text x="18" y="30" class="serif h2">A. Robot and environment</text>
+    <text x="18" y="52" class="sans small muted">Warehouse aisle · differential-drive robot · dynamic pallet truck crossing the planned path</text>
+
+    <g transform="translate(18 72)">
+      <rect width="654" height="350" fill="url(#grid)" stroke="#d4dae1"/>
+      <!-- shelves -->
+      <g fill="#e9edf1" stroke="#aeb8c3">
+        <rect x="42" y="22" width="112" height="44"/><rect x="190" y="22" width="112" height="44"/><rect x="338" y="22" width="112" height="44"/>
+        <rect x="42" y="278" width="112" height="44"/><rect x="190" y="278" width="112" height="44"/><rect x="338" y="278" width="112" height="44"/>
+      </g>
+      <text x="98" y="49" text-anchor="middle" class="sans small muted">shelf A</text><text x="246" y="49" text-anchor="middle" class="sans small muted">shelf B</text><text x="394" y="49" text-anchor="middle" class="sans small muted">shelf C</text>
+      <text x="98" y="304" text-anchor="middle" class="sans small muted">shelf D</text><text x="246" y="304" text-anchor="middle" class="sans small muted">shelf E</text><text x="394" y="304" text-anchor="middle" class="sans small muted">shelf F</text>
+
+      <!-- nominal path -->
+      <path d="M70 220 C145 216 210 210 285 202 C355 195 405 175 465 142 C520 111 566 100 610 92" fill="none" stroke="#9eb2c6" stroke-width="4" stroke-dasharray="9 7"/>
+      <path d="M288 202 C314 171 347 149 390 141 C430 133 449 141 465 142" fill="none" stroke="#d9a15b" stroke-width="4" stroke-dasharray="6 5" opacity="0">
+        <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.42;0.46;0.64;0.68;1" dur="16s" repeatCount="indefinite"/>
+      </path>
+
+      <!-- goal -->
+      <circle cx="610" cy="92" r="17" fill="#dff0e5" stroke="#28775f" stroke-width="2"/><path d="M610 73 V45" stroke="#28775f" stroke-width="2"/><path d="M610 45 l24 9 -24 9z" fill="#28775f"/>
+      <text x="610" y="31" text-anchor="middle" class="sans small" fill="#28775f">inspection goal</text>
+
+      <!-- dynamic obstacle -->
       <g class="animated">
-        <g id="robot">
-          <rect x="-14" y="-11" width="28" height="22" fill="#dce9f6" stroke="#245b88" stroke-width="2"/>
-          <circle cx="-9" cy="14" r="4" fill="#27313b"/><circle cx="9" cy="14" r="4" fill="#27313b"/>
-          <circle cx="0" cy="-16" r="4" fill="#a95a13"/>
-          <animateMotion dur="12s" repeatCount="indefinite" keyTimes="0;0.29;0.36;0.56;0.68;1" keyPoints="0;0.38;0.38;0.58;0.58;1" calcMode="linear" path="M52 272 C112 230 156 223 205 217 C224 214 232 211 238 204 C222 176 225 137 253 116 C284 91 322 92 350 103 C385 86 420 76 455 73"/>
+        <g>
+          <rect x="-24" y="-14" width="48" height="28" fill="#f4caca" stroke="#b84d5d" stroke-width="2"/>
+          <rect x="-31" y="-10" width="7" height="20" fill="#8d99a5"/><rect x="24" y="-10" width="7" height="20" fill="#8d99a5"/>
+          <animateMotion dur="16s" repeatCount="indefinite" keyTimes="0;0.22;0.38;0.58;1" values="290,88;290,88;290,202;290,265;290,265"/>
         </g>
-        <circle cx="244" cy="145" r="7" fill="#c94a4a">
-          <animate attributeName="r" values="7;7;16;7;7" keyTimes="0;0.28;0.34;0.48;1" dur="12s" repeatCount="indefinite"/>
-          <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.27;0.33;0.58;0.64" dur="12s" repeatCount="indefinite"/>
-        </circle>
       </g>
+      <g class="reduced" style="display:none"><rect x="266" y="188" width="48" height="28" fill="#f4caca" stroke="#b84d5d" stroke-width="2"/></g>
+      <text x="316" y="112" class="sans small" fill="#9a3f67">moving pallet truck</text>
 
-      <g class="reduced" style="display:none">
-        <rect x="434" y="58" width="28" height="22" fill="#dce9f6" stroke="#245b88" stroke-width="2"/>
-      </g>
-    </g>
-
-    <g transform="translate(20 412)">
-      <text x="0" y="0" class="sans small muted">Execution phase</text>
+      <!-- robot -->
       <g class="animated">
-        <g class="phase"><text x="0" y="30" class="sans statusline" fill="#2f6fbd">1. NavigateToGoal → Running</text><animate attributeName="opacity" values="1;1;0;0;0" keyTimes="0;0.28;0.30;0.99;1" dur="12s" repeatCount="indefinite"/></g>
-        <g class="phase"><text x="0" y="30" class="sans statusline" fill="#9a3f67">2. Obstacle detected → navigation preempted</text><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.27;0.30;0.38;0.41;1" dur="12s" repeatCount="indefinite"/></g>
-        <g class="phase"><text x="0" y="30" class="sans statusline" fill="#a95a13">3. AvoidObstacle → Running → Success</text><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.38;0.41;0.60;0.63;1" dur="12s" repeatCount="indefinite"/></g>
-        <g class="phase"><text x="0" y="30" class="sans statusline" fill="#28775f">4. NavigateToGoal resumes → Success</text><animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.62;0.65;0.98;1" dur="12s" repeatCount="indefinite"/></g>
+        <g>
+          <rect x="-17" y="-13" width="34" height="26" fill="#dce9f6" stroke="#245b88" stroke-width="2"/>
+          <circle cx="-11" cy="17" r="5" fill="#26323d"/><circle cx="11" cy="17" r="5" fill="#26323d"/>
+          <path d="M0 -13 L8 -23 L-8 -23 Z" fill="#6d8fb3"/>
+          <circle cx="0" cy="0" r="34" fill="none" stroke="#6d8fb3" stroke-dasharray="3 5" opacity=".35"/>
+          <animateMotion dur="16s" repeatCount="indefinite" keyTimes="0;0.30;0.39;0.54;0.66;1" keyPoints="0;0.37;0.37;0.58;0.58;1" calcMode="linear" path="M70 220 C145 216 210 210 285 202 C300 200 311 193 320 184 C330 156 350 143 390 141 C430 133 449 141 465 142 C520 111 566 100 610 92"/>
+        </g>
       </g>
-      <text x="0" y="65" class="sans small muted">The root is evaluated again every control cycle; there is no explicit transition edge from Navigate to Avoid.</text>
+      <g class="reduced" style="display:none"><rect x="593" y="79" width="34" height="26" fill="#dce9f6" stroke="#245b88" stroke-width="2"/></g>
+
+      <!-- sensor alert pulse -->
+      <circle cx="290" cy="202" r="18" fill="none" stroke="#c94a4a" stroke-width="3" opacity="0" class="animated">
+        <animate attributeName="r" values="18;18;55;18;18" keyTimes="0;0.29;0.38;0.44;1" dur="16s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.28;0.31;0.41;0.46;1" dur="16s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+
+    <!-- runtime status -->
+    <g transform="translate(18 445)">
+      <rect width="654" height="66" fill="#fff" stroke="#d4dae1"/>
+      <text x="12" y="20" class="sans small muted">Current event</text>
+      <g class="animated">
+        <g class="phase"><text x="12" y="45" class="sans body" fill="#2f6fbd">NavigateToGoal is RUNNING; obstacle range is clear.</text><animate attributeName="opacity" values="1;1;0;0;0" keyTimes="0;0.29;0.31;0.99;1" dur="16s" repeatCount="indefinite"/></g>
+        <g class="phase"><text x="12" y="45" class="sans body" fill="#9a3f67">LiDAR detects crossing obstacle; navigation goal is HALTED on the next root tick.</text><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.29;0.31;0.40;0.42;1" dur="16s" repeatCount="indefinite"/></g>
+        <g class="phase"><text x="12" y="45" class="sans body" fill="#a95a13">AvoidObstacle RUNNING; local detour is executed while nominal navigation remains inactive.</text><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.40;0.42;0.55;0.57;1" dur="16s" repeatCount="indefinite"/></g>
+        <g class="phase"><text x="12" y="45" class="sans body" fill="#6847a5">Recovery succeeds; path is replanned around the cleared crossing zone.</text><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.55;0.57;0.66;0.68;1" dur="16s" repeatCount="indefinite"/></g>
+        <g class="phase"><text x="12" y="45" class="sans body" fill="#28775f">NavigateToGoal resumes with updated path and eventually reaches the inspection goal.</text><animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.67;0.69;0.99;1" dur="16s" repeatCount="indefinite"/></g>
+      </g>
+      <text x="12" y="45" class="sans body reduced" style="display:none" fill="#28775f">Reduced-motion view: recovery complete; navigation resumes on the updated path.</text>
     </g>
   </g>
 
-  <g transform="translate(615 112)">
-    <rect width="543" height="500" fill="#fff" stroke="#cbd2da"/>
-    <text x="20" y="31" class="serif" font-size="19" font-weight="700">Tree execution (synchronized)</text>
+  <!-- BT -->
+  <g transform="translate(748 108)">
+    <rect width="616" height="530" class="panel"/>
+    <text x="18" y="30" class="serif h2">B. Synchronized behavior tree and blackboard</text>
 
-    <line x1="272" y1="114" x2="150" y2="185" class="edge"/>
-    <line x1="272" y1="114" x2="395" y2="185" class="edge"/>
-    <line x1="150" y1="235" x2="78" y2="310" class="edge"/>
-    <line x1="150" y1="235" x2="222" y2="310" class="edge"/>
-    <line x1="395" y1="235" x2="329" y2="310" class="edge"/>
-    <line x1="395" y1="235" x2="461" y2="310" class="edge"/>
+    <!-- blackboard -->
+    <g transform="translate(18 54)">
+      <rect width="580" height="78" fill="#f8fafc" stroke="#94a3b8"/>
+      <text x="12" y="20" class="sans label">Blackboard xₜ</text>
+      <g class="animated">
+        <g class="phase"><text x="12" y="43" class="mono">obstacle=false  nav=RUNNING  path=v1  recovery=none</text><animate attributeName="opacity" values="1;1;0;0;0" keyTimes="0;0.29;0.31;0.99;1" dur="16s" repeatCount="indefinite"/></g>
+        <g class="phase"><text x="12" y="43" class="mono">obstacle=true   nav=HALTED   path=v1  recovery=avoid</text><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.29;0.31;0.55;0.57;1" dur="16s" repeatCount="indefinite"/></g>
+        <g class="phase"><text x="12" y="43" class="mono">obstacle=false  nav=IDLE     path=v2  recovery=replan</text><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.55;0.57;0.67;0.69;1" dur="16s" repeatCount="indefinite"/></g>
+        <g class="phase"><text x="12" y="43" class="mono">obstacle=false  nav=RUNNING  path=v2  recovery=none</text><animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;0.68;0.70;0.99;1" dur="16s" repeatCount="indefinite"/></g>
+      </g>
+      <text x="12" y="43" class="mono reduced" style="display:none">obstacle=false  nav=RUNNING  path=v2  recovery=none</text>
+      <text x="12" y="63" class="mono">goal=(8.2,3.1)  battery=0.42  localized=true</text>
+    </g>
 
-    <rect x="186" y="72" width="172" height="52" class="node" fill="#e7eff6" stroke="#245b88"/>
-    <text x="272" y="103" text-anchor="middle" class="sans label">Fallback</text>
+    <!-- tree edges -->
+    <path d="M308 190 V219 H118 V247" class="edge"/><path d="M308 219 H308 V247" class="edge"/><path d="M308 219 H500 V247" class="edge"/>
+    <path d="M118 295 V323 H67 V347" class="edge"/><path d="M118 323 H169 V347" class="edge"/>
+    <path d="M308 295 V323 H257 V347" class="edge"/><path d="M308 323 H359 V347" class="edge"/>
+    <path d="M500 295 V323 H445 V347" class="edge"/><path d="M500 323 H555 V347" class="edge"/>
+    <path d="M500 399 V425 H470 V451" class="edge"/><path d="M500 425 H548 V451" class="edge"/>
 
-    <rect x="84" y="185" width="132" height="50" class="node" fill="#eef8f3" stroke="#28775f"/>
-    <text x="150" y="215" text-anchor="middle" class="sans label">Sequence</text>
-    <rect x="329" y="185" width="132" height="50" class="node" fill="#eef8f3" stroke="#28775f"/>
-    <text x="395" y="215" text-anchor="middle" class="sans label">Sequence</text>
+    <rect x="220" y="154" width="176" height="50" class="node" fill="#e7eff6" stroke="#245b88"/><text x="308" y="184" text-anchor="middle" class="sans label">Reactive Fallback</text>
+    <rect x="65" y="247" width="106" height="48" class="node" fill="#eef8f3" stroke="#28775f"/><text x="118" y="276" text-anchor="middle" class="sans label">Sequence</text>
+    <rect x="255" y="247" width="106" height="48" class="node" fill="#eef8f3" stroke="#28775f"/><text x="308" y="276" text-anchor="middle" class="sans label">Sequence</text>
+    <rect x="447" y="247" width="106" height="48" class="node" fill="#eef8f3" stroke="#28775f"/><text x="500" y="276" text-anchor="middle" class="sans label">Sequence</text>
 
-    <rect id="obstacleCond" x="20" y="310" width="116" height="62" class="node" fill="#fff0f1" stroke="#b84d5d"/>
-    <text x="78" y="335" text-anchor="middle" class="sans label">Condition</text><text x="78" y="355" text-anchor="middle" class="sans small">Obstacle?</text>
-    <rect id="avoidAction" x="164" y="310" width="116" height="62" class="node" fill="#fff6e9" stroke="#a95a13"/>
-    <text x="222" y="335" text-anchor="middle" class="sans label">Action</text><text x="222" y="355" text-anchor="middle" class="sans small">Avoid</text>
-    <rect x="271" y="310" width="116" height="62" class="node" fill="#fff0f1" stroke="#b84d5d"/>
-    <text x="329" y="335" text-anchor="middle" class="sans label">Condition</text><text x="329" y="355" text-anchor="middle" class="sans small">GoalKnown?</text>
-    <rect id="navAction" x="403" y="310" width="116" height="62" class="node" fill="#fff6e9" stroke="#a95a13"/>
-    <text x="461" y="335" text-anchor="middle" class="sans label">Action</text><text x="461" y="355" text-anchor="middle" class="sans small">Navigate</text>
+    <rect x="20" y="347" width="94" height="52" class="node" fill="#fff0f1" stroke="#b84d5d"/><text x="67" y="369" text-anchor="middle" class="sans label">BatteryLow?</text><text x="67" y="386" text-anchor="middle" class="sans small">condition</text>
+    <rect x="122" y="347" width="94" height="52" class="node" fill="#fff6e9" stroke="#a95a13"/><text x="169" y="369" text-anchor="middle" class="sans label">Dock</text><text x="169" y="386" text-anchor="middle" class="sans small">action</text>
+    <rect x="210" y="347" width="94" height="52" class="node" fill="#fff0f1" stroke="#b84d5d"/><text x="257" y="369" text-anchor="middle" class="sans label">Obstacle?</text><text x="257" y="386" text-anchor="middle" class="sans small">condition</text>
+    <rect x="312" y="347" width="94" height="52" class="node" fill="#fff6e9" stroke="#a95a13"/><text x="359" y="369" text-anchor="middle" class="sans label">Avoid</text><text x="359" y="386" text-anchor="middle" class="sans small">action</text>
+    <rect x="398" y="347" width="94" height="52" class="node" fill="#fff0f1" stroke="#b84d5d"/><text x="445" y="369" text-anchor="middle" class="sans label">GoalValid?</text><text x="445" y="386" text-anchor="middle" class="sans small">condition</text>
+    <rect x="508" y="347" width="94" height="52" class="node" fill="#f3f0fb" stroke="#6847a5"/><text x="555" y="369" text-anchor="middle" class="sans label">Fallback</text><text x="555" y="386" text-anchor="middle" class="sans small">nav recovery</text>
+    <rect x="421" y="451" width="98" height="52" class="node" fill="#fff6e9" stroke="#a95a13"/><text x="470" y="473" text-anchor="middle" class="sans label">FollowPath</text><text x="470" y="490" text-anchor="middle" class="sans small">action</text>
+    <rect x="527" y="451" width="84" height="52" class="node" fill="#fff6e9" stroke="#a95a13"/><text x="569" y="473" text-anchor="middle" class="sans label">Replan</text><text x="569" y="490" text-anchor="middle" class="sans small">action</text>
 
+    <!-- animated highlights -->
     <g class="animated">
-      <rect x="398" y="305" width="126" height="72" fill="none" stroke="#2f6fbd" stroke-width="4" opacity="0"><animate attributeName="opacity" values="1;1;0;0;1;1;0" keyTimes="0;0.28;0.31;0.61;0.64;0.97;1" dur="12s" repeatCount="indefinite"/></rect>
-      <rect x="15" y="305" width="126" height="72" fill="none" stroke="#28775f" stroke-width="4" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.28;0.31;0.60;0.63;1" dur="12s" repeatCount="indefinite"/></rect>
-      <rect x="159" y="305" width="126" height="72" fill="none" stroke="#a95a13" stroke-width="4" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.38;0.41;0.60;0.63;1" dur="12s" repeatCount="indefinite"/></rect>
+      <rect x="416" y="446" width="108" height="62" class="hi" stroke="#2f6fbd" opacity="0"><animate attributeName="opacity" values="1;1;0;0;1;1;0" keyTimes="0;0.29;0.31;0.67;0.70;0.99;1" dur="16s" repeatCount="indefinite"/></rect>
+      <rect x="205" y="342" width="104" height="62" class="hi" stroke="#4b9a62" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.29;0.31;0.55;0.57;1" dur="16s" repeatCount="indefinite"/></rect>
+      <rect x="307" y="342" width="104" height="62" class="hi" stroke="#a95a13" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.39;0.41;0.55;0.57;1" dur="16s" repeatCount="indefinite"/></rect>
+      <rect x="522" y="446" width="94" height="62" class="hi" stroke="#6847a5" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;0.55;0.57;0.67;0.69;1" dur="16s" repeatCount="indefinite"/></rect>
     </g>
 
-    <g transform="translate(20 410)">
-      <rect x="0" y="0" width="14" height="14" fill="#4b9a62"/><text x="22" y="12" class="sans small">Success / true</text>
-      <rect x="126" y="0" width="14" height="14" fill="#c94a4a"/><text x="148" y="12" class="sans small">Failure / false</text>
-      <rect x="254" y="0" width="14" height="14" fill="#2f6fbd"/><text x="276" y="12" class="sans small">Running</text>
-      <rect x="348" y="0" width="14" height="14" fill="#a95a13"/><text x="370" y="12" class="sans small">Current action</text>
-      <text x="0" y="47" class="sans small muted">Priority: obstacle recovery subtree is checked before ordinary navigation.</text>
-      <text x="0" y="72" class="sans small muted">When Obstacle? becomes true, the higher-priority branch takes control on the next tick.</text>
+    <g transform="translate(18 513)">
+      <rect x="0" y="0" width="12" height="12" fill="#4b9a62"/><text x="18" y="11" class="sans small">Success/true</text>
+      <rect x="102" y="0" width="12" height="12" fill="#c94a4a"/><text x="120" y="11" class="sans small">Failure/false</text>
+      <rect x="206" y="0" width="12" height="12" fill="#2f6fbd"/><text x="224" y="11" class="sans small">Running</text>
+      <rect x="286" y="0" width="12" height="12" fill="#a95a13"/><text x="304" y="11" class="sans small">Current action</text>
+      <text x="414" y="11" class="sans small muted">tick ≈ 20 Hz</text>
     </g>
   </g>
 
-  <g class="animated" transform="translate(42 640)">
-    <rect x="0" y="0" width="1116" height="8" fill="#e1e6eb"/>
-    <rect x="0" y="0" width="1116" height="8" fill="#245b88">
-      <animate attributeName="width" values="0;1116" dur="12s" repeatCount="indefinite"/>
-    </rect>
-    <text x="0" y="31" class="sans small muted">12 s loop</text>
-    <text x="1100" y="31" text-anchor="end" class="sans small muted">restarts</text>
+  <!-- event timeline -->
+  <g transform="translate(36 664)">
+    <rect width="1328" height="150" class="panel"/>
+    <text x="18" y="28" class="serif h2">C. Event / status timeline</text>
+    <line x1="34" y1="74" x2="1292" y2="74" stroke="#94a3b8" stroke-width="2"/>
+    <g class="sans small">
+      <circle cx="82" cy="74" r="6" fill="#2f6fbd"/><text x="82" y="54" text-anchor="middle">t₀</text><text x="82" y="101" text-anchor="middle">FollowPath:R</text>
+      <circle cx="378" cy="74" r="6" fill="#9a3f67"/><text x="378" y="54" text-anchor="middle">obstacle detected</text><text x="378" y="101" text-anchor="middle">halt nav</text>
+      <circle cx="604" cy="74" r="6" fill="#a95a13"/><text x="604" y="54" text-anchor="middle">recovery active</text><text x="604" y="101" text-anchor="middle">Avoid:R</text>
+      <circle cx="808" cy="74" r="6" fill="#6847a5"/><text x="808" y="54" text-anchor="middle">obstacle clears</text><text x="808" y="101" text-anchor="middle">Replan:S</text>
+      <circle cx="1035" cy="74" r="6" fill="#2f6fbd"/><text x="1035" y="54" text-anchor="middle">mission resumes</text><text x="1035" y="101" text-anchor="middle">FollowPath:R</text>
+      <circle cx="1262" cy="74" r="6" fill="#28775f"/><text x="1262" y="54" text-anchor="middle">goal reached</text><text x="1262" y="101" text-anchor="middle">root:S</text>
+    </g>
+    <g class="animated"><rect x="34" y="124" width="1258" height="6" fill="#e2e8f0"/><rect x="34" y="124" width="0" height="6" fill="#245b88"><animate attributeName="width" values="0;1258" dur="16s" repeatCount="indefinite"/></rect></g>
   </g>
+
+  <text x="36" y="844" class="sans small muted">Repository-authored execution example. Timing is illustrative; the architectural behavior—root re-evaluation, action halting, recovery priority, and resumption—is the key point.</text>
 </svg>
