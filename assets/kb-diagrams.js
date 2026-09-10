@@ -64,7 +64,7 @@ if (article) {
 
     const hint = document.createElement('span');
     hint.className = 'kb-diagram-hint';
-    hint.textContent = 'Scroll normally · Pan mode or Shift+drag · Ctrl/⌘+wheel to zoom';
+    hint.textContent = 'Scroll page normally · use Pan to drag diagram · Ctrl/⌘+wheel to zoom';
 
     const controls = document.createElement('div');
     controls.className = 'kb-diagram-controls';
@@ -83,8 +83,8 @@ if (article) {
 
     const viewport = document.createElement('div');
     viewport.className = 'kb-diagram-viewport';
-    viewport.tabIndex = 0;
-    viewport.setAttribute('aria-label', 'Interactive Mermaid diagram. Use toolbar buttons to zoom or enable pan mode.');
+    viewport.tabIndex = -1;
+    viewport.setAttribute('aria-label', 'Mermaid diagram. Use the toolbar to zoom or enable pan mode.');
 
     const canvas = document.createElement('div');
     canvas.className = 'kb-diagram-canvas';
@@ -121,7 +121,7 @@ if (article) {
   }
 
   function setupInteraction(entry) {
-    const { viewport, canvas, diagram, zoomOut, zoomIn, fit, pan, zoomLabel } = entry;
+    const { shell, viewport, canvas, diagram, zoomOut, zoomIn, fit, pan, zoomLabel } = entry;
     const svg = diagram.querySelector('svg');
     if (!svg) return;
 
@@ -153,7 +153,7 @@ if (article) {
     }
 
     function updateViewportHeight() {
-      const width = Math.max(320, viewport.clientWidth || 900);
+      const width = Math.max(320, viewport.clientWidth || shell.clientWidth || 900);
       viewport.style.height = `${Math.round(Math.max(340, Math.min(620, width * aspect + 72)))}px`;
     }
 
@@ -194,7 +194,15 @@ if (article) {
       pan.setAttribute('aria-pressed', String(panMode));
       pan.textContent = panMode ? 'Pan on' : 'Pan';
       viewport.classList.toggle('pan-enabled', panMode);
-      if (!panMode) viewport.classList.remove('is-panning');
+      viewport.tabIndex = panMode ? 0 : -1;
+
+      if (panMode) {
+        viewport.focus({ preventScroll: true });
+      } else {
+        dragging = false;
+        dragStart = null;
+        viewport.classList.remove('is-panning');
+      }
     }
 
     function panBy(dx, dy) {
@@ -209,17 +217,16 @@ if (article) {
     fit.addEventListener('click', fitToViewport);
     pan.addEventListener('click', () => setPanMode(!panMode));
 
-    viewport.addEventListener('wheel', event => {
+    // The shell, not the diagram viewport, receives modified wheel zoom. This
+    // keeps ordinary wheel events completely available to the reader.
+    shell.addEventListener('wheel', event => {
       if (!(event.ctrlKey || event.metaKey)) return;
       event.preventDefault();
       zoomAt(event.deltaY < 0 ? 1.12 : 0.89, event.clientX, event.clientY);
     }, { passive: false });
 
     viewport.addEventListener('pointerdown', event => {
-      const wantsPan = panMode || event.shiftKey || event.button === 1;
-      if (!wantsPan) return;
-      if (event.button !== 0 && event.button !== 1) return;
-
+      if (!panMode || event.button !== 0) return;
       event.preventDefault();
       dragging = true;
       dragStart = { clientX: event.clientX, clientY: event.clientY, x, y };
@@ -228,7 +235,7 @@ if (article) {
     });
 
     viewport.addEventListener('pointermove', event => {
-      if (!dragging || !dragStart) return;
+      if (!panMode || !dragging || !dragStart) return;
       event.preventDefault();
       x = dragStart.x + event.clientX - dragStart.clientX;
       y = dragStart.y + event.clientY - dragStart.clientY;
@@ -248,7 +255,12 @@ if (article) {
     viewport.addEventListener('pointercancel', endDrag);
 
     viewport.addEventListener('keydown', event => {
-      if (event.key === '+' || event.key === '=') {
+      if (!panMode) return;
+
+      if (event.key === 'Escape' || event.key.toLowerCase() === 'p') {
+        event.preventDefault();
+        setPanMode(false);
+      } else if (event.key === '+' || event.key === '=') {
         event.preventDefault();
         zoomAt(1.22);
       } else if (event.key === '-' || event.key === '_') {
@@ -257,19 +269,16 @@ if (article) {
       } else if (event.key === '0' || event.key.toLowerCase() === 'f') {
         event.preventDefault();
         fitToViewport();
-      } else if (event.key.toLowerCase() === 'p') {
-        event.preventDefault();
-        setPanMode(!panMode);
-      } else if (panMode && event.key === 'ArrowLeft') {
+      } else if (event.key === 'ArrowLeft') {
         event.preventDefault();
         panBy(28, 0);
-      } else if (panMode && event.key === 'ArrowRight') {
+      } else if (event.key === 'ArrowRight') {
         event.preventDefault();
         panBy(-28, 0);
-      } else if (panMode && event.key === 'ArrowUp') {
+      } else if (event.key === 'ArrowUp') {
         event.preventDefault();
         panBy(0, 28);
-      } else if (panMode && event.key === 'ArrowDown') {
+      } else if (event.key === 'ArrowDown') {
         event.preventDefault();
         panBy(0, -28);
       }
@@ -323,11 +332,17 @@ if (article) {
     });
   }
 
-  new MutationObserver(scheduleRender).observe(article, {
+  // Markdown documents are inserted dynamically. Observe only for unconverted
+  // Mermaid code blocks; Mermaid's own SVG mutations must not recursively
+  // trigger rendering work.
+  new MutationObserver(() => {
+    if (article.querySelector('pre > code.language-mermaid')) scheduleRender();
+  }).observe(article, {
     childList: true,
     subtree: true
   });
 
+  window.addEventListener('kb:content-opened', scheduleRender);
   scheduleRender();
   window.KBDiagrams = { render: renderDiagrams };
 }
