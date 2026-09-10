@@ -179,8 +179,8 @@ The construction closure is deliberately placed on an upcoming edge of route ver
     "pedestrianNode": "r2c2",
     "closureTime": 28,
     "closureEdge": "h1-3-4",
-    "crossStart": 32,
-    "crossEnd": 40,
+    "crossStart": 43,
+    "crossEnd": 51,
     "crossNode": "r0c3"
   },
   "ego": {
