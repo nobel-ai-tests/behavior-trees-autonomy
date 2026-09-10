@@ -2,11 +2,15 @@
 
 ## Abstract
 
-Verbatim excerpt from the paper's abstract:
+Introduction: In Interactive Task Learning (ITL), an agent learns a new task through natural interaction with a human instructor. Behavior Trees (BTs) offer a reactive, modular, and interpretable way of encoding task descriptions but have not yet been applied a lot in robotic ITL settings. Most existing approaches that learn a BT from human demonstrations require the user to specify each action step-by-step or do not allow for adapting a learned BT without the need to repeat the entire teaching process from scratch.
 
-> “In Interactive Task Learning (ITL), an agent learns a new task through natural interaction with a human instructor.”
+Method: We propose a new framework to directly learn a BT from only a few human task demonstrations recorded as RGB-D video streams. We automatically extract continuous pre- and post-conditions for BT action nodes from visual features and use a Backchaining approach to build a reactive BT. In a user study on how non-experts provide and vary demonstrations, we identify three common failure cases of an BT learned from potentially imperfect initial human demonstrations. We offer a way to interactively resolve these failure cases by refining the existing BT through interaction with a user over a web-interface. Specifically, failure cases or unknown states are detected automatically during the execution of a learned BT and the initial BT is adjusted or extended according to the provided user input.
 
-- [Read the complete source abstract and full article](https://www.frontiersin.org/journals/robotics-and-ai/articles/10.3389/frobt.2023.1152595/full)
+Evaluation and results: We evaluate our approach on a robotic trash disposal task with 20 human participants and demonstrate that our method is capable of learning reactive BTs from only a few human demonstrations and interactively resolving possible failure cases at runtime.
+
+*Verbatim abstract. The article is licensed CC BY 4.0.*
+
+- [Source abstract and full article](https://www.frontiersin.org/journals/robotics-and-ai/articles/10.3389/frobt.2023.1152595/full)
 - [PubMed Central copy](https://pmc.ncbi.nlm.nih.gov/articles/PMC10368948/)
 
 ## Full text
