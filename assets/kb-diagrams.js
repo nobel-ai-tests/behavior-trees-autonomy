@@ -7,15 +7,18 @@ if (article) {
     startOnLoad: false,
     securityLevel: 'strict',
     theme: 'base',
+    look: 'classic',
     layout: 'elk',
     fontFamily: 'ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif',
     flowchart: {
-      htmlLabels: true,
+      htmlLabels: false,
       useMaxWidth: false,
       curve: 'linear',
-      nodeSpacing: 28,
-      rankSpacing: 40,
-      diagramPadding: 8
+      nodeSpacing: 22,
+      rankSpacing: 32,
+      diagramPadding: 8,
+      wrappingWidth: 180,
+      padding: 12
     },
     themeVariables: {
       background: '#ffffff',
@@ -61,7 +64,7 @@ if (article) {
 
     const hint = document.createElement('span');
     hint.className = 'kb-diagram-hint';
-    hint.textContent = 'Drag to pan · Ctrl/⌘ + wheel to zoom';
+    hint.textContent = 'Scroll normally · Pan mode or Shift+drag · Ctrl/⌘+wheel to zoom';
 
     const controls = document.createElement('div');
     controls.className = 'kb-diagram-controls';
@@ -72,14 +75,16 @@ if (article) {
     zoomLabel.textContent = '100%';
     const zoomIn = button('+', 'Zoom in');
     const fit = button('Fit', 'Fit diagram to viewport');
+    const pan = button('Pan', 'Toggle diagram pan mode');
+    pan.setAttribute('aria-pressed', 'false');
 
-    controls.append(zoomOut, zoomLabel, zoomIn, fit);
+    controls.append(zoomOut, zoomLabel, zoomIn, fit, pan);
     toolbar.append(hint, controls);
 
     const viewport = document.createElement('div');
     viewport.className = 'kb-diagram-viewport';
     viewport.tabIndex = 0;
-    viewport.setAttribute('aria-label', 'Zoomable Mermaid diagram');
+    viewport.setAttribute('aria-label', 'Interactive Mermaid diagram. Use toolbar buttons to zoom or enable pan mode.');
 
     const canvas = document.createElement('div');
     canvas.className = 'kb-diagram-canvas';
@@ -93,7 +98,7 @@ if (article) {
     viewport.appendChild(canvas);
     shell.append(toolbar, viewport);
 
-    return { shell, diagram, viewport, canvas, zoomOut, zoomIn, fit, zoomLabel };
+    return { shell, diagram, viewport, canvas, zoomOut, zoomIn, fit, pan, zoomLabel };
   }
 
   function convertMermaidBlocks() {
@@ -116,7 +121,7 @@ if (article) {
   }
 
   function setupInteraction(entry) {
-    const { viewport, canvas, diagram, zoomOut, zoomIn, fit, zoomLabel } = entry;
+    const { viewport, canvas, diagram, zoomOut, zoomIn, fit, pan, zoomLabel } = entry;
     const svg = diagram.querySelector('svg');
     if (!svg) return;
 
@@ -135,17 +140,21 @@ if (article) {
     svg.style.display = 'block';
 
     const aspect = naturalHeight / naturalWidth;
-    viewport.style.height = `${Math.round(Math.max(340, Math.min(620, viewport.clientWidth * aspect + 72)))}px`;
-
     let scale = 1;
     let x = 0;
     let y = 0;
     let manual = false;
+    let panMode = false;
     let dragging = false;
     let dragStart = null;
 
     function clampScale(value) {
       return Math.max(0.35, Math.min(4, value));
+    }
+
+    function updateViewportHeight() {
+      const width = Math.max(320, viewport.clientWidth || 900);
+      viewport.style.height = `${Math.round(Math.max(340, Math.min(620, width * aspect + 72)))}px`;
     }
 
     function apply() {
@@ -154,6 +163,7 @@ if (article) {
     }
 
     function fitToViewport() {
+      updateViewportHeight();
       const padding = 24;
       const width = Math.max(100, viewport.clientWidth - padding * 2);
       const height = Math.max(100, viewport.clientHeight - padding * 2);
@@ -179,9 +189,25 @@ if (article) {
       apply();
     }
 
+    function setPanMode(enabled) {
+      panMode = Boolean(enabled);
+      pan.setAttribute('aria-pressed', String(panMode));
+      pan.textContent = panMode ? 'Pan on' : 'Pan';
+      viewport.classList.toggle('pan-enabled', panMode);
+      if (!panMode) viewport.classList.remove('is-panning');
+    }
+
+    function panBy(dx, dy) {
+      x += dx;
+      y += dy;
+      manual = true;
+      apply();
+    }
+
     zoomOut.addEventListener('click', () => zoomAt(0.82));
     zoomIn.addEventListener('click', () => zoomAt(1.22));
     fit.addEventListener('click', fitToViewport);
+    pan.addEventListener('click', () => setPanMode(!panMode));
 
     viewport.addEventListener('wheel', event => {
       if (!(event.ctrlKey || event.metaKey)) return;
@@ -190,7 +216,11 @@ if (article) {
     }, { passive: false });
 
     viewport.addEventListener('pointerdown', event => {
-      if (event.button !== 0) return;
+      const wantsPan = panMode || event.shiftKey || event.button === 1;
+      if (!wantsPan) return;
+      if (event.button !== 0 && event.button !== 1) return;
+
+      event.preventDefault();
       dragging = true;
       dragStart = { clientX: event.clientX, clientY: event.clientY, x, y };
       viewport.setPointerCapture?.(event.pointerId);
@@ -199,6 +229,7 @@ if (article) {
 
     viewport.addEventListener('pointermove', event => {
       if (!dragging || !dragStart) return;
+      event.preventDefault();
       x = dragStart.x + event.clientX - dragStart.clientX;
       y = dragStart.y + event.clientY - dragStart.clientY;
       manual = true;
@@ -215,15 +246,43 @@ if (article) {
 
     viewport.addEventListener('pointerup', endDrag);
     viewport.addEventListener('pointercancel', endDrag);
-    viewport.addEventListener('dblclick', fitToViewport);
+
+    viewport.addEventListener('keydown', event => {
+      if (event.key === '+' || event.key === '=') {
+        event.preventDefault();
+        zoomAt(1.22);
+      } else if (event.key === '-' || event.key === '_') {
+        event.preventDefault();
+        zoomAt(0.82);
+      } else if (event.key === '0' || event.key.toLowerCase() === 'f') {
+        event.preventDefault();
+        fitToViewport();
+      } else if (event.key.toLowerCase() === 'p') {
+        event.preventDefault();
+        setPanMode(!panMode);
+      } else if (panMode && event.key === 'ArrowLeft') {
+        event.preventDefault();
+        panBy(28, 0);
+      } else if (panMode && event.key === 'ArrowRight') {
+        event.preventDefault();
+        panBy(-28, 0);
+      } else if (panMode && event.key === 'ArrowUp') {
+        event.preventDefault();
+        panBy(0, 28);
+      } else if (panMode && event.key === 'ArrowDown') {
+        event.preventDefault();
+        panBy(0, -28);
+      }
+    });
 
     const observer = new ResizeObserver(() => {
-      viewport.style.height = `${Math.round(Math.max(340, Math.min(620, viewport.clientWidth * aspect + 72)))}px`;
+      updateViewportHeight();
       if (!manual) fitToViewport();
     });
     observer.observe(viewport);
 
-    fitToViewport();
+    updateViewportHeight();
+    requestAnimationFrame(fitToViewport);
   }
 
   async function renderDiagrams() {
@@ -235,7 +294,7 @@ if (article) {
         try {
           await document.fonts.ready;
         } catch (_) {
-          // Continue with fallback metrics if the Font Loading API rejects.
+          // Continue with fallback metrics if font loading fails.
         }
       }
 
