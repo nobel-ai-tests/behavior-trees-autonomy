@@ -4,6 +4,11 @@ A living knowledge base for exploring behavior trees (BTs) in autonomous systems
 
 The repository collects and connects papers, implementation notes, conceptual summaries, comparisons, and references as the knowledge base develops.
 
+## Start here
+
+- [Behavior Tree Foundations](topics/behavior-tree-foundations.md) — what a behavior tree is, how its runtime semantics work, and how it differs from a machine-learning decision tree.
+- [References](references.md) — consolidated bibliography with DOI and accessible-source links.
+
 ## Structure
 
 - `papers/` — notes on individual papers and technical publications
