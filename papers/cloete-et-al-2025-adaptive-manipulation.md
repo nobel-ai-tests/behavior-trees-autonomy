@@ -2,9 +2,11 @@
 
 ## Abstract
 
-This paper introduces an adaptive behavior-tree pattern for manipulation tasks whose critical properties may only become known after physical interaction begins. The robot uses task feedback, including force/torque information, to select among discrete manipulation strategies, switch strategies before failure, and reuse information from previous attempts. The approach is evaluated on industrial-style manipulation tasks including valve operation.
+Many manipulation tasks use instances of a set of common motions, such as a twisting motion for tightening or loosening a valve. However, different instances of the same motion often require different environmental parameters (e.g. force/torque level), and thus different manipulation strategies to successfully complete; for example, grasping a valve handle from the side rather than head-on to increase applied torque. Humans can intuitively adapt their manipulation strategy to best suit such problems, but representing and implementing such behaviors for robots remains an open question. We present a behavior tree-based approach for adaptive manipulation, wherein the robot can reactively select from and switch between a discrete set of manipulation strategies during task execution. Furthermore, our approach allows the robot to learn from past attempts to optimize performance, for example learning the optimal strategy for different task instances. Our approach also allows the robot to preempt task failure and either change to a more feasible strategy or safely exit the task before catastrophic failure occurs. We propose a simple behavior tree design for general adaptive robot behavior and apply it in the context of industrial manipulation. The adaptive behavior outperformed all baseline behaviors that only used a single manipulation strategy, markedly reducing the number of attempts and overall time taken to complete the example tasks. Our results demonstrate potential for improved robustness and efficiency in task completion, reducing dependency on human supervision and intervention.
 
-- [Raw abstract and preprint on arXiv](https://arxiv.org/abs/2406.14634)
+*Verbatim abstract from the CC BY 4.0 preprint.*
+
+- [Source abstract on arXiv](https://arxiv.org/abs/2406.14634)
 - [Oxford Research Archive record](https://ora.ox.ac.uk/objects/uuid%3Acfc482c4-2237-4bff-949d-037178689f0e)
 
 ## Full text

@@ -2,9 +2,19 @@
 
 ## Abstract
 
-This paper studies automatic behavior-tree synthesis for robotic tasks in unpredictable environments using genetic programming. The authors evolve BT structure in a deliberately simple simulator, then test whether the learned policy transfers to a more realistic simulation. The approach avoids task-specific heuristics and produces fault-tolerant robot behavior, making it a useful example of interpretable program synthesis for robotics.
+*Analytical abstract — repository-authored because the source does not provide clear permission to reproduce the complete publisher abstract verbatim.*
 
-- [Raw abstract and preprint on arXiv](https://arxiv.org/abs/2011.03252)
+**Contribution / method.** The paper learns behavior-tree structure with genetic programming (GP) for a mobile-manipulation task in an unpredictable environment. Candidate BTs are evolved using crossover, mutation, tournament selection, and a fitness function that combines task progress, tree size, execution time, and estimated action-failure probability. To make the search tractable, learning is performed in a lightweight state-machine simulator and the resulting trees are then validated in a more detailed ROS/Gazebo simulation.
+
+**Quantitative evidence.** The reported GP setup uses a population of 30 individuals, initial tree length 4, 8,000 generations, 40% crossover, 60% mutation, and 10% elitism; learning curves are averaged over 10 runs. The authors estimate that direct GP in Gazebo would take more than a month on a powerful gaming computer, while the simplified simulator reduces learning to a few minutes, i.e. several orders of magnitude faster. Convergence still requires roughly 400,000 evaluated episodes. In action-pool robustness tests, the required pool contains 9 useful behaviors; experiments add 3 useless behaviors and then 27 additional useless behaviors, and GP still removes meaningless actions early. A risk-sensitive experiment assigns failure probabilities 0.2 and 0.4 to the short path and changes the failure-cost weight from δ=0 to δ=150, causing the learned BT to prefer the longer safer route.
+
+**Advantages.** The major measured advantage is computational: the surrogate simulator makes a search that is impractical in high-fidelity simulation feasible in minutes. The learned BTs also transfer to Gazebo without retraining in the reported tasks, remain interpretable as executable programs, tolerate injected action failures, and are relatively robust to a much larger pool of irrelevant behaviors. The explicit risk term can bias the learned structure toward safer behavior rather than only shorter execution.
+
+**Disadvantages / trade-offs.** The speedup comes from manually constructing a simplified simulator whose transition outcomes must remain representative of the detailed environment. GP is still sample hungry—about 400,000 episodes for convergence in the reported setup—and the result depends on the fitness weights, mutation/crossover settings, allowed node set, and structural constraints. Penalizing failure probability can improve safety but may select longer/slower paths, while stronger tree-size or time penalties can push in the opposite direction.
+
+**Limitations.** Validation is sim-to-sim, not on a physical robot, and the paper explicitly leaves real-robot transfer and comparison with hand-coded BTs to future work. The simplified simulator is a substantial modeling assumption: if action outcomes, sensing effects, or failure modes differ materially from the real system, a learned tree may not transfer. The task domain is one mobile pick-and-place problem, so the experiments do not establish scaling to long-horizon tasks, richer manipulation, continuous control, multi-robot coordination, or very large behavior libraries. The learning process also requires hundreds of thousands of policy evaluations and manually chosen fitness shaping, which can encode designer bias even though no task-specific search heuristic is used. Finally, robustness is tested against selected stochastic failures and irrelevant behaviors; it is not a formal guarantee against arbitrary disturbances or model mismatch.
+
+[Source abstract on arXiv](https://arxiv.org/abs/2011.03252).
 
 ## Full text
 

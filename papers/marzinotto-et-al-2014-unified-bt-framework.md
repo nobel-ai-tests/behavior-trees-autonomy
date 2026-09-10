@@ -2,9 +2,19 @@
 
 ## Abstract
 
-The paper argues that robotics needs a more mathematically precise and internally consistent behavior-tree formalism. It introduces a unified framework, relates behavior trees to Controlled Hybrid Dynamical Systems, and demonstrates the formulation on a NAO grasping task.
+*Analytical abstract — repository-authored because the source does not provide clear permission to reproduce the complete publisher abstract verbatim.*
 
-[Read the source abstract on the Christian Smith / KTH publication page](https://www.csc.kth.se/~ccs/Publications/icra14b.html).
+**Contribution / method.** The paper turns the then-inconsistent behavior-tree literature into a unified robot-control formalism. It first reviews conflicting BT terminology and semantics, then defines a compact mathematical representation with explicit Action and Condition subsets and relates BTs to Controlled Hybrid Dynamical Systems (CHDSs). The framework is implemented in a BT library and exercised on a NAO grasping mission.
+
+**Quantitative evidence.** This is primarily a formalization paper, not a performance benchmark. The robot section shows two representative grasp executions—one successful ball grasp and one failed bottle grasp—but reports no repeated-trial success rate, runtime comparison, statistical test, or quantitative comparison against FSMs or other architectures.
+
+**Advantages.** Analytically, the framework makes BT execution more precise and compact, supplies a bridge to hybrid-systems reasoning, and exposes why BTs can be modular: subtrees can be composed around a common Success/Failure/Running interface rather than around large sets of explicit state transitions. Relative to a CHDS description, the BT representation sacrifices explicit named-state identity but gains a hierarchical, reusable control-flow structure.
+
+**Disadvantages / trade-offs.** The formal compactness does not by itself establish better task performance. The demonstrated robot scheduling is largely open-loop at the action level, and the paper does not quantify robustness to sensing errors, action uncertainty, timing variation, or disturbances. The equivalence discussion is representational; it should not be read as evidence that BTs dominate CHDSs or FSMs on efficiency, safety, or reliability.
+
+**Limitations.** The empirical scope is very small: one NAO platform and a simple grasping mission are used to show applicability rather than generality. There is no large task suite, no baseline architecture, no ablation, and no numerical evaluation of modularity or engineering effort. The formal model also abstracts away many execution details that matter in deployed robotics, including stochastic action outcomes, asynchronous skills, continuous feedback inside leaves, resource contention, and communication delays. Consequently, the paper is strongest as a foundational representation and semantics result; its claims about practical scalability and robustness require later work and broader experiments.
+
+[Source abstract and paper record](https://www.csc.kth.se/~ccs/Publications/icra14b.html).
 
 ## Full text
 

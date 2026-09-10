@@ -2,14 +2,19 @@
 
 ## Abstract
 
-Verbatim opening from the paper's abstract:
+*Analytical abstract — repository-authored because the source does not provide clear permission to reproduce the complete publisher abstract verbatim.*
 
-> “In this paper we will give a control theoretic perspective on the research area of behavior trees in robotics.”
+**Contribution / method.** This review reframes behavior trees through three control-system ideas—modularity, hierarchy, and feedback—and uses that lens to connect BT execution with hybrid switching, finite-time convergence, regions of attraction, safety/invariance, control barrier functions, explainability, reinforcement learning, evolutionary search, and planning. Rather than conducting a systematic literature search, the authors build a control-theoretic synthesis around a common BT model and show how local subtree interfaces and return statuses support reasoning about larger controllers.
 
-- [Read the complete abstract on arXiv](https://arxiv.org/abs/2203.13083)
-- [Version of record at Annual Reviews](https://doi.org/10.1146/annurev-control-042920-095314)
+**Quantitative evidence.** This is a conceptual and theoretical review, not a meta-analysis or comparative experiment. It reports no pooled effect sizes, success-rate statistics, runtime benchmark, or numerical comparison of BTs against FSMs, planners, or other executive architectures. Its evidence is analytical: formal definitions, composition arguments, state-space operating regions, convergence reasoning, safety constructions, and worked examples from the literature.
 
-The abstract identifies **modularity, hierarchy, and feedback** as the three ideas used to manage the complexity of versatile robot-control systems. It then states that the review uses those ideas across theoretical analysis, practical design, and extensions that connect BTs with other concepts from control theory and robotics.
+**Advantages.** The review's main analytical advantage is that it explains why BTs can support scalable controller design beyond the superficial tree notation. Modularity isolates sub-behaviors behind a common interface; hierarchy allows large tasks to be decomposed recursively; and feedback through Success/Failure/Running lets high-level action selection react to progress and applicability. The operating-region perspective provides a bridge from software structure to closed-loop control analysis, while the recursive design principle gives a practical way to convert desired conditions and alternative actions into reusable subtrees.
+
+**Disadvantages / trade-offs.** The same hierarchy that improves modularity can make global behavior difficult to reason about when return statuses, side effects, shared resources, or asynchronous actions are poorly specified. Formal guarantees require sufficiently accurate models of subtree success/failure/running regions and dynamics, which may be hard to obtain for learned policies, perception-heavy systems, or contact-rich robotics. Reactive reevaluation can improve adaptability but can also introduce repeated work, preemption effects, or oscillatory switching unless conditions and priorities are designed carefully.
+
+**Limitations.** The review is not systematic in the survey-methodology sense: it does not provide reproducible search databases, query strings, screening criteria, corpus counts, or quantitative evidence synthesis, so coverage is shaped by the authors' control-theoretic perspective. Many presented guarantees are conditional on mathematical assumptions that real robot components may violate, and the paper does not empirically measure software-development effort, debugging time, maintainability, runtime overhead, or reliability against alternative architectures. Safety and convergence results are also only as good as the modeled state sets, controllers, and interfaces; unmodeled uncertainty, partial observability, distributed timing, resource conflicts, and stochastic action outcomes can invalidate those assumptions. Finally, because it is a 2022 review, it cannot cover later advances in BT learning, formal verification, large-scale multi-robot deployment, and newer robotics software ecosystems.
+
+[Source abstract at Annual Reviews](https://www.annualreviews.org/content/journals/10.1146/annurev-control-042920-095314).
 
 ## Full text
 

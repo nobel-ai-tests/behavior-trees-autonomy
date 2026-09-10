@@ -37,12 +37,12 @@ See [Behavior Trees in Robotics: Core Research Topics](../topics/robotics-behavi
 
 Paper briefs should follow a consistent academic reading order:
 
-1. **Abstract** — use wording taken from the paper's actual abstract when quoting it, and link the complete source abstract. Do not present a repository-written paraphrase as though it were the source abstract. When redistribution or quotation constraints prevent reproducing the complete abstract, include a short verbatim excerpt plus a faithful summary and the full-source link.
+1. **Abstract** — use one of two explicit modes. **Raw abstract:** when the source license permits verbatim redistribution, place the complete paper abstract directly in the note and identify the reuse license/source. **Analytical abstract:** when the complete publisher abstract cannot be reproduced, use a repository-authored abstract containing five required components: **Contribution / method**, **Quantitative evidence**, **Advantages**, **Disadvantages / trade-offs**, and **Limitations**. Quantitative claims must use values actually reported by the paper; if the paper has no numerical benchmark, say that explicitly instead of inventing one. The limitations paragraph should be complete and written in repository language, covering assumptions, evaluation scope, missing comparisons, generalization limits, and major deployment gaps relevant to the paper. Keep the analytical abstract self-contained so a reader does not need to open another site merely to understand what the paper contributes or where it falls short.
 2. **Full text** — direct PDF or accepted-manuscript access first, followed by the version of record when applicable.
 3. **Images / figures, when appropriate** — prioritize figures that explain the paper's overview, methodology, architecture, or workflow. Repository redraws should preserve the information structure of a specific source figure and identify its figure number; generic decorative diagrams should not substitute for the paper's visual argument. Embed source figures directly only when there is a stable source and clear reuse permission.
 4. **Contents** — follow the paper's section structure closely enough that the note can be used as a reading map.
 5. **Paper-derived material** — problem/motivation, contribution, method, experimental setting where applicable, and key results/significance.
-6. **Repository notes** — limitations, comparison notes, why the paper matters to this knowledge base, and cross-paper connections.
+6. **Repository notes** — comparison notes, why the paper matters to this knowledge base, and cross-paper connections. Major limitations should already be visible in the Abstract rather than being hidden only here.
 7. **Citation** — always the final section.
 
 ## Additional structure for surveys and reviews
@@ -54,6 +54,6 @@ Survey/review notes should emphasize the paper's own organizing logic rather tha
 - one or more **methodology/workflow figures** that show how the reviewed methods are organized or how a representative approach proceeds;
 - the paper's **taxonomy, synthesis, or open-challenge structure**, so later topic nodes can link back to the survey's categories.
 
-Do not duplicate a publisher's full copyrighted abstract, figures, or paper text into the repository when redistribution rights are unclear. Link the source and provide a faithful source-backed note instead.
+Do not duplicate publisher-controlled text or figures beyond what their license permits. For permissively licensed papers, keep the complete raw abstract inline. For restricted papers, the analytical abstract is the self-contained replacement: readers should be able to see the method, evidence, advantages, disadvantages, and limitations without leaving the knowledge base.
 
 Each paper must also be registered in `../kb-manifest.json` with a one-sentence `description` and explicit `topics` IDs so the graph inspector can present a useful summary and topic list. Add `authors`, `year`, `venue`, `doi`, `abstractUrl`, `pdf`, `keywords`, `related`, and `tags` when available. The `abstractUrl` field should point to the raw abstract source; `pdf` should point directly to the best lawful reading copy available.
