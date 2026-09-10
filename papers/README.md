@@ -12,11 +12,15 @@ One Markdown note per paper or technical publication.
 
 ## Recommended fields for future paper notes
 
+Each paper note should cover:
+
 - Citation
 - Problem / motivation
-- Behavior-tree contribution
+- Behavior-tree or comparison contribution
 - Method
-- Experimental setting
-- Key results
+- Experimental setting, where applicable
+- Key results / significance
 - Limitations
 - Connections to other work
+
+Each paper must also be registered in `../kb-manifest.json` with a one-sentence `description` and explicit `topics` IDs so the graph inspector can present a useful summary and topic list. Add `authors`, `year`, `venue`, `doi`, `keywords`, `related`, and `tags` when available.
