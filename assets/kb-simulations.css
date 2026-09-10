@@ -19,10 +19,7 @@
 }
 
 .kb-sim-header { border-bottom: 1px solid var(--line); }
-.kb-sim-footer {
-  border-top: 1px solid var(--line);
-  flex-wrap: wrap;
-}
+.kb-sim-footer { border-top: 1px solid var(--line); flex-wrap: wrap; }
 
 .kb-sim-title {
   font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
@@ -48,6 +45,11 @@
   min-width: 0;
   padding: 12px;
   background: #fff;
+}
+
+.kb-sim-tree-panel {
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
 }
 
 .kb-sim-panel h4 {
@@ -104,8 +106,8 @@
   display: flex;
   justify-content: space-between;
   gap: 8px;
-  padding: 6px 7px;
   min-width: 0;
+  padding: 6px 7px;
   background: #f8fafc;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 10.5px;
@@ -123,7 +125,7 @@
 .kb-sim-tree-host {
   position: relative;
   width: 100%;
-  min-height: 430px;
+  min-height: 700px;
   border: 1px solid #d8dee6;
   background: #fbfcfd;
 }
@@ -135,15 +137,15 @@
   z-index: 2;
   gap: 4px;
   justify-content: flex-end;
-  padding: 5px;
+  padding: 6px;
   border-bottom: 1px solid #d8dee6;
-  background: rgba(251, 252, 253, .96);
+  background: rgba(251, 252, 253, .97);
 }
 
 .kb-sim-tree-toolbar button {
-  min-width: 38px;
-  padding: 4px 8px;
-  font-size: .72rem;
+  min-width: 42px;
+  padding: 5px 9px;
+  font-size: .78rem;
 }
 
 .kb-sim-tree-toolbar button.active {
@@ -154,7 +156,7 @@
 
 .kb-sim-tree-shell {
   width: 100%;
-  height: 390px;
+  height: 650px;
   overflow: hidden;
   touch-action: pan-y;
 }
@@ -170,29 +172,29 @@
   display: block;
   width: 100%;
   height: 100%;
-  min-width: 610px;
+  min-width: 0;
+  overflow: visible;
   user-select: none;
 }
 
 .kb-sim-tree-links path {
   fill: none;
   stroke: #c0c8d0;
-  stroke-width: 1.2px;
+  stroke-width: 1.35px;
 }
 
 .kb-sim-tree-links path[data-active="true"] {
   stroke: #405c76;
-  stroke-width: 2.4px;
+  stroke-width: 2.7px;
 }
 
 .kb-sim-tree-node { cursor: pointer; }
 .kb-sim-tree-node rect {
   fill: #f8fafc;
   stroke: #8d99a5;
-  stroke-width: 1.2px;
+  stroke-width: 1.25px;
 }
 
-/* Node type is encoded by the card fill; runtime status is encoded by border. */
 .kb-sim-tree-node[data-kind="fallback"] rect,
 .kb-sim-tree-node[data-kind="control"] rect { fill: #edf4fb; }
 .kb-sim-tree-node[data-kind="sequence"] rect { fill: #eef8f3; }
@@ -200,11 +202,11 @@
 .kb-sim-tree-node[data-kind="action"] rect { fill: #fff7e8; }
 .kb-sim-tree-node[data-kind="decorator"] rect { fill: #f5effb; }
 
-.kb-sim-tree-node[data-status="SUCCESS"] rect { stroke: #3f8b57; stroke-width: 2.4px; }
-.kb-sim-tree-node[data-status="FAILURE"] rect { stroke: #c94a4a; stroke-width: 2.4px; }
-.kb-sim-tree-node[data-status="RUNNING"] rect { stroke: #2f6fbd; stroke-width: 3px; }
-.kb-sim-tree-node[data-status="HALTED"] rect { stroke: #8a6a16; stroke-width: 2.6px; }
-.kb-sim-tree-node[data-status="IDLE"] { opacity: .48; }
+.kb-sim-tree-node[data-status="SUCCESS"] rect { stroke: #3f8b57; stroke-width: 2.5px; }
+.kb-sim-tree-node[data-status="FAILURE"] rect { stroke: #c94a4a; stroke-width: 2.5px; }
+.kb-sim-tree-node[data-status="RUNNING"] rect { stroke: #2f6fbd; stroke-width: 3.2px; }
+.kb-sim-tree-node[data-status="HALTED"] rect { stroke: #8a6a16; stroke-width: 2.8px; }
+.kb-sim-tree-node[data-status="IDLE"] { opacity: .52; }
 
 .kb-sim-tree-node:focus rect {
   outline: none;
@@ -213,19 +215,23 @@
 
 .kb-sim-tree-label {
   fill: #17202a;
-  font-size: 10.5px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 720;
   pointer-events: none;
 }
 
 .kb-sim-tree-meta,
 .kb-sim-tree-status {
-  fill: #5d6976;
-  font-size: 8.5px;
-  font-weight: 750;
-  letter-spacing: .035em;
+  fill: #566575;
+  font-size: 10.5px;
+  font-weight: 760;
+  letter-spacing: .03em;
   pointer-events: none;
 }
+
+/* Keep the larger type/depth/status labels inside each node card. */
+.kb-sim-tree-meta { transform: translateY(-27px); }
+.kb-sim-tree-status { transform: translateY(-31px); }
 
 .kb-sim-inspector {
   min-height: 108px;
@@ -240,7 +246,7 @@
   display: block;
   margin-bottom: 7px;
   color: #17202a;
-  font-size: .88rem;
+  font-size: .9rem;
 }
 
 .kb-sim-inspector-grid {
@@ -297,7 +303,8 @@
 @media (max-width: 1180px) {
   .kb-sim-layout { grid-template-columns: 1fr; }
   .kb-sim-canvas { min-height: 330px; }
-  .kb-sim-tree-host { min-height: 390px; }
+  .kb-sim-tree-host { min-height: 620px; }
+  .kb-sim-tree-shell { height: 570px; }
 }
 
 @media (max-width: 640px) {
@@ -305,8 +312,10 @@
   .kb-sim-phase { text-align: left; }
   .kb-sim-blackboard { grid-template-columns: 1fr; }
   .kb-sim-canvas { min-height: 255px; }
-  .kb-sim-tree-shell { height: 340px; overflow-x: auto; }
+  .kb-sim-tree-host { min-height: 540px; }
+  .kb-sim-tree-shell { height: 490px; }
   .kb-sim-inspector-grid { grid-template-columns: 1fr; }
+  .kb-sim-tree-label { font-size: 14px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
