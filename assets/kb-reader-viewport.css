@@ -1,0 +1,36 @@
+.content-pane {
+  display: flex;
+  flex-direction: column;
+  height: clamp(600px, 72vh, 820px);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.content-history {
+  flex: 0 0 auto;
+}
+
+.reader {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-behavior: auto;
+  scrollbar-gutter: stable;
+}
+
+.reader article {
+  margin-top: 0;
+  padding-top: 32px;
+}
+
+@media (max-width: 760px) {
+  .content-pane {
+    height: 72vh;
+    min-height: 520px;
+  }
+
+  .reader article {
+    padding-top: 20px;
+  }
+}
