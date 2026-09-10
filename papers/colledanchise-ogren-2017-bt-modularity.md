@@ -2,11 +2,19 @@
 
 ## Abstract
 
-Verbatim excerpt from the paper's abstract:
+*Analytical abstract — repository-authored because the source does not provide clear permission to reproduce the complete publisher abstract verbatim.*
 
-> “Behavior trees (BTs) are a way of organizing the switching structure of a hybrid dynamical system (HDS)…”
+**Contribution / method.** The paper gives a functional formulation of behavior trees as switching structures for hybrid dynamical systems, then derives conditions under which properties of component BTs are preserved when trees are composed. It formalizes safety, finite-time success, efficiency bounds, and robustness through regions of attraction, and shows how BTs can represent sequential behavior compositions, the subsumption architecture, and decision-tree structures. The analysis is illustrated with three robot-control examples implemented in ROS.
 
-[Read the abstract in the accepted manuscript](https://www.diva-portal.org/smash/get/diva2:1078931/FULLTEXT01.pdf).
+**Quantitative evidence.** The evidence is mainly theorem- and example-based rather than statistical. The paper presents three worked robot examples—safety, robustness/efficiency, and a larger composed controller—but no repeated trials, success-rate comparison, runtime benchmark, or engineering-effort metric against FSMs or other architectures. Where quantitative bounds are given, they are analytical, such as finite-time-success completion bounds formed from sums of subtree bounds and explicit state-space/reachable-set assumptions.
+
+**Advantages.** The main analytical advantage is compositional reasoning: under stated conditions, a designer can infer properties of a larger BT from properties of its subtrees instead of reanalyzing the whole controller from scratch. Fallback composition can enlarge a controller's region of attraction, providing a precise notion of increased robustness to initial conditions, while Sequence composition can preserve safety and efficiency properties. The generalization results also explain why one BT notation can encode several older switching architectures.
+
+**Disadvantages / trade-offs.** The guarantees are conditional rather than universal. The paper's notion of robustness is primarily a larger region of attraction, not general disturbance rejection, probabilistic robustness, or resilience to model error. Adding fallback alternatives can increase robustness but also enlarges the controller and may add execution overhead. The analysis requires meaningful state regions and properties for the component behaviors, which can be difficult to establish for complex learned or perception-heavy skills.
+
+**Limitations.** The strongest results rely on deterministic finite-time-success assumptions for atomic behaviors and on sufficiently accurate models of their success, failure, and running regions. The authors explicitly note that some real robot actions, such as NAO grasping, are unreliable, while stochastic success/failure modeling is outside the paper's scope. Parts of the larger example involving user interaction are not amenable to the presented performance analysis. There is also no empirical demonstration that BTs reduce development time, code size, defect rate, or runtime compared with equivalent FSM implementations. Accordingly, the paper establishes a valuable formal basis for modularity and property preservation, but practical gains depend on whether the assumptions can be validated for the actual robot system.
+
+[Source abstract in the accepted manuscript](https://www.diva-portal.org/smash/get/diva2:1078931/FULLTEXT01.pdf).
 
 ## Full text
 
