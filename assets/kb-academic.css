@@ -125,13 +125,16 @@ body.resizing-columns .splitter span {
   color: #163f60;
 }
 
-/* Academic reading surface. */
+/* Academic reading surface. Use most of the left pane instead of a narrow column. */
 .reader {
   background: #ffffff;
 }
 
 .reader article {
-  max-width: 860px;
+  width: 94%;
+  max-width: none;
+  margin-left: auto;
+  margin-right: auto;
   color: #20262d;
   font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, "Times New Roman", serif;
   font-size: 17px;
@@ -170,7 +173,14 @@ body.resizing-columns .splitter span {
 
 .reader article p,
 .reader article li {
-  max-width: 78ch;
+  max-width: none;
+}
+
+.reader article > p,
+.reader article > ul,
+.reader article > ol,
+.reader article > blockquote {
+  width: 100%;
 }
 
 .reader article a {
@@ -186,6 +196,7 @@ body.resizing-columns .splitter span {
 }
 
 .reader article table {
+  width: 100%;
   font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   font-size: .9rem;
 }
@@ -200,8 +211,14 @@ body.resizing-columns .splitter span {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
 }
 
+.reader article pre {
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .reader article img {
   display: block;
+  width: 100%;
   max-width: 100%;
   height: auto;
   margin: 1.4rem auto;
@@ -278,6 +295,7 @@ body.resizing-columns .splitter span {
 
 @media (max-width: 760px) {
   .reader article {
+    width: 92%;
     font-size: 16px;
     line-height: 1.7;
   }
