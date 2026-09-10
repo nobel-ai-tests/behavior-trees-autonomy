@@ -2,12 +2,12 @@
 
 ## Abstract
 
-Verbatim excerpt from the paper's abstract:
+Behavior Trees (BTs) were invented as a tool to enable modular AI in computer games, but have received an increasing amount of attention in the robotics community in the last decade. With rising demands on agent AI complexity, game programmers found that the Finite State Machines (FSM) that they used scaled poorly and were difficult to extend, adapt and reuse. In BTs, the state transition logic is not dispersed across the individual states, but organized in a hierarchical tree structure, with the states as leaves. This has a significant effect on modularity, which in turn simplifies both synthesis and analysis by humans and algorithms alike. These advantages are needed not only in game AI design, but also in robotics, as is evident from the research being done. In this paper we present a comprehensive survey of the topic of BTs in Artificial Intelligence and Robotic applications. The existing literature is described and categorized based on methods, application areas and contributions, and the paper is concluded with a list of open research challenges.
 
-> “Behavior Trees (BTs) were invented as a tool to enable modular AI in computer games, but have received an increasing amount of attention…”
+*Verbatim abstract. The article is licensed CC BY.*
 
-- [Read the complete abstract on arXiv](https://arxiv.org/abs/2005.05842)
-- [Publisher abstract on ScienceDirect](https://www.sciencedirect.com/science/article/pii/S0921889022000513)
+- [Source abstract on arXiv](https://arxiv.org/abs/2005.05842)
+- [Publisher article on ScienceDirect](https://www.sciencedirect.com/science/article/pii/S0921889022000513)
 
 ## Full text
 
