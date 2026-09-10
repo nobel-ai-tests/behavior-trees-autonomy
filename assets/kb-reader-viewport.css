@@ -22,9 +22,10 @@
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
-  overscroll-behavior: contain;
+  overscroll-behavior: auto;
   scroll-behavior: auto;
   scrollbar-gutter: stable;
+  touch-action: pan-y;
 }
 
 .reader article {
