@@ -1,48 +1,57 @@
 # Quinlan (1986) — Induction of Decision Trees
 
-## Citation
+## Abstract
 
-J. R. Quinlan. **Induction of Decision Trees.** *Machine Learning*, 1, 81–106, 1986. DOI: [10.1007/BF00116251](https://doi.org/10.1007/BF00116251).
+The paper explains a practical methodology for inducing decision trees from examples, presents ID3 in detail, studies noisy and incomplete information, compares remedies for a known weakness of the basic method, and closes with directions for further research.
 
-## Abstract and full text
+[Read the source abstract via the Springer DOI page](https://doi.org/10.1007/BF00116251).
 
-- **Raw abstract source:** [Springer Nature](https://doi.org/10.1007/BF00116251)
-- **Abstract summary:** The paper explains a practical methodology for inducing decision trees from examples, presents ID3 in detail, studies noisy and incomplete information, compares remedies for a known weakness of the basic method, and closes with directions for further research.
-- **Publicly hosted reading copy:** [PDF hosted by Oregon State University](https://web.engr.oregonstate.edu/~xfern/classes/cs434/decisiontree-quinlan.pdf)
-- **Version of record:** [Springer DOI](https://doi.org/10.1007/BF00116251)
+## Full text
 
-## Paper contents
+- [Publicly hosted reading copy at Oregon State University](https://web.engr.oregonstate.edu/~xfern/classes/cs434/decisiontree-quinlan.pdf)
+- [Springer version of record](https://doi.org/10.1007/BF00116251)
 
-The paper introduces inductive learning from examples, develops the ID3 decision-tree approach and its information-based attribute selection criterion, demonstrates the method on examples, examines noise and incomplete attribute values, discusses shortcomings and modifications, and concludes with current research directions.
+## Contents
+
+- Inductive learning from examples
+- Decision-tree representation
+- The ID3 system
+- Information-based attribute selection
+- Worked examples
+- Noise and incomplete attribute values
+- Weaknesses of the basic method
+- Modifications and remedies
+- Further research directions
 
 ## Problem / motivation
 
-The paper studies how a predictive decision tree can be induced from examples and presents the ID3 system in detail. It is a canonical source for the machine-learning meaning of "decision tree."
+The paper studies how a predictive decision tree can be induced from examples and presents the ID3 system in detail. It is a canonical source for the machine-learning meaning of “decision tree.”
 
 ## Decision-tree contribution
 
-A decision tree recursively partitions examples using tests on attributes/features. Traversing the learned tests routes an input toward a leaf that represents an inferred classification. Quinlan connects split selection to information-theoretic criteria and discusses noisy or incomplete data.
+A decision tree recursively partitions examples using tests on attributes or features. Traversing the learned tests routes an input toward a leaf that represents an inferred classification. Quinlan connects split selection to information-theoretic criteria and discusses noisy or incomplete data.
 
-## Why it belongs in a behavior-tree knowledge base
+## Method
 
-Behavior trees and decision trees share a branching tree shape, so newcomers often assume they are variants of the same mechanism. Quinlan provides the contrasting baseline:
+The paper develops the ID3 induction procedure, illustrates its attribute-selection heuristic through examples, and examines practical complications such as noise, missing information, and limitations of the basic selection criterion.
 
-- the decision tree is learned from examples for **inference/prediction**;
-- internal nodes perform feature tests;
-- evaluation normally ends at a prediction leaf;
-- there is no inherent `Running` status or lifecycle for an executing action.
+## Key results / significance
 
-A behavior tree, by contrast, is normally embedded in an agent's execution loop and composes conditions/actions using control-flow semantics.
+The work established a widely influential decision-tree induction framework and helped make information-based recursive partitioning a standard machine-learning approach.
 
-## Key significance
+## Repository notes
 
-This paper is useful for making the comparison precise rather than relying on visual intuition. It also prevents conflating a robotics behavior executive with a supervised-learning classifier.
+This paper is included to provide a precise comparison point for behavior trees. A machine-learning decision tree performs inference or prediction from feature tests, whereas a behavior tree is normally embedded in an agent execution loop and composes conditions and actions using control-flow semantics.
 
-## Limitations for this comparison
+“Decision tree” also has meanings in decision analysis and planning. This note uses Quinlan specifically as the machine-learning and classification baseline.
 
-"Decision tree" has other meanings in decision analysis and planning. Quinlan specifically represents the machine-learning/classification tradition; comparisons should name the intended decision-tree formalism.
+The paper contains decision-tree examples and diagrams in the linked reading copy. Those figures are not rehosted here unless reuse rights are clear.
 
-## Connections to other work
+Connections in this knowledge base:
 
-- Breiman et al. (1984), *Classification and Regression Trees*, is another foundational reference and extends the tree methodology to both classification and regression.
+- Breiman et al. (1984), *Classification and Regression Trees*, is another foundational reference covering classification and regression trees.
 - Colledanchise & Ögren (2017) formally discuss how behavior trees can generalize decision-tree structures in a hybrid-control setting.
+
+## Citation
+
+J. R. Quinlan. **Induction of Decision Trees.** *Machine Learning*, 1, 81–106, 1986. DOI: [10.1007/BF00116251](https://doi.org/10.1007/BF00116251).
