@@ -2,6 +2,16 @@
 
 The GitHub Pages index is an interactive graph over the Markdown knowledge base. It is intentionally driven by `kb-manifest.json`: adding or enriching a document changes the graph without requiring a build step.
 
+## Page layout
+
+The explorer uses three main regions:
+
+- a **full-width configuration bar** for presets, entity/relationship filters, search behavior, complexity, layout, physics, and direct document selection;
+- a **resizable content pane** on the left for Markdown reading;
+- a **graph pane** on the right, with an optional inspector directly below the graph.
+
+The content/graph divider defaults to 70/30, can be dragged, and persists the selected width in browser storage. The inspector can be turned on or off from the graph toolbar.
+
 ## Graph model
 
 The explorer currently recognizes these node types:
@@ -46,7 +56,7 @@ Top-level graph configuration is optional:
         "id": "foundations",
         "title": "Foundations",
         "parent": "behavior-trees",
-        "description": "Core behavior-tree concepts.",
+        "description": "Core behavior-tree definitions, formal models, terminology, and architectural principles.",
         "keywords": ["formalism", "semantics"]
       }
     ]
@@ -54,7 +64,7 @@ Top-level graph configuration is optional:
 }
 ```
 
-Each document can remain minimal (`title`, `path`, `tags`) or provide richer graph metadata:
+Each registered document should provide inspector-ready metadata:
 
 ```json
 {
@@ -62,7 +72,7 @@ Each document can remain minimal (`title`, `path`, `tags`) or provide richer gra
   "shortTitle": "Author et al. (2026)",
   "path": "papers/example.md",
   "kind": "paper",
-  "description": "One-sentence graph/inspector summary.",
+  "description": "One concise sentence used as the inspector summary.",
   "authors": ["First Author", "Second Author"],
   "year": 2026,
   "venue": "Example Conference",
@@ -74,17 +84,36 @@ Each document can remain minimal (`title`, `path`, `tags`) or provide richer gra
 }
 ```
 
-### Field behavior
+### Metadata conventions
+
+`description` should be one sentence and short enough to work as a single-line inspector summary. It should state what the document, paper, or topic contributes rather than merely repeat its title.
+
+`topics` should contain one or more stable taxonomy IDs. These IDs drive the explicit topic list in the inspector and the document → topic graph edges. Prefer a small set of durable conceptual topics over using every possible keyword as a topic.
+
+Every declared taxonomy node should also have a one-sentence `description`. Selecting a topic node uses that description directly; its inspector topic list shows the taxonomy path from the root topic to the selected topic.
+
+For non-document nodes such as authors, keywords, venues, years, and sections, the inspector derives topics from the documents associated with that entity. It also generates a concise relationship summary from those document/topic counts.
 
 `kind` determines whether a document is rendered as a paper or general-knowledge node. Documents in the `papers` section default to paper if `kind` is omitted; other sections default to general knowledge.
 
-`topics` should reference stable taxonomy IDs. If an ID has not yet been declared in `graph.taxonomy`, the explorer still creates a topic node, so metadata can be added incrementally.
-
-`keywords` are merged with `tags`. Use `tags` for repository/search classification and `keywords` for graph concepts when the distinction is useful.
+`keywords` are merged with `tags` by the graph model. Use `tags` for repository/search classification and `keywords` for more granular graph concepts when the distinction is useful.
 
 `related` contains repository Markdown paths and creates explicit document-to-document relationships. Use it for meaningful conceptual or lineage connections rather than every citation.
 
 `authors`, `venue`, `year`, and `doi` are primarily useful for papers. The first three become graph nodes; DOI becomes an external action in the node inspector.
+
+## Inspector contract
+
+Selecting a node populates the inspector in this order:
+
+1. entity type and title;
+2. a single-line summary;
+3. a visible list of associated topics;
+4. entity-specific metadata;
+5. document/focus/source actions;
+6. **Connections** at the bottom.
+
+Document and taxonomy summaries come directly from the manifest. Entity summaries/topics for authors, keywords, venues, years, and sections are derived from their associated documents. The connections list remains last so it functions as the transition point from understanding the selected node to exploring adjacent nodes.
 
 ## Explorer configuration levels
 
@@ -126,9 +155,9 @@ Presets are starting points. Any individual control can be changed afterward.
 
 ## Interaction model
 
-Click a node to inspect its metadata and connected nodes. Double-click a paper or general-knowledge node to open its Markdown page. The inspector also provides an explicit **Open document** action and DOI/source action when present.
+Click a node to select it and populate the inspector. Double-click a paper or general-knowledge node to open its Markdown page. The inspector provides an explicit **Open document** action and DOI/source action when present, followed by its connection list.
 
-The graph supports drag, pan, zoom, fit-to-view, keyboard search (`/`), and an integrated Markdown reader. Markdown is rendered with `marked` and sanitized with DOMPurify.
+The graph supports drag, pan, zoom, fit-to-view, keyboard search (`/`), and an integrated Markdown reader. Markdown is rendered with `marked`, sanitized with DOMPurify, and relative Markdown/media links are resolved against the directory of the source document.
 
 ## Scaling the knowledge base
 
