@@ -1,6 +1,96 @@
 {
   "title": "Behavior Trees in Autonomous Systems and Robotics",
-  "description": "A living Markdown knowledge base for behavior trees in robotics and autonomous systems.",
+  "description": "A living, graph-explorable knowledge base for behavior trees in robotics and autonomous systems.",
+  "graph": {
+    "defaults": {
+      "preset": "concepts",
+      "depth": 2,
+      "maxNodes": 160,
+      "minKeywordFrequency": 1,
+      "linkDistance": 80,
+      "charge": -190
+    },
+    "taxonomy": [
+      {
+        "id": "behavior-trees",
+        "title": "Behavior Trees",
+        "description": "Executable hierarchical structures for behavior selection, sequencing, and switching in autonomous agents.",
+        "keywords": ["behavior-tree", "autonomy"]
+      },
+      {
+        "id": "foundations",
+        "title": "Foundations",
+        "parent": "behavior-trees",
+        "keywords": ["foundations", "formalism"]
+      },
+      {
+        "id": "semantics",
+        "title": "Execution Semantics",
+        "parent": "foundations",
+        "keywords": ["tick", "success", "failure", "running"]
+      },
+      {
+        "id": "control-flow",
+        "title": "Control Flow",
+        "parent": "semantics",
+        "keywords": ["sequence", "fallback", "selector"]
+      },
+      {
+        "id": "reactivity",
+        "title": "Reactivity",
+        "parent": "foundations",
+        "keywords": ["reactive-control", "preemption", "feedback"]
+      },
+      {
+        "id": "modularity",
+        "title": "Modularity and Composition",
+        "parent": "behavior-trees",
+        "keywords": ["modularity", "composition", "hierarchy"]
+      },
+      {
+        "id": "robot-control",
+        "title": "Robot Control",
+        "parent": "behavior-trees",
+        "keywords": ["robotics", "control", "autonomous-systems"]
+      },
+      {
+        "id": "comparisons",
+        "title": "Comparisons with Other Architectures",
+        "parent": "behavior-trees",
+        "keywords": ["comparison", "architecture"]
+      },
+      {
+        "id": "decision-trees",
+        "title": "Decision Trees",
+        "parent": "comparisons",
+        "keywords": ["decision-trees", "classification", "regression"]
+      },
+      {
+        "id": "finite-state-machines",
+        "title": "Finite-State Machines",
+        "parent": "comparisons",
+        "keywords": ["FSM", "state-machine", "transitions"]
+      },
+      {
+        "id": "planning",
+        "title": "Planning and Task Decomposition",
+        "parent": "comparisons",
+        "keywords": ["planning", "HTN", "task-planning"]
+      },
+      {
+        "id": "surveys",
+        "title": "Surveys and Reviews",
+        "parent": "behavior-trees",
+        "keywords": ["survey", "review", "literature-review"]
+      },
+      {
+        "id": "machine-learning",
+        "title": "Machine Learning",
+        "parent": "decision-trees",
+        "keywords": ["machine-learning", "ID3", "induction"]
+      }
+    ]
+  },
   "sections": [
     {
       "id": "topics",
@@ -10,7 +100,19 @@
         {
           "title": "Topics overview",
           "path": "topics/README.md",
+          "kind": "knowledge",
+          "topics": ["behavior-trees"],
           "tags": ["overview"]
+        },
+        {
+          "title": "Behavior tree foundations: what BTs are and how they differ from decision trees",
+          "shortTitle": "BT foundations and decision-tree comparison",
+          "path": "topics/behavior-tree-foundations.md",
+          "kind": "knowledge",
+          "description": "Defines behavior trees as executable task-switching structures and contrasts their semantics with predictive decision trees, FSMs, and planners.",
+          "topics": ["behavior-trees", "foundations", "semantics", "reactivity", "comparisons", "decision-trees", "finite-state-machines", "planning"],
+          "keywords": ["sequence", "fallback", "running", "tick", "task-switching", "execution", "classifier"],
+          "tags": ["foundations", "semantics", "decision-trees", "comparison"]
         }
       ]
     },
@@ -22,7 +124,84 @@
         {
           "title": "Papers overview",
           "path": "papers/README.md",
+          "kind": "knowledge",
+          "topics": ["surveys"],
           "tags": ["overview"]
+        },
+        {
+          "title": "Marzinotto et al. (2014) — Unified BT framework for robot control",
+          "shortTitle": "Marzinotto et al. (2014)",
+          "path": "papers/marzinotto-et-al-2014-unified-bt-framework.md",
+          "kind": "paper",
+          "description": "A foundational robotics formulation that gives behavior trees a unified execution semantics for robot control.",
+          "authors": ["Alejandro Marzinotto", "Michele Colledanchise", "Christian Smith", "Petter Ögren"],
+          "year": 2014,
+          "venue": "IEEE ICRA",
+          "doi": "10.1109/ICRA.2014.6907656",
+          "topics": ["foundations", "semantics", "control-flow", "robot-control"],
+          "keywords": ["tick", "sequence", "fallback", "robot-control"],
+          "related": ["topics/behavior-tree-foundations.md", "papers/colledanchise-ogren-2017-bt-modularity.md"],
+          "tags": ["foundations", "semantics", "robot-control", "ICRA"]
+        },
+        {
+          "title": "Colledanchise & Ögren (2017) — BT modularity and generalization",
+          "shortTitle": "Colledanchise & Ögren (2017)",
+          "path": "papers/colledanchise-ogren-2017-bt-modularity.md",
+          "kind": "paper",
+          "description": "Formalizes BT modularity for hybrid control and relates behavior trees to sequential compositions, subsumption, FSM-like switching, and decision trees.",
+          "authors": ["Michele Colledanchise", "Petter Ögren"],
+          "year": 2017,
+          "venue": "IEEE Transactions on Robotics",
+          "doi": "10.1109/TRO.2016.2633567",
+          "topics": ["foundations", "modularity", "robot-control", "comparisons", "decision-trees", "finite-state-machines"],
+          "keywords": ["hybrid-control", "modularity", "subsumption", "decision-tree", "composition"],
+          "related": ["topics/behavior-tree-foundations.md", "papers/marzinotto-et-al-2014-unified-bt-framework.md"],
+          "tags": ["modularity", "decision-trees", "FSM", "hybrid-control"]
+        },
+        {
+          "title": "Iovino et al. (2022) — Survey of Behavior Trees in robotics and AI",
+          "shortTitle": "Iovino et al. (2022)",
+          "path": "papers/iovino-et-al-2022-survey.md",
+          "kind": "paper",
+          "description": "A broad survey of behavior-tree research across robotics and AI, including design, synthesis, learning, and application trends.",
+          "authors": ["Matteo Iovino", "Edgars Scukins", "Jesper Styrud", "Petter Ögren", "Christian Smith"],
+          "year": 2022,
+          "venue": "Robotics and Autonomous Systems",
+          "doi": "10.1016/j.robot.2022.104096",
+          "topics": ["behavior-trees", "surveys", "robot-control", "modularity"],
+          "keywords": ["survey", "robotics", "AI", "synthesis", "learning"],
+          "related": ["papers/ogren-sprague-2022-robot-control-systems.md", "topics/behavior-tree-foundations.md"],
+          "tags": ["survey", "robotics", "AI", "literature-review"]
+        },
+        {
+          "title": "Ögren & Sprague (2022) — Behavior Trees in robot control systems",
+          "shortTitle": "Ögren & Sprague (2022)",
+          "path": "papers/ogren-sprague-2022-robot-control-systems.md",
+          "kind": "paper",
+          "description": "A control-systems review emphasizing feedback, modularity, and the role of behavior trees in robot control architectures.",
+          "authors": ["Petter Ögren", "Christopher I. Sprague"],
+          "year": 2022,
+          "venue": "Annual Review of Control, Robotics, and Autonomous Systems",
+          "doi": "10.1146/annurev-control-042920-095314",
+          "topics": ["surveys", "robot-control", "reactivity", "modularity"],
+          "keywords": ["feedback", "control", "modularity", "reactivity"],
+          "related": ["papers/iovino-et-al-2022-survey.md", "papers/colledanchise-ogren-2017-bt-modularity.md"],
+          "tags": ["review", "control", "feedback", "modularity"]
+        },
+        {
+          "title": "Quinlan (1986) — Induction of Decision Trees",
+          "shortTitle": "Quinlan (1986)",
+          "path": "papers/quinlan-1986-induction-decision-trees.md",
+          "kind": "paper",
+          "description": "A canonical machine-learning paper on inducing classification decision trees, included as a comparison point for behavior-tree semantics.",
+          "authors": ["J. Ross Quinlan"],
+          "year": 1986,
+          "venue": "Machine Learning",
+          "doi": "10.1007/BF00116251",
+          "topics": ["decision-trees", "machine-learning", "comparisons"],
+          "keywords": ["ID3", "classification", "information-gain", "induction"],
+          "related": ["topics/behavior-tree-foundations.md", "papers/colledanchise-ogren-2017-bt-modularity.md"],
+          "tags": ["decision-trees", "machine-learning", "comparison", "ID3"]
         }
       ]
     },
@@ -34,6 +213,8 @@
         {
           "title": "Notes overview",
           "path": "notes/README.md",
+          "kind": "knowledge",
+          "topics": ["behavior-trees"],
           "tags": ["overview"]
         }
       ]
@@ -46,6 +227,8 @@
         {
           "title": "References",
           "path": "references.md",
+          "kind": "knowledge",
+          "topics": ["behavior-trees", "surveys"],
           "tags": ["bibliography"]
         }
       ]
