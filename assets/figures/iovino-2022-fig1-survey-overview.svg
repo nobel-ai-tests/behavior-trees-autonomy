@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 620" role="img" aria-labelledby="title desc">
+  <title id="title">Iovino et al. survey topic overview</title>
+  <desc id="desc">Repository redraw of Figure 1 from Iovino et al. 2022, showing Behavior Trees organized by domain and design method.</desc>
+  <defs>
+    <style>
+      .edge{stroke:#66727f;stroke-width:2;fill:none}.node{fill:#fff;stroke:#334155;stroke-width:2}.root{fill:#eef4f8;stroke:#245b88;stroke-width:3}.label{font:18px ui-sans-serif,system-ui,sans-serif;fill:#17202a;text-anchor:middle}.small{font-size:16px}
+    </style>
+  </defs>
+  <path class="edge" d="M550 310 L390 235 M550 310 L710 385"/>
+  <path class="edge" d="M390 235 L245 175 M390 235 L245 305"/>
+  <path class="edge" d="M245 175 L95 95 M245 175 L205 70 M245 175 L315 75 M245 175 L390 115"/>
+  <path class="edge" d="M245 305 L95 255 M245 305 L100 365 M245 305 L225 430 M245 305 L390 345"/>
+  <path class="edge" d="M710 385 L630 505 M710 385 L760 525 M710 385 L900 475 M710 385 L935 340"/>
+
+  <ellipse class="node root" cx="550" cy="310" rx="92" ry="48"/><text class="label" x="550" y="306">Behavior</text><text class="label" x="550" y="329">Trees</text>
+  <ellipse class="node" cx="390" cy="235" rx="70" ry="34"/><text class="label" x="390" y="241">Domain</text>
+  <ellipse class="node" cx="710" cy="385" rx="85" ry="36"/><text class="label small" x="710" y="381">Design</text><text class="label small" x="710" y="402">method</text>
+  <ellipse class="node" cx="245" cy="175" rx="72" ry="34"/><text class="label" x="245" y="181">Game AI</text>
+  <ellipse class="node" cx="245" cy="305" rx="76" ry="34"/><text class="label" x="245" y="311">Robotic AI</text>
+
+  <ellipse class="node" cx="95" cy="95" rx="70" ry="31"/><text class="label small" x="95" y="91">Platform</text><text class="label small" x="95" y="112">games</text>
+  <ellipse class="node" cx="205" cy="70" rx="70" ry="31"/><text class="label small" x="205" y="66">Dialogue</text><text class="label small" x="205" y="87">games</text>
+  <ellipse class="node" cx="315" cy="75" rx="62" ry="31"/><text class="label small" x="315" y="71">FPS</text><text class="label small" x="315" y="92">games</text>
+  <ellipse class="node" cx="390" cy="115" rx="62" ry="31"/><text class="label small" x="390" y="111">RTS</text><text class="label small" x="390" y="132">games</text>
+
+  <ellipse class="node" cx="95" cy="255" rx="78" ry="31"/><text class="label small" x="95" y="261">Manipulation</text>
+  <ellipse class="node" cx="100" cy="365" rx="82" ry="34"/><text class="label small" x="100" y="361">Mobile ground</text><text class="label small" x="100" y="382">robots</text>
+  <ellipse class="node" cx="225" cy="430" rx="55" ry="31"/><text class="label small" x="225" y="436">UAVs</text>
+  <ellipse class="node" cx="390" cy="345" rx="70" ry="31"/><text class="label small" x="390" y="341">Other</text><text class="label small" x="390" y="362">robots</text>
+
+  <ellipse class="node" cx="630" cy="505" rx="74" ry="34"/><text class="label small" x="630" y="501">Manual</text><text class="label small" x="630" y="522">design</text>
+  <ellipse class="node" cx="760" cy="525" rx="74" ry="31"/><text class="label small" x="760" y="531">Planning</text>
+  <ellipse class="node" cx="900" cy="475" rx="94" ry="39"/><text class="label small" x="900" y="468">Learning by</text><text class="label small" x="900" y="489">demonstration</text>
+  <ellipse class="node" cx="935" cy="340" rx="96" ry="39"/><text class="label small" x="935" y="333">Reinforcement</text><text class="label small" x="935" y="354">learning</text>
+</svg>
