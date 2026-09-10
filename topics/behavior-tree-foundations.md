@@ -17,11 +17,61 @@ Two canonical control-flow nodes are:
 
 Leaves are usually **conditions** (queries about state) or **actions** (behaviors that can change the world or internal system state). Variants add decorators, parallel nodes, memory, explicit recovery semantics, and application-specific extensions.
 
-### Visual overview: data structure and return semantics
+### Visual overview: practical data structure, data flow, and return semantics
 
-![Behavior tree foundations overview showing the rooted data structure, node types, status interface, and simplified Sequence/Fallback return rules](../assets/figures/topics/behavior-tree-foundations-overview.svg)
+```mermaid
+flowchart LR
+  subgraph WORLD["World state and shared data"]
+    direction LR
+    SENS["Sensors<br/>LiDAR · battery · odometry"] --> EST["State estimator / monitors<br/>pose · obstacle · health"]
+    EST --> BB[("Blackboard x_t<br/>battery=0.42<br/>obstacle=true<br/>path=v1")]
+  end
 
-*Figure 1. Repository-authored overview of a behavior tree as both a rooted executable data structure and a status-propagating control formalism. The simplified return rules show the essential semantics of memoryless Sequence and Fallback nodes.*
+  subgraph BT["Prioritized behavior tree"]
+    direction TB
+    ROOT{{"Reactive Fallback<br/>priority ordered"}}
+
+    ROOT --> BAT["Sequence<br/>battery recovery"]
+    ROOT --> OBS["Sequence<br/>obstacle recovery"]
+    ROOT --> MIS["Sequence<br/>nominal mission"]
+
+    BAT --> BC{"BatteryCritical?"}
+    BC --> DOCK["DockAndCharge"]
+
+    OBS --> OC{"ObstacleNear?"}
+    OC --> AVOID["AvoidObstacle"]
+
+    MIS --> GV{"GoalValid?"}
+    GV --> NAVFB{{"Fallback<br/>navigation recovery"}}
+    NAVFB --> FOLLOW["FollowPath"]
+    NAVFB --> REPLAN["Replan"]
+    MIS --> AT{"AtGoal?"}
+  end
+
+  BB -. "read on each tick" .-> ROOT
+  DOCK --> SKILL["Robot skill interface<br/>async actions + halt"]
+  AVOID --> SKILL
+  FOLLOW --> SKILL
+  REPLAN --> SKILL
+  SKILL --> CTRL["Local controllers<br/>velocity / trajectory"]
+  CTRL --> ROBOT["Robot + environment"]
+  ROBOT --> SENS
+  SKILL -. "Success / Failure / Running" .-> ROOT
+
+  classDef control fill:#e7eff6,stroke:#245b88,color:#17202a,stroke-width:2px;
+  classDef sequence fill:#eef8f3,stroke:#28775f,color:#17202a;
+  classDef condition fill:#fff0f1,stroke:#b84d5d,color:#17202a;
+  classDef action fill:#fff7e8,stroke:#a95a13,color:#17202a;
+  classDef data fill:#f4f7fa,stroke:#718096,color:#17202a;
+
+  class ROOT,NAVFB control;
+  class BAT,OBS,MIS sequence;
+  class BC,OC,GV,AT condition;
+  class DOCK,AVOID,FOLLOW,REPLAN,SKILL,CTRL action;
+  class SENS,EST,BB,ROBOT data;
+```
+
+*Figure 1. Repository-authored structured diagram of a behavior tree embedded in a practical robot executive. The diagram source is declarative Mermaid rather than manually positioned SVG: the renderer manages node placement and edge routing. The BT reads shared state, evaluates prioritized recovery and mission branches, commands asynchronous robot skills, and receives `Success`, `Failure`, or `Running` status on repeated ticks.*
 
 A simplified mobile-robot BT might be written as:
 
@@ -86,7 +136,7 @@ This makes the tree part of the agent's **control policy/executive**. In contras
 
 ![Animated behavior tree execution showing a mobile robot navigating, detecting an obstacle, preempting navigation, avoiding the obstacle, and resuming toward the goal](../assets/animations/topics/behavior-tree-reactive-navigation.svg)
 
-*Animation 1. A deterministic twelve-second execution loop. The robot and the corresponding tree nodes are synchronized: ordinary navigation returns `Running`, the obstacle condition becomes true, the higher-priority avoidance branch takes control, and navigation resumes after recovery. Users who prefer reduced motion see a static state instead.*
+*Animation 1. A deterministic sixteen-second execution loop. The warehouse robot, dynamic obstacle, blackboard state, active BT nodes, action halting, replanning, and execution timeline are synchronized. Users who prefer reduced motion see a static state instead.*
 
 The key architectural point is that there is no explicit transition edge from `Navigate` to `Avoid`. The switch emerges from reevaluating the same prioritized tree against a changed world state.
 
@@ -104,9 +154,55 @@ The extra semantics are what make BTs useful as autonomous-system executives.
 
 A BT is not only a tree representation; in a robotics system it sits inside a repeated engineering and execution loop. Task goals and failure modes are converted into conditions/actions, those leaves are composed into prioritized subtrees, the resulting tree is integrated with robot skills and shared state, and repeated ticks close the feedback loop between the controller and the environment.
 
-![Behavior-tree methodological workflow from task analysis through design, implementation, ticking, monitoring, and recovery](../assets/figures/topics/behavior-tree-design-workflow.svg)
+```mermaid
+flowchart TB
+  subgraph DESIGN["A. Design-time modeling and construction"]
+    direction LR
+    MISSION["Mission specification<br/>goal · constraints · safety · success criteria"] --> MODEL["Action / condition model<br/>preconditions · effects · failure modes"]
+    MODEL --> COMPOSE["BT composition<br/>priority · Sequence · Fallback · subtrees"]
+    COMPOSE --> CHECK["Static checks / simulation<br/>coverage · retries · timeout bounds · replay"]
+    CHECK --> TREE["Deployable tree<br/>versioned structure + port mappings"]
+  end
 
-*Figure 2. Methodological workflow for designing and deploying a behavior tree. The control-loop view at the bottom emphasizes that execution repeatedly maps current state `x_t` through the BT to an action, which changes the environment and produces the next state `x_{t+1}`.*
+  subgraph INTEGRATION["B. Software integration boundary"]
+    direction LR
+    RUNTIME["BT runtime<br/>tick scheduler · halt semantics"] --> PORTS[("Blackboard / typed ports<br/>goal · pose · obstacle · status")]
+    PORTS --> MW["ROS 2 / middleware<br/>actions · services · topics"]
+    MW --> SKILLS["Robot skills<br/>navigate · dock · avoid"]
+    SKILLS --> SAFE["Safety supervisor<br/>watchdog · e-stop · command limits"]
+  end
+
+  subgraph ONLINE["C. Runtime tick-act-observe loop"]
+    direction LR
+    SENSORS["Sensors<br/>LiDAR · IMU · battery · odometry"] --> STATE["State update<br/>estimate x_t · write blackboard"]
+    STATE --> TICK["Root tick<br/>evaluate priority · propagate S/F/R"]
+    TICK --> ACTIVE["Active skill<br/>start · continue · halt"]
+    ACTIVE --> CONTROL["Controllers<br/>velocity / trajectory"]
+    CONTROL --> ENV["Robot + environment<br/>x_t → x_t+1"]
+    ENV --> SENSORS
+  end
+
+  TREE --> RUNTIME
+  SAFE --> ACTIVE
+  STATE -. "shared state" .-> PORTS
+  PORTS -. "conditions read / actions write" .-> TICK
+  ACTIVE -. "Failure / timeout" .-> RECOVERY["Recovery escalation<br/>retry · clear map · replan · safe stop"]
+  RECOVERY -. "next root tick" .-> TICK
+
+  classDef design fill:#eef4fa,stroke:#245b88,color:#17202a;
+  classDef runtime fill:#eef8f3,stroke:#28775f,color:#17202a;
+  classDef action fill:#fff7e8,stroke:#a95a13,color:#17202a;
+  classDef safety fill:#fff0f1,stroke:#9a3f67,color:#17202a;
+  classDef data fill:#f4f7fa,stroke:#718096,color:#17202a;
+
+  class MISSION,MODEL,COMPOSE,CHECK,TREE design;
+  class RUNTIME,MW,TICK,STATE runtime;
+  class SKILLS,ACTIVE,CONTROL,RECOVERY action;
+  class SAFE safety;
+  class PORTS,SENSORS,ENV data;
+```
+
+*Figure 2. Structured methodological workflow for designing and deploying a behavior tree. Mermaid automatically manages the three engineering lanes and their dependencies. The online loop repeatedly maps current state `x_t` through the BT to an action, changes the environment, observes `x_{t+1}`, and can enter recovery after a skill failure or timeout.*
 
 This loop also explains why implementation details matter. Blackboard/data-port semantics, action halting, middleware callbacks, and failure recovery determine how the abstract tree interacts with a physical robot and its asynchronous processes.
 
