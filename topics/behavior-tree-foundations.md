@@ -17,54 +17,35 @@ Two core control-flow nodes are:
 
 Leaves are generally **conditions** that query state and **actions** that affect the robot, environment, or internal system.
 
-### Practical overview: state, control flow, and robot skills
+### Practical overview: planning, state, control flow, and robot skills
 
 ```mermaid
 flowchart LR
-  subgraph S["State pipeline"]
-    SEN["Sensors"] --> EST["State estimation"]
-    EST --> BB[("Blackboard")]
-  end
+  MAP["City road network"] --> PLAN["A* global planner"]
+  PLAN --> ROUTE["Route"]
+  ROUTE --> BB[("Blackboard")]
 
-  subgraph B["Reactive BT"]
-    ROOT{{"Reactive Fallback"}}
-    ROOT --> SAFE["Sequence: safety"]
-    SAFE --> RISK{"Collision imminent?"}
-    RISK --> EB["Emergency brake"]
+  WORLD["World state"] --> PER["Perception"]
+  PER --> BB
 
-    ROOT --> YIELD["Sequence: right of way"]
-    YIELD --> CONFLICT{"Crossing conflict?"}
-    CONFLICT --> STOP["Yield at stop line"]
-
-    ROOT --> MISSION["Sequence: mission"]
-    MISSION --> VALID{"Goal valid?"}
-    VALID --> EXEC{{"Fallback: goal"}}
-    EXEC --> GOAL{"At goal?"}
-    EXEC --> DRIVE["Drive lane"]
-  end
-
-  BB -. "read each tick" .-> ROOT
-  EB --> ACT["Vehicle controller"]
-  STOP --> ACT
-  DRIVE --> ACT
-  ACT --> VEH["Vehicle + road"]
-  VEH --> SEN
-  ACT -. "S / F / R" .-> ROOT
+  BB --> ROOT{{"Behavior tree"}}
+  ROOT --> ACT["Selected behavior"]
+  ACT --> CTRL["Vehicle controller"]
+  CTRL --> EGO["Ego vehicle"]
+  EGO --> WORLD
 
   classDef control fill:#e7eff6,stroke:#245b88,color:#17202a,stroke-width:2px;
-  classDef sequence fill:#eef8f3,stroke:#28775f,color:#17202a;
-  classDef condition fill:#fff0f1,stroke:#b84d5d,color:#17202a;
   classDef action fill:#fff7e8,stroke:#a95a13,color:#17202a;
   classDef data fill:#f4f7fa,stroke:#718096,color:#17202a;
+  classDef plan fill:#eef8f3,stroke:#28775f,color:#17202a;
 
-  class ROOT,EXEC control;
-  class SAFE,YIELD,MISSION sequence;
-  class RISK,CONFLICT,VALID,GOAL condition;
-  class EB,STOP,DRIVE,ACT action;
-  class SEN,EST,BB,VEH data;
+  class ROOT control;
+  class ACT,CTRL action;
+  class MAP,ROUTE,WORLD,PER,BB,EGO data;
+  class PLAN plan;
 ```
 
-*Figure 1. A practical BT inside an autonomous-vehicle control loop. The diagram is declarative Mermaid; layout and edge routing are generated automatically. Use the diagram toolbar to zoom, pan, and refit the view.*
+*Figure 1. The simulator uses one closed-loop state chain. The map produces a road graph, A* produces the displayed route, perception populates the blackboard, the BT selects a driving behavior, and the controller updates the physical world.*
 
 ## The core idea: a tree that runs
 
@@ -82,133 +63,479 @@ The visual similarity between a behavior tree and a machine-learning decision tr
 
 ### Why `Running` matters
 
-Physical actions take time. `DriveLane`, `NavigateToGoal`, or `DockAndCharge` can remain `Running` over many ticks. A reactive parent can still reconsider higher-priority conditions and interrupt the action when the world changes.
+Physical actions take time. `DriveSegment`, `FollowLeadVehicle`, or `YieldAtStopLine` can remain `Running` over many ticks. A reactive parent can still reconsider higher-priority conditions and interrupt the action when the world changes. The live simulator also records `HALTED` when a previously running action is preempted and leaves unticked branches `IDLE`.
 
 ### Why repeated evaluation matters
 
-Repeated root ticks make the tree part of the closed-loop controller. Conditions are recomputed from current state rather than from the state that existed when an action first began.
+Repeated root ticks make the tree part of the closed-loop controller. Conditions are recomputed from current perception and planner state rather than from the state that existed when an action first began.
 
-## Simulated execution scenario: unsignalized road crossing
+## Behavior Trees can be deeply hierarchical
 
-The visualization below is a **small deterministic road simulator**, not a hand-authored animation. The ego car and cross-traffic car are both advanced from their current simulated positions. The BT is evaluated at 10 Hz. A predicted intersection-arrival conflict activates the yielding branch; otherwise the ego vehicle continues along its lane.
+There is no fixed depth of three. A BT is recursively composed, so useful branches can be as deep as the task decomposition requires. Depth is not a goal by itself: each level should answer a distinct control question.
 
-The right side is a live D3-laid behavior tree. Its node states come directly from the evaluator used to control the vehicle.
+```mermaid
+flowchart TB
+  ROOT["Autonomy Root · depth 0"] --> MISSION["Execute Mission · depth 1"]
+  MISSION --> SEG["Segment Supervisor · depth 2"]
+  SEG --> INT["Intersection Handling · depth 3"]
+  INT --> POLICY["Right-of-Way Policy · depth 4"]
+  POLICY --> YSEQ["Yield sequence · depth 5"]
+  YSEQ --> CONFLICT{"Conflict? · depth 6"}
+  YSEQ --> YIELD["Yield at stop line · depth 6"]
+
+  ROOT --> REC["Route Recovery · depth 1"]
+  REC --> RESTORE["Restore Route · depth 2"]
+  RESTORE --> GLOBAL["Global Replan · depth 3"]
+  GLOBAL --> VALID{"Destination valid? · depth 4"}
+  GLOBAL --> PLAN["Compute route · depth 4"]
+
+  classDef control fill:#e7eff6,stroke:#245b88,color:#17202a;
+  classDef sequence fill:#eef8f3,stroke:#28775f,color:#17202a;
+  classDef condition fill:#fff0f1,stroke:#b84d5d,color:#17202a;
+  classDef action fill:#fff7e8,stroke:#a95a13,color:#17202a;
+  class ROOT,RESTORE,POLICY control;
+  class MISSION,SEG,INT,YSEQ,REC,GLOBAL sequence;
+  class CONFLICT,VALID condition;
+  class YIELD,PLAN action;
+```
+
+Mission, navigation, segment handling, intersection handling, right-of-way policy, and physical action are different concerns. The evaluator therefore recurses over arbitrary tree depth rather than using depth-specific logic.
+
+A node is represented as structured data, not as a manually drawn box. For example:
+
+```json
+{
+  "id": "intersection-policy",
+  "label": "Intersection Policy",
+  "kind": "fallback",
+  "children": [
+    {
+      "id": "yield-sequence",
+      "label": "Yield",
+      "kind": "sequence",
+      "children": [
+        {
+          "id": "intersection-conflict",
+          "label": "Conflict?",
+          "kind": "condition",
+          "condition": "intersectionConflict"
+        },
+        {
+          "id": "yield-stop-line",
+          "label": "YieldAtStopLine",
+          "kind": "action",
+          "action": "yieldAtStopLine"
+        }
+      ]
+    }
+  ]
+}
+```
+
+The same data drives both recursive evaluation and the D3 hierarchy shown in the live panel.
+
+## Simulated execution scenario: small-city navigation mission
+
+The visualization below is a **deterministic city-road simulator**, not a sequence of authored frames. The map contains four avenues, five streets, twelve building blocks, twenty intersection nodes, and planner edges generated from the road geometry. The ego vehicle starts in the south-west and must reach a loading point in the north-east.
+
+At initialization there is no route. The BT discovers this state and invokes A*. The planned route is then executed segment by segment. A slower lead vehicle, a pedestrian crossing, cross traffic, and a construction closure are world events; none of them directly assigns a BT node state. The BT sees their consequences through perception and the blackboard.
+
+The construction closure is deliberately placed on an upcoming edge of route version 1. When it activates, route validation fails and the recovery branch invokes A* again. Route version 2 takes a visibly different path through the north-east part of the grid.
 
 ```kb-sim
 {
-  "title": "Road intersection: reactive yielding and resume",
+  "title": "Small city: planning, reactive driving, recovery, and goal completion",
   "loop": true,
-  "road": {
-    "width": 120,
-    "height": 80,
-    "mainY": 40,
-    "crossX": 60,
-    "laneWidth": 10,
-    "intersectionHalf": 7,
-    "stopLineX": 49,
-    "goalX": 108
+  "city": {
+    "width": 168,
+    "height": 126,
+    "roadWidth": 10,
+    "verticalXs": [12, 48, 84, 120, 156],
+    "horizontalYs": [15, 47, 79, 111],
+    "verticalNames": ["1st Street", "2nd Street", "3rd Street", "4th Street", "5th Street"],
+    "horizontalNames": ["Avenue A", "Avenue B", "Avenue C", "Avenue D"]
+  },
+  "startNode": "r3c0",
+  "goalNode": "r0c4",
+  "planner": {
+    "turnPenalty": 2,
+    "edgePenalties": {
+      "h3-2-3": 28,
+      "h3-3-4": 28,
+      "v0-0-1": 20,
+      "v0-1-2": 20,
+      "v0-2-3": 20,
+      "v1-0-1": 16,
+      "v1-1-2": 16,
+      "v1-2-3": 16,
+      "h2-2-3": 10,
+      "h2-3-4": 10,
+      "v2-0-1": 40
+    }
+  },
+  "events": {
+    "pedestrianStart": 17,
+    "pedestrianEnd": 23,
+    "pedestrianNode": "r2c2",
+    "closureTime": 28,
+    "closureEdge": "h1-3-4",
+    "crossStart": 43,
+    "crossEnd": 51,
+    "crossNode": "r0c3"
   },
   "ego": {
-    "x": 12,
-    "y": 42.5,
-    "speed": 6.2,
-    "length": 4.4,
-    "width": 1.9,
-    "maxSpeed": 9,
-    "accel": 2,
-    "comfortBrake": 3.4,
-    "emergencyBrake": 7
-  },
-  "crossTraffic": {
-    "x": 62.5,
-    "y": 72,
-    "speed": 5,
-    "resetY": 74,
-    "exitY": 5,
-    "length": 4.6,
+    "length": 4.5,
     "width": 2,
-    "label": "cross traffic"
+    "maxSpeed": 7,
+    "accel": 2.1,
+    "comfortBrake": 3.2,
+    "emergencyBrake": 7.5,
+    "turnRate": 2.4
   },
   "control": {
     "dt": 0.04,
     "btHz": 10,
+    "goalTolerance": 1.4,
+    "intersectionRange": 15,
     "conflictHorizon": 2.4,
-    "approachStartX": 25,
-    "goalTolerance": 1.2,
-    "resetDelay": 2.5
+    "leadRange": 17,
+    "safeFollowingDistance": 8,
+    "plannerTicks": 2,
+    "resetDelay": 3
   },
   "tree": {
     "id": "root",
-    "label": "Reactive Fallback",
+    "label": "Autonomy Root",
     "kind": "fallback",
+    "purpose": "Re-evaluate safety, recovery, mission execution, and terminal failure in priority order every tick.",
     "children": [
       {
-        "id": "safety",
-        "label": "Sequence: safety",
+        "id": "emergency-safety",
+        "label": "Emergency Safety",
         "kind": "sequence",
         "children": [
           {
-            "id": "risk",
+            "id": "collision-imminent",
             "label": "Collision imminent?",
             "kind": "condition",
-            "condition": "collisionImminent"
+            "condition": "collisionImminent",
+            "reads": ["collision_imminent"],
+            "purpose": "Gate the highest-priority emergency braking behavior."
           },
           {
-            "id": "ebrake",
-            "label": "EmergencyBrake",
+            "id": "emergency-brake",
+            "label": "Emergency Brake",
             "kind": "action",
-            "action": "emergencyBrake"
+            "action": "emergencyBrake",
+            "reads": ["ego_speed"],
+            "writes": ["target_speed", "active_skill"],
+            "purpose": "Command zero target speed with emergency deceleration."
           }
         ]
       },
       {
-        "id": "rightOfWay",
-        "label": "Sequence: right of way",
+        "id": "pedestrian-safety",
+        "label": "Pedestrian Safety",
         "kind": "sequence",
         "children": [
           {
-            "id": "conflict",
-            "label": "CrossingConflict?",
+            "id": "pedestrian-in-lane",
+            "label": "Pedestrian in lane?",
             "kind": "condition",
-            "condition": "crossingConflict"
+            "condition": "pedestrianInLane",
+            "reads": ["pedestrian_in_lane"]
           },
           {
-            "id": "yield",
-            "label": "YieldAtStopLine",
+            "id": "stop-pedestrian",
+            "label": "Stop for pedestrian",
             "kind": "action",
-            "action": "yieldAtStopLine"
+            "action": "stopForPedestrian",
+            "reads": ["pedestrian_in_lane", "ego_speed"],
+            "writes": ["target_speed", "active_skill"],
+            "purpose": "Stop the ego vehicle until the pedestrian clears the lane."
           }
         ]
       },
       {
-        "id": "mission",
-        "label": "Sequence: mission",
+        "id": "destination-complete",
+        "label": "Destination Complete",
         "kind": "sequence",
         "children": [
           {
-            "id": "goalValid",
-            "label": "GoalValid?",
+            "id": "destination-reached",
+            "label": "Destination reached?",
             "kind": "condition",
-            "condition": "goalValid"
+            "condition": "destinationReached",
+            "reads": ["destination_reached"]
           },
           {
-            "id": "goalExec",
-            "label": "Fallback: goal",
+            "id": "stop-destination",
+            "label": "Stop at destination",
+            "kind": "action",
+            "action": "stopAtDestination",
+            "reads": ["ego_speed"],
+            "writes": ["target_speed", "active_skill"],
+            "purpose": "Bring the vehicle to rest and complete the mission."
+          }
+        ]
+      },
+      {
+        "id": "route-recovery",
+        "label": "Route Recovery",
+        "kind": "sequence",
+        "children": [
+          {
+            "id": "route-invalid",
+            "label": "Route invalid?",
+            "kind": "condition",
+            "condition": "routeInvalid",
+            "reads": ["route_available", "route_valid"]
+          },
+          {
+            "id": "restore-route",
+            "label": "Restore Route",
             "kind": "fallback",
             "children": [
               {
-                "id": "atGoal",
-                "label": "AtGoal?",
-                "kind": "condition",
-                "condition": "atGoal"
+                "id": "local-detour",
+                "label": "Local Detour",
+                "kind": "sequence",
+                "children": [
+                  {
+                    "id": "local-detour-available",
+                    "label": "Local detour?",
+                    "kind": "condition",
+                    "condition": "localDetourAvailable",
+                    "reads": ["local_detour_available"]
+                  },
+                  {
+                    "id": "apply-local-detour",
+                    "label": "Apply local detour",
+                    "kind": "action",
+                    "action": "applyLocalDetour"
+                  }
+                ]
               },
               {
-                "id": "drive",
-                "label": "DriveLane",
-                "kind": "action",
-                "action": "driveLane"
+                "id": "global-replan",
+                "label": "Global Replan",
+                "kind": "sequence",
+                "children": [
+                  {
+                    "id": "destination-valid",
+                    "label": "Destination valid?",
+                    "kind": "condition",
+                    "condition": "destinationValid",
+                    "reads": ["destination_valid"]
+                  },
+                  {
+                    "id": "compute-global-route",
+                    "label": "Compute global route",
+                    "kind": "action",
+                    "action": "computeGlobalRoute",
+                    "reads": ["route_valid", "blocked_segment", "destination_valid"],
+                    "writes": ["route_version", "route_valid", "current_segment"],
+                    "purpose": "Run A* on the current road graph and commit the resulting route to mission state."
+                  }
+                ]
               }
             ]
+          }
+        ]
+      },
+      {
+        "id": "execute-mission",
+        "label": "Execute Mission",
+        "kind": "sequence",
+        "children": [
+          {
+            "id": "route-available",
+            "label": "Route available?",
+            "kind": "condition",
+            "condition": "routeAvailable",
+            "reads": ["route_available"]
+          },
+          {
+            "id": "segment-supervisor",
+            "label": "Segment Supervisor",
+            "kind": "fallback",
+            "children": [
+              {
+                "id": "intersection-handling",
+                "label": "Intersection Handling",
+                "kind": "sequence",
+                "children": [
+                  {
+                    "id": "approaching-intersection",
+                    "label": "Approaching intersection?",
+                    "kind": "condition",
+                    "condition": "approachingIntersection",
+                    "reads": ["approaching_intersection"]
+                  },
+                  {
+                    "id": "intersection-policy",
+                    "label": "Intersection Policy",
+                    "kind": "fallback",
+                    "children": [
+                      {
+                        "id": "yield-sequence",
+                        "label": "Yield",
+                        "kind": "sequence",
+                        "children": [
+                          {
+                            "id": "intersection-conflict",
+                            "label": "Conflict?",
+                            "kind": "condition",
+                            "condition": "intersectionConflict",
+                            "reads": ["intersection_conflict"]
+                          },
+                          {
+                            "id": "yield-stop-line",
+                            "label": "Yield at stop line",
+                            "kind": "action",
+                            "action": "yieldAtStopLine",
+                            "reads": ["intersection_conflict", "ego_speed"],
+                            "writes": ["target_speed", "active_skill"],
+                            "purpose": "Hold before the intersection until cross traffic no longer conflicts."
+                          }
+                        ]
+                      },
+                      {
+                        "id": "proceed-sequence",
+                        "label": "Proceed",
+                        "kind": "sequence",
+                        "children": [
+                          {
+                            "id": "proceed-intersection",
+                            "label": "Proceed through intersection",
+                            "kind": "action",
+                            "action": "proceedThroughIntersection",
+                            "reads": ["current_segment", "has_right_of_way"],
+                            "writes": ["target_speed", "active_skill"]
+                          },
+                          {
+                            "id": "advance-after-intersection",
+                            "label": "Advance segment",
+                            "kind": "action",
+                            "action": "advanceRouteSegment",
+                            "writes": ["current_segment"]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "lead-vehicle-handling",
+                "label": "Lead Vehicle Handling",
+                "kind": "sequence",
+                "children": [
+                  {
+                    "id": "lead-too-close",
+                    "label": "Lead vehicle too close?",
+                    "kind": "condition",
+                    "condition": "leadVehicleTooClose",
+                    "reads": ["lead_vehicle_detected", "lead_vehicle_distance"]
+                  },
+                  {
+                    "id": "follow-lead",
+                    "label": "Follow lead vehicle",
+                    "kind": "action",
+                    "action": "followLeadVehicle",
+                    "reads": ["lead_vehicle_speed", "lead_vehicle_distance"],
+                    "writes": ["target_speed", "active_skill"]
+                  },
+                  {
+                    "id": "advance-after-follow",
+                    "label": "Advance segment",
+                    "kind": "action",
+                    "action": "advanceRouteSegment",
+                    "writes": ["current_segment"]
+                  }
+                ]
+              },
+              {
+                "id": "nominal-road",
+                "label": "Nominal Road Execution",
+                "kind": "sequence",
+                "children": [
+                  {
+                    "id": "current-segment-valid",
+                    "label": "Segment valid?",
+                    "kind": "condition",
+                    "condition": "currentSegmentValid",
+                    "reads": ["route_valid", "current_segment"]
+                  },
+                  {
+                    "id": "maneuver",
+                    "label": "Maneuver",
+                    "kind": "fallback",
+                    "children": [
+                      {
+                        "id": "turn-sequence",
+                        "label": "Turn",
+                        "kind": "sequence",
+                        "children": [
+                          {
+                            "id": "turn-required",
+                            "label": "Turn required?",
+                            "kind": "condition",
+                            "condition": "turnRequired",
+                            "reads": ["current_segment"]
+                          },
+                          {
+                            "id": "execute-turn",
+                            "label": "Execute turn",
+                            "kind": "action",
+                            "action": "executeTurn",
+                            "reads": ["current_segment", "ego_speed"],
+                            "writes": ["target_speed", "active_skill"]
+                          }
+                        ]
+                      },
+                      {
+                        "id": "drive-segment",
+                        "label": "Drive segment",
+                        "kind": "action",
+                        "action": "driveSegment",
+                        "reads": ["current_segment", "route_valid"],
+                        "writes": ["target_speed", "active_skill"],
+                        "purpose": "Track the active road segment at its speed limit when no higher-priority behavior applies."
+                      }
+                    ]
+                  },
+                  {
+                    "id": "advance-route-segment",
+                    "label": "Advance segment",
+                    "kind": "action",
+                    "action": "advanceRouteSegment",
+                    "writes": ["current_segment"]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "mission-failure",
+        "label": "Mission Failure",
+        "kind": "sequence",
+        "children": [
+          {
+            "id": "planning-failed",
+            "label": "Planning failed?",
+            "kind": "condition",
+            "condition": "planningFailed",
+            "reads": ["planning_failed"]
+          },
+          {
+            "id": "safe-stop-failure",
+            "label": "Safe stop",
+            "kind": "action",
+            "action": "safeStopMissionFailure",
+            "writes": ["target_speed", "active_skill"]
           }
         ]
       }
@@ -217,9 +544,9 @@ The right side is a live D3-laid behavior tree. Its node states come directly fr
 }
 ```
 
-*Simulation 1. The ego car accelerates and advances whenever `DriveLane` is active. Cross traffic moves independently. When the predicted arrival windows overlap near the intersection, `CrossingConflict?` succeeds and `YieldAtStopLine` brakes the ego car toward the yield line. Once the crossing car clears, the higher-priority sequence fails at its condition and the mission branch becomes active again. `Play/Pause`, `Step`, and `Reset` operate on the simulation itself.*
+*Simulation 1. The canvas, route overlay, blackboard, live D3 tree, event history, and node inspector are all views of the same simulated state. The map route is produced by A*, and the road closure changes the graph rather than directly selecting a recovery node. Use Play/Pause, Step, Reset, and the speed selector for the physical simulation; use Fit, zoom, and explicit Pan for the deep tree.*
 
-This example demonstrates an important BT property: there is no explicit `Drive → Yield → Drive` transition graph. The switch emerges from reevaluating the same priority structure against new state.
+The expected sequence is initialization and global planning, nominal multi-segment driving, slower-vehicle following, pedestrian stop and preemption, route invalidation and global replanning, intersection yielding, then goal completion. The exact BT branch is still determined by perception on each tick, so the event schedule does not encode node statuses.
 
 ## Formal relationship to other tree structures
 
@@ -274,7 +601,7 @@ flowchart TB
   class PORTS,SENSOR,WORLD data;
 ```
 
-*Figure 2. Design, integration, and online execution are distinct but connected. The online loop repeatedly maps current state through the BT to an active skill and then observes the resulting next state. The Mermaid viewer can be zoomed and panned when the full workflow is too dense for the available reader width.*
+*Figure 3. Design, integration, and online execution are distinct but connected. The online loop repeatedly maps current state through the BT to an active skill and then observes the resulting next state.*
 
 ## Behavior trees vs. nearby autonomy architectures
 
@@ -284,7 +611,7 @@ FSMs express explicit states and transitions. BTs instead place much of the swit
 
 ### Planners and hierarchical task networks
 
-Planners primarily generate or decompose plans. BTs primarily execute behavior and react during execution. A planner can generate a BT, a BT can invoke a planner, and both can coexist in an autonomy stack.
+Planners primarily generate or decompose plans. BTs primarily execute behavior and react during execution. A planner can generate a BT, a BT can invoke a planner, and both can coexist in an autonomy stack. The city simulation demonstrates the latter: A* is a callable capability inside a BT-controlled execution loop.
 
 ## A useful mental model
 
@@ -304,4 +631,4 @@ Planners primarily generate or decompose plans. BTs primarily execute behavior a
 
 ## Next questions for the knowledge base
 
-Natural follow-on topics are precise tick semantics, reactive versus memory variants, interruption and halt semantics, BTs versus statecharts, planning-to-BT compilation, and formal treatment of safety and robustness.
+Natural follow-on topics are precise tick semantics, reactive versus memory variants, interruption and halt semantics, BTs versus statecharts, planning-to-BT compilation, formal treatment of safety and robustness, and how subtree contracts scale across larger autonomy stacks.

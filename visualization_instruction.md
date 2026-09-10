@@ -46,12 +46,7 @@ Current requirements:
 
 ### Interaction
 
-Every Mermaid diagram must provide visible controls for:
-
-- zoom out;
-- zoom in;
-- fit/reset;
-- explicit pan mode.
+Every Mermaid diagram must provide visible controls for zoom out, zoom in, fit/reset, and explicit pan mode.
 
 Normal article scrolling must always remain the default interaction.
 
@@ -101,13 +96,7 @@ Do not encode a list of hand-authored frames, statuses, or phases when those val
 
 Behavior-tree node states shown in a live decision graph must come directly from the same evaluator that controls the actor.
 
-The renderer must distinguish at least:
-
-- `SUCCESS`;
-- `FAILURE`;
-- `RUNNING`;
-- `HALTED` when a previously running action is interrupted;
-- `IDLE` / not ticked.
+The renderer must distinguish at least `SUCCESS`, `FAILURE`, `RUNNING`, `HALTED` when a previously running action is interrupted, and `IDLE` / not ticked.
 
 The scene and decision tree must share one source of truth. A node must never be shown as Running merely because an animation author selected that color/state.
 
@@ -117,11 +106,12 @@ When the selected behavior implies motion, the actor should physically move in t
 
 Examples:
 
-- `DriveLane` advances the ego vehicle;
+- `DriveSegment` advances the ego vehicle along the current road segment;
 - `YieldAtStopLine` decelerates toward and holds a yield/stop position;
+- `FollowLeadVehicle` targets a speed constrained by the lead vehicle;
 - `EmergencyBrake` decelerates aggressively;
-- navigation actions should advance robot pose along a generated or controlled trajectory;
-- moving obstacles/other agents should evolve independently according to their own model.
+- navigation actions advance robot pose along a generated or controlled trajectory;
+- moving obstacles/other agents evolve independently according to their own model.
 
 ### Live decision visualization
 
@@ -136,7 +126,73 @@ The live tree should:
 - avoid overlapping labels;
 - keep node labels concise.
 
-## 4. Paper visualizations
+## 4. Map-navigation simulations
+
+Physical navigation simulations must separate the following responsibilities even when they live in one browser file:
+
+`visual map geometry -> navigation graph -> planner -> route state -> controller -> renderer`
+
+Canvas objects are display primitives, not the navigation model. Road surfaces and building rectangles may be rendered from structured map data, but pathfinding must operate on a graph or another explicit planning representation.
+
+### Map and graph generation
+
+Where practical, derive navigation nodes from road intersections and connect neighboring nodes that share a road. Keep visual road geometry and graph edge metadata consistent through shared source data rather than maintaining unrelated coordinate lists.
+
+Road edges should expose enough metadata for planning and control, such as road identity, length, speed limit, blockage state, and optional cost modifiers.
+
+A complex demonstration should use enough blocks and intersections to make route choice meaningful. Start and goal must not be a trivial straight-line pair when the purpose is to teach planning and hierarchical route execution.
+
+### Planning and route overlays
+
+Routes displayed in a simulation must be produced by the planner. Do not draw a route that differs from planner state.
+
+For road-network navigation, A* is appropriate. A blocked edge must have infinite/unavailable traversal cost. Optional congestion and turn penalties may be used when they remain explicit scenario inputs.
+
+Route state should include, at minimum, the ordered nodes/edges, a version, validity, and the current segment index. The renderer should visually distinguish planned, completed, current, and blocked portions of the route.
+
+A route closure must update the road/world model first. Route validation then discovers the invalid path, and the BT may invoke replanning. Do not schedule `ReplanRoute` directly from the event timeline.
+
+### Dynamic obstacles and perception
+
+Environment events may deterministically spawn, move, or remove lead vehicles, crossing traffic, pedestrians, and construction barriers. Those events must modify world state only.
+
+Perception converts world state into task-relevant observations such as:
+
+- lead-vehicle distance and speed;
+- pedestrian occupancy of the ego lane;
+- intersection approach and conflict estimates;
+- collision risk;
+- blocked route segments.
+
+BT conditions should read these perception/blackboard values rather than querying Canvas coordinates ad hoc.
+
+### Behavior-tree depth and lifecycle
+
+Live BT visualizations must support recursively nested trees without assuming a fixed hierarchy depth. The evaluator must use generic recursion for Sequence, Fallback/Selector, Condition, and Action nodes.
+
+Selected branches may reasonably reach five to eight logical levels when the hierarchy corresponds to real decomposition, for example:
+
+`mission -> route execution -> segment supervisor -> intersection handling -> right-of-way policy -> yield behavior`
+
+Depth is not itself a quality metric. Avoid unnecessary wrapper nodes that do not express a distinct control responsibility.
+
+If a previously `RUNNING` action is not ticked because a higher-priority branch preempts it, expose `HALTED` semantics. Unticked children remain `IDLE`. Active-path highlighting must be derived from the actual tick traversal.
+
+### Deep-tree interaction and inspection
+
+For deep BTs, use automatic layout and a viewport that supports Fit, zoom, and explicit Pan rather than shrinking the complete tree until text becomes unreadable.
+
+Normal wheel and touch gestures must continue to scroll the reader while Pan is off. `Ctrl/Command + wheel` may zoom. Direct drag-to-pan is enabled only through the visible Pan control.
+
+Where useful, allow selecting a node to inspect its label, type, depth, runtime status, input/read keys, output/write keys, and purpose. Node metadata belongs in the structured tree definition or runtime model, not in manually positioned annotations.
+
+### Determinism and event history
+
+Reset must reproduce the same map, start pose, destination, obstacle schedule, and planning result unless a visible seeded-random mode is explicitly supported.
+
+Event history should record meaningful state transitions such as route computation, obstacle detection, preemption, route invalidation, replanning, and goal completion. Do not log every physics frame.
+
+## 5. Paper visualizations
 
 For paper briefs, visuals should be placed in this order when applicable:
 
@@ -155,18 +211,13 @@ Only reproduce source figures when reuse rights and source stability are clear. 
 
 Repository-authored figures must not imply they are original figures from the cited paper.
 
-## 5. Topic visualizations
+## 6. Topic visualizations
 
-A mature topic page should normally contain, where applicable:
-
-- one overview/architecture diagram;
-- one methodological or execution-flow diagram;
-- one mathematical/data-structure visualization when the topic has meaningful formal structure;
-- one simulated example when temporal behavior is central to understanding the topic.
+A mature topic page should normally contain, where applicable, an overview/architecture diagram, a methodological or execution-flow diagram, a mathematical/data-structure visualization when the topic has meaningful formal structure, and a simulated example when temporal behavior is central to understanding the topic.
 
 Do not add all four mechanically. Use only the visual forms that materially improve comprehension.
 
-## 6. Visual design
+## 7. Visual design
 
 The site is light-theme-first.
 
@@ -178,11 +229,13 @@ Use restrained, readable colors with strong contrast against white/off-white bac
 - amber: running/action/recovery emphasis;
 - gray/slate: inactive, infrastructure, or neutral data.
 
+For live BT cards, node type and runtime status must use separate visual channels. For example, fill may encode type while border or a marker encodes status.
+
 Keep corners sharp. Avoid decorative gradients, oversized shadows, or game-like visual effects unless the subject specifically benefits from them.
 
 The academic reader uses serif body typography; diagram and simulation interfaces use a modern sans-serif UI font for legibility.
 
-## 7. Reader and viewport safety
+## 8. Reader and viewport safety
 
 Visualizations live inside the left reader, which has its own vertical scroll context.
 
@@ -200,9 +253,9 @@ Reader scroll reset is a semantic navigation action, not a DOM-rendering side ef
 
 When zoom/pan is necessary, interaction must be explicit and reversible.
 
-## 8. Validation checklist
+## 9. Validation checklist
 
-Before considering a visualization complete, verify all of the following:
+Before considering a visualization complete, verify all of the following.
 
 ### Static diagrams
 
@@ -226,8 +279,21 @@ Before considering a visualization complete, verify all of the following:
 - BT statuses are evaluator-derived;
 - `HALTED` is used only for real preemption/interruption;
 - the scene and live tree agree on the active behavior;
-- the scenario eventually demonstrates the intended behavior under its configured conditions;
 - reduced-motion preference disables automatic playback without breaking manual stepping.
+
+For map-navigation simulations also verify:
+
+- the ego car visibly follows a multi-segment planner route;
+- start and destination are not one trivial straight road;
+- the road graph and displayed route come from the same map model;
+- A* computes the initial route;
+- a road closure invalidates an upcoming route edge and produces a different route version;
+- different obstacle classes activate distinct BT subtrees;
+- a preempted running action can be observed as `HALTED`;
+- the route overlay agrees with route state before and after replanning;
+- the vehicle eventually reaches the destination or safely stops on genuine planning failure;
+- deep-tree labels remain readable under Fit/zoom/pan;
+- selecting a live-tree node does not interfere with reader scrolling.
 
 ### Site behavior
 
@@ -238,7 +304,7 @@ Before considering a visualization complete, verify all of the following:
 - GitHub Pages builds successfully;
 - where possible, perform a real browser interaction check rather than relying only on deployment success.
 
-## 9. Maintenance rule
+## 10. Maintenance rule
 
 When the visualization architecture, interaction contract, renderer, simulation format, or validation procedure changes, update this file in the same change set.
 
