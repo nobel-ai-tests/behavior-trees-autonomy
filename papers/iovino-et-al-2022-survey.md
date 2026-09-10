@@ -6,6 +6,16 @@ Behavior Trees (BTs) were invented as a tool to enable modular AI in computer ga
 
 *Verbatim abstract. The article is licensed CC BY.*
 
+**Contribution / method.** The paper provides a field-level taxonomy of behavior-tree research spanning foundational theory, applications, design and synthesis methods, implementation libraries, and open research challenges. Its review method is explicit: the authors search Google Scholar, Scopus, and Clarivate Web of Science for both “Behavior Tree” and “Behaviour Tree,” restrict the corpus to English-language papers, remove the unrelated requirements-engineering meaning of the term, dead links, and duplicates, and then organize the retained literature by topic, application area, and methodology.
+
+**Quantitative evidence.** The search produced **297 initial papers** and a cleaned corpus of **166 papers as of April 24, 2020**. Those numbers describe literature coverage rather than method performance: the survey does not perform a statistical meta-analysis, pool success rates, or estimate effect sizes comparing BTs with FSMs, planners, or learning methods.
+
+**Advantages.** The strongest advantage is breadth combined with a reusable taxonomy. It gives a reader one map connecting game AI, manipulation, mobile robotics, aerial/underwater systems, learning, learning from demonstration, planning/analytic synthesis, manual design, theory, and software libraries. That organization is especially useful for locating a new paper relative to the rest of the field and for separating questions about BT execution semantics from questions about how a tree is designed or learned.
+
+**Disadvantages / trade-offs.** The breadth of the survey necessarily limits depth on individual algorithms and empirical comparisons. Papers with very different assumptions, robot platforms, task difficulty, evaluation methodology, and maturity are grouped under common categories, so membership in the same category should not be read as evidence of equal performance or rigor. The taxonomy is excellent for navigation but does not by itself tell a practitioner which method is best for a particular deployment.
+
+**Limitations.** The literature search is restricted to English and to papers discoverable with the two explicit BT spellings, so relevant work using different terminology can be missed. The corpus closes on April 24, 2020 even though the journal article appeared in 2022, which means later work in learning, synthesis, verification, multi-robot systems, and modern robotics software is absent. The review also does not report a formal risk-of-bias or paper-quality scoring procedure and does not weight conclusions by experimental strength. Finally, it is a taxonomy and narrative synthesis rather than a meta-analysis: it cannot support numerical claims that BTs are globally more reliable, faster, safer, or easier to maintain than alternative executive architectures.
+
 - [Source abstract on arXiv](https://arxiv.org/abs/2005.05842)
 - [Publisher article on ScienceDirect](https://www.sciencedirect.com/science/article/pii/S0921889022000513)
 
@@ -44,11 +54,38 @@ This makes the paper especially useful as a field map. It answers three differen
 
 ## Method and workflow: planning to a behavior tree
 
-![Repository redraw of Figure 8: planner-derived behavior-tree structure for mobile manipulation](../assets/figures/iovino-2022-fig8-planning-workflow.svg)
+The planning literature summarized by the survey repeatedly uses a backchaining-style idea: begin with a desired condition, find actions that can establish it, expose the preconditions of those actions, and recursively turn unmet preconditions into subtrees. The following is repository-written pseudocode for that recurring workflow; it is not copied from a source algorithm.
 
-*Condensed repository redraw of the structure illustrated in the paper's Figure 8. The source example shows a mobile-manipulation BT generated from planning/action information; the redraw emphasizes the goal, precondition, navigation, grasp, and placement flow.*
+```text
+procedure BUILD_REACTIVE_BT(goal_conditions, action_library):
+    root ← SEQUENCE()
 
-The planning section identifies a recurring synthesis workflow in the literature: a planner computes a plan or exposes action preconditions and effects, and a BT-specific conversion or backchaining procedure turns that information into an executable tree. The resulting structure can keep goal conditions high in the tree and place alternative ways of satisfying preconditions underneath them, preserving the reactive checking that distinguishes BT execution from a fixed action list.
+    for each goal in goal_conditions:
+        root.add(EXPAND(goal, action_library))
+
+    return root
+
+function EXPAND(condition, action_library):
+    # If the world already satisfies the condition, do nothing else.
+    alternatives ← [ CONDITION(condition) ]
+
+    # Otherwise try actions whose effects can establish the condition.
+    for each action in action_library where condition ∈ effects(action):
+        branch ← SEQUENCE()
+
+        for each precondition in preconditions(action):
+            if precondition can be checked directly:
+                branch.add(CONDITION(precondition))
+            else:
+                branch.add(EXPAND(precondition, action_library))
+
+        branch.add(ACTION(action))
+        alternatives.append(branch)
+
+    return FALLBACK(alternatives)
+```
+
+This pseudocode captures the information structure emphasized in the survey's planning examples: goal checks stay high in the tree, alternative actions sit under Fallback-like choice, and each action exposes the conditions that must hold before it can run. A concrete planner may add ordering, conflict resolution, cost, pruning, or online expansion rules that are not represented in this generic sketch.
 
 The survey treats planning as one family among several BT-generation approaches rather than as the definition of a BT. Other reviewed approaches learn or evolve tree structure, learn from demonstrations, or rely on manual authoring.
 
@@ -77,7 +114,7 @@ Because the literature corpus closes in April 2020 even though the journal publi
 
 ## Repository notes
 
-This note follows the survey's own structure and uses figure-derived repository redraws for the overview and planning workflow. The redraws are intentionally simplified and should be read alongside the original figures in the linked full text.
+This note keeps the survey's overview/taxonomy visual and expresses the planning workflow as repository-written pseudocode instead of a self-made workflow diagram. The pseudocode is intentionally generic and should be read alongside the planning section of the linked full text.
 
 Connections in this knowledge base:
 
