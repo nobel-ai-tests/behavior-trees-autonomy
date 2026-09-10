@@ -2,9 +2,9 @@
 
 ## What is a behavior tree?
 
-A **Behavior Tree (BT)** is a hierarchical control structure for organizing how an autonomous agent selects, sequences, and switches between behaviors. In robotics, a BT is best understood as an **executable task-switching architecture** rather than as a predictive model.
+A **Behavior Tree (BT)** is a hierarchical control structure for organizing how an autonomous agent selects, sequences, interrupts, and switches between behaviors. In robotics, a BT is best understood as an **executable task-switching architecture** rather than as a predictive model.
 
-The standard robotics formulation uses a rooted directed tree. Execution begins at the root and propagates through internal control-flow nodes toward leaf nodes. A node returns a small status interface, conventionally:
+A standard BT is a rooted directed tree. Execution begins at the root and propagates through control-flow nodes toward leaves. Every tick returns a small status interface:
 
 - **Success** — the node's objective or condition is satisfied.
 - **Failure** — the node cannot satisfy its objective, or a condition is false.
@@ -12,51 +12,48 @@ The standard robotics formulation uses a rooted directed tree. Execution begins 
 
 Two canonical control-flow nodes are:
 
-- **Sequence** — evaluates children in order; it succeeds only when all required children succeed, and stops when a child fails or is still running.
-- **Fallback / Selector** — evaluates alternatives in priority order; it succeeds when one child succeeds, and stops when a child succeeds or is still running.
+- **Sequence** — ticks children from left to right; returns `Failure` when the first decisive child fails, `Running` when the first unresolved child is still executing, and `Success` only when all children succeed.
+- **Fallback / Selector** — ticks alternatives from left to right; returns `Success` when the first decisive child succeeds, `Running` when the first unresolved child is still executing, and `Failure` only when all children fail.
 
-Leaves are usually **conditions** (queries about state) or **actions** (behaviors that can change the world or internal system state). Variants add decorators, parallel nodes, memory, explicit recovery semantics, and application-specific extensions.
+Leaves are usually **conditions** (queries about current state) or **actions** (behaviors that can change the world or internal system state). Implementations may add decorators, parallel nodes, memory, recovery nodes, blackboards/data ports, and application-specific extensions.
 
-### Visual overview: practical data structure, data flow, and return semantics
+### Practical overview: control flow, shared data, and robot skills
 
 ```mermaid
 flowchart LR
-  subgraph WORLD["World state and shared data"]
-    direction LR
-    SENS["Sensors<br/>LiDAR · battery · odometry"] --> EST["State estimator / monitors<br/>pose · obstacle · health"]
-    EST --> BB[("Blackboard x_t<br/>battery=0.42<br/>obstacle=true<br/>path=v1")]
+  subgraph STATE["World state"]
+    direction TB
+    SENS["Sensors<br/>LiDAR · odometry · battery"] --> EST["State estimation / monitors<br/>pose · obstacle · system health"]
+    EST --> BB[("Blackboard x_t<br/>goal · obstacle_near · at_goal · fault")]
   end
 
-  subgraph BT["Prioritized behavior tree"]
+  subgraph BT["Reactive behavior tree"]
     direction TB
-    ROOT{{"Reactive Fallback<br/>priority ordered"}}
+    ROOT{{"Reactive Fallback"}}
 
-    ROOT --> BAT["Sequence<br/>battery recovery"]
+    ROOT --> SAFE["Sequence<br/>safety"]
+    SAFE --> FAULT{"CriticalFault?"}
+    FAULT --> STOP["StopRobot"]
+
     ROOT --> OBS["Sequence<br/>obstacle recovery"]
-    ROOT --> MIS["Sequence<br/>nominal mission"]
-
-    BAT --> BC{"BatteryCritical?"}
-    BC --> DOCK["DockAndCharge"]
-
     OBS --> OC{"ObstacleNear?"}
     OC --> AVOID["AvoidObstacle"]
 
-    MIS --> GV{"GoalValid?"}
-    GV --> NAVFB{{"Fallback<br/>navigation recovery"}}
-    NAVFB --> FOLLOW["FollowPath"]
-    NAVFB --> REPLAN["Replan"]
-    MIS --> AT{"AtGoal?"}
+    ROOT --> MISSION["Sequence<br/>nominal mission"]
+    MISSION --> GV{"GoalValid?"}
+    GV --> EXEC{{"Fallback<br/>goal execution"}}
+    EXEC --> AT{"AtGoal?"}
+    EXEC --> FOLLOW["FollowPath"]
   end
 
-  BB -. "read on each tick" .-> ROOT
-  DOCK --> SKILL["Robot skill interface<br/>async actions + halt"]
-  AVOID --> SKILL
-  FOLLOW --> SKILL
-  REPLAN --> SKILL
-  SKILL --> CTRL["Local controllers<br/>velocity / trajectory"]
-  CTRL --> ROBOT["Robot + environment"]
+  BB -. "read at each root tick" .-> ROOT
+  STOP --> SKILLS["Async robot-skill interface<br/>start · continue · halt"]
+  AVOID --> SKILLS
+  FOLLOW --> SKILLS
+  SKILLS --> NAV["Navigation / local control<br/>planner · controller · velocity command"]
+  NAV --> ROBOT["Robot + environment"]
   ROBOT --> SENS
-  SKILL -. "Success / Failure / Running" .-> ROOT
+  SKILLS -. "Success / Failure / Running" .-> ROOT
 
   classDef control fill:#e7eff6,stroke:#245b88,color:#17202a,stroke-width:2px;
   classDef sequence fill:#eef8f3,stroke:#28775f,color:#17202a;
@@ -64,16 +61,16 @@ flowchart LR
   classDef action fill:#fff7e8,stroke:#a95a13,color:#17202a;
   classDef data fill:#f4f7fa,stroke:#718096,color:#17202a;
 
-  class ROOT,NAVFB control;
-  class BAT,OBS,MIS sequence;
-  class BC,OC,GV,AT condition;
-  class DOCK,AVOID,FOLLOW,REPLAN,SKILL,CTRL action;
+  class ROOT,EXEC control;
+  class SAFE,OBS,MISSION sequence;
+  class FAULT,OC,GV,AT condition;
+  class STOP,AVOID,FOLLOW,SKILLS,NAV action;
   class SENS,EST,BB,ROBOT data;
 ```
 
-*Figure 1. Repository-authored structured diagram of a behavior tree embedded in a practical robot executive. The diagram source is declarative Mermaid rather than manually positioned SVG: the renderer manages node placement and edge routing. The BT reads shared state, evaluates prioritized recovery and mission branches, commands asynchronous robot skills, and receives `Success`, `Failure`, or `Running` status on repeated ticks.*
+*Figure 1. A practical BT embedded in a robot executive. The tree is declarative Mermaid, so layout and edge routing are managed automatically. Safety and obstacle handling are checked before nominal mission execution. The BT reads current state, ticks an asynchronous skill, and receives `Success`, `Failure`, or `Running` back from that skill.*
 
-A simplified mobile-robot BT might be written as:
+A smaller BT might be written as:
 
 ```text
 Fallback
@@ -85,13 +82,13 @@ Fallback
     └── NavigateToGoal
 ```
 
-On each control update, the tree can re-evaluate whether the higher-priority recharge behavior is applicable. That repeated evaluation is one reason BTs are described as **reactive**: changes in sensed state can alter which subtree is active without requiring an explicit transition from every possible prior behavior.
+On each control update the root can re-evaluate whether the higher-priority recharge behavior is applicable. That repeated evaluation is one reason BTs are described as **reactive**: a changed state can alter which subtree is active without an explicit transition from every possible prior behavior.
 
-This formulation was given a more rigorous robotics semantics by Marzinotto et al. (2014), and subsequent work by Colledanchise and Ögren connected BT composition to hybrid control, modularity, and other switching structures. The 2022 survey by Iovino et al. provides a broad map of the field.
+This formulation was given a rigorous robotics semantics by Marzinotto et al. (2014), and subsequent work by Colledanchise and Ögren connected BT composition to hybrid control, modularity, and other switching structures. The 2022 survey by Iovino et al. provides a broad map of the field.
 
-## The core idea: a tree that *runs*, not merely a tree that *classifies*
+## The core idea: a tree that runs, not merely a tree that classifies
 
-The visual similarity between a behavior tree and a decision tree is misleading. Both are trees, but the edges and leaves mean different things because the two structures solve different problems.
+The visual similarity between a behavior tree and a decision tree is misleading. Both are trees, but their node semantics and purposes are different.
 
 A behavior tree answers a question such as:
 
@@ -100,8 +97,6 @@ A behavior tree answers a question such as:
 A classical machine-learning decision tree answers a question such as:
 
 > **Given this feature vector, what class or numeric value should be predicted?**
-
-That difference in purpose determines their semantics.
 
 ## Behavior tree vs. machine-learning decision tree
 
@@ -113,81 +108,145 @@ That difference in purpose determines their semantics.
 | Leaves | Conditions and executable actions/subtrees | Predicted class, probability, or numeric value |
 | Return/output | Usually `Success`, `Failure`, or `Running`; actions may have side effects | A prediction |
 | Time | Designed for repeated evaluation during execution | Usually one root-to-leaf inference per sample |
-| Reactivity | High-level choices can be reconsidered as state changes | A new prediction requires another inference call; the tree itself does not manage an ongoing task |
-| State/progress | `Running` explicitly represents incomplete execution; implementations may add memory | Standard prediction trees do not represent an action that remains in progress |
-| Construction | Often engineered, synthesized from plans, learned, or hybrid | Commonly induced from labeled data by optimizing split criteria |
-| Main quality concerns | Modularity, reactivity, robustness, safety, task correctness, execution efficiency | Generalization, predictive accuracy, calibration, interpretability, overfitting |
+| Reactivity | High-level choices can be reconsidered as state changes | A new prediction requires another inference call |
+| State/progress | `Running` explicitly represents incomplete execution | Standard prediction trees do not represent an executing action |
+| Construction | Engineered, synthesized, learned, or hybrid | Commonly induced from labeled data by optimizing split criteria |
+| Main quality concerns | Modularity, reactivity, robustness, safety, task correctness | Generalization, predictive accuracy, calibration, interpretability |
 
-J. R. Quinlan's ID3 work is a canonical reference for the machine-learning meaning of a decision tree: internal tests partition examples and leaves represent inferred classifications. The CART framework by Breiman, Friedman, Olshen, and Stone established a major classification-and-regression-tree methodology.
+J. R. Quinlan's ID3 work is a canonical reference for the machine-learning meaning of a decision tree. The CART framework by Breiman, Friedman, Olshen, and Stone established a major classification-and-regression-tree methodology.
 
 ### Why `Running` matters
 
-The `Running` result is a fundamental semantic difference. An action such as `NavigateToGoal` may require seconds or minutes. A BT can return `Running`, be ticked again later, and allow higher-level logic to determine whether the action should continue, be interrupted, or be replaced by another behavior.
+An action such as `FollowPath` may require seconds or minutes. A BT can return `Running`, be ticked again later, and allow higher-level logic to decide whether that action should continue, be interrupted, or be replaced by another behavior.
 
-A standard classifier decision tree has no analogous notion of an action that is currently executing. Its evaluation terminates at a prediction leaf.
+A standard classifier decision tree has no analogous notion of an action that remains in progress.
 
 ### Why repeated evaluation matters
 
-A BT is normally embedded in a control loop. Conditions can therefore be checked again as the environment changes. For example, a navigation task can be pre-empted by a newly detected safety condition when the root is evaluated again.
+A BT is normally embedded in a control loop. Conditions can therefore be checked again as the environment changes. If a higher-priority condition becomes true, a **reactive** control-flow node can switch to that branch on the next tick. A previously running lower-priority action is then halted according to the implementation's interruption semantics.
 
-This makes the tree part of the agent's **control policy/executive**. In contrast, a decision tree classifier is a **mapping from inputs to outputs**. It may be called repeatedly by another control system, but the classifier itself does not define the lifecycle of an ongoing behavior.
+### Structured execution simulation: obstacle preemption and resume
 
-### Animated execution example: navigation, preemption, recovery
+```kb-sim
+{
+  "title": "Reactive obstacle preemption during warehouse navigation",
+  "phaseMs": 2400,
+  "loop": true,
+  "scene": {
+    "width": 12,
+    "height": 8,
+    "goal": {"x": 10.7, "y": 2.0, "label": "inspection goal"},
+    "obstacleLabel": "pallet truck",
+    "shelves": [
+      {"x": 0.6, "y": 0.6, "w": 2.0, "h": 1.0},
+      {"x": 3.2, "y": 0.6, "w": 2.0, "h": 1.0},
+      {"x": 6.0, "y": 0.6, "w": 2.0, "h": 1.0},
+      {"x": 0.6, "y": 6.4, "w": 2.0, "h": 1.0},
+      {"x": 3.2, "y": 6.4, "w": 2.0, "h": 1.0},
+      {"x": 6.0, "y": 6.4, "w": 2.0, "h": 1.0}
+    ]
+  },
+  "tree": {
+    "id": "root", "label": "Reactive Fallback", "kind": "control", "children": [
+      {"id": "safety", "label": "Sequence: safety", "kind": "sequence", "children": [
+        {"id": "fault", "label": "CriticalFault?", "kind": "condition"},
+        {"id": "stop", "label": "StopRobot", "kind": "action"}
+      ]},
+      {"id": "obstacle", "label": "Sequence: obstacle recovery", "kind": "sequence", "children": [
+        {"id": "obstacleNear", "label": "ObstacleNear?", "kind": "condition"},
+        {"id": "avoid", "label": "AvoidObstacle", "kind": "action"}
+      ]},
+      {"id": "mission", "label": "Sequence: mission", "kind": "sequence", "children": [
+        {"id": "goalValid", "label": "GoalValid?", "kind": "condition"},
+        {"id": "goalExec", "label": "Fallback: goal execution", "kind": "control", "children": [
+          {"id": "atGoal", "label": "AtGoal?", "kind": "condition"},
+          {"id": "follow", "label": "FollowPath", "kind": "action"}
+        ]}
+      ]}
+    ]
+  },
+  "phases": [
+    {
+      "title": "Nominal navigation",
+      "event": "The root ticks safety first (Failure), then obstacle recovery (Failure), then the mission branch. AtGoal? is false, so FollowPath is Running.",
+      "robot": {"x": 2.0, "y": 5.3, "heading": -8},
+      "obstacle": {"x": 5.4, "y": 2.0, "visible": true},
+      "blackboard": {"critical_fault": "false", "obstacle_near": "false", "goal_valid": "true", "at_goal": "false", "nav_status": "RUNNING", "active_skill": "FollowPath"},
+      "statuses": {"root":"RUNNING","safety":"FAILURE","fault":"FAILURE","stop":"IDLE","obstacle":"FAILURE","obstacleNear":"FAILURE","avoid":"IDLE","mission":"RUNNING","goalValid":"SUCCESS","goalExec":"RUNNING","atGoal":"FAILURE","follow":"RUNNING"}
+    },
+    {
+      "title": "Obstacle detected — preemption",
+      "event": "LiDAR sets obstacle_near=true before the next root tick. ObstacleNear? succeeds, AvoidObstacle becomes Running, and the previously running FollowPath action is halted because its lower-priority branch is no longer ticked.",
+      "robot": {"x": 4.5, "y": 4.7, "heading": -10},
+      "obstacle": {"x": 5.2, "y": 4.7, "visible": true},
+      "blackboard": {"critical_fault": "false", "obstacle_near": "true", "goal_valid": "true", "at_goal": "false", "nav_status": "HALTED", "active_skill": "AvoidObstacle"},
+      "statuses": {"root":"RUNNING","safety":"FAILURE","fault":"FAILURE","stop":"IDLE","obstacle":"RUNNING","obstacleNear":"SUCCESS","avoid":"RUNNING","mission":"HALTED","goalValid":"IDLE","goalExec":"IDLE","atGoal":"IDLE","follow":"HALTED"}
+    },
+    {
+      "title": "Obstacle avoidance running",
+      "event": "The obstacle remains within the recovery condition, so the same higher-priority branch stays active. AvoidObstacle continues returning Running while the robot creates clearance.",
+      "robot": {"x": 4.4, "y": 3.1, "heading": -55},
+      "obstacle": {"x": 5.2, "y": 4.8, "visible": true},
+      "blackboard": {"critical_fault": "false", "obstacle_near": "true", "goal_valid": "true", "at_goal": "false", "nav_status": "HALTED", "active_skill": "AvoidObstacle"},
+      "statuses": {"root":"RUNNING","safety":"FAILURE","fault":"FAILURE","stop":"IDLE","obstacle":"RUNNING","obstacleNear":"SUCCESS","avoid":"RUNNING","mission":"IDLE","goalValid":"IDLE","goalExec":"IDLE","atGoal":"IDLE","follow":"IDLE"}
+    },
+    {
+      "title": "Obstacle clears — mission resumes",
+      "event": "On the next tick obstacle_near=false, so the obstacle-recovery Sequence fails immediately and the Reactive Fallback continues to the mission branch. FollowPath is ticked again from the robot's current pose.",
+      "robot": {"x": 5.5, "y": 3.0, "heading": -18},
+      "obstacle": {"x": 5.2, "y": 6.0, "visible": true},
+      "blackboard": {"critical_fault": "false", "obstacle_near": "false", "goal_valid": "true", "at_goal": "false", "nav_status": "RUNNING", "active_skill": "FollowPath"},
+      "statuses": {"root":"RUNNING","safety":"FAILURE","fault":"FAILURE","stop":"IDLE","obstacle":"FAILURE","obstacleNear":"FAILURE","avoid":"IDLE","mission":"RUNNING","goalValid":"SUCCESS","goalExec":"RUNNING","atGoal":"FAILURE","follow":"RUNNING"}
+    },
+    {
+      "title": "Goal reached",
+      "event": "AtGoal? now succeeds. Because it is the first child of the goal-execution Fallback, FollowPath is not ticked. The goal-execution Fallback, mission Sequence, and root all return Success.",
+      "robot": {"x": 10.3, "y": 2.0, "heading": 0},
+      "obstacle": {"x": 5.2, "y": 7.1, "visible": true},
+      "blackboard": {"critical_fault": "false", "obstacle_near": "false", "goal_valid": "true", "at_goal": "true", "nav_status": "SUCCESS", "active_skill": "none"},
+      "statuses": {"root":"SUCCESS","safety":"FAILURE","fault":"FAILURE","stop":"IDLE","obstacle":"FAILURE","obstacleNear":"FAILURE","avoid":"IDLE","mission":"SUCCESS","goalValid":"SUCCESS","goalExec":"SUCCESS","atGoal":"SUCCESS","follow":"IDLE"}
+    }
+  ]
+}
+```
 
-![Animated behavior tree execution showing a mobile robot navigating, detecting an obstacle, preempting navigation, avoiding the obstacle, and resuming toward the goal](../assets/animations/topics/behavior-tree-reactive-navigation.svg)
+*Animation 1. A repository-authored, state-driven simulation rather than a hand-positioned SVG animation. The tree hierarchy is generated from nested data, scene objects are positioned from logical coordinates, and every visible node status comes from the same phase definition as the blackboard and robot state. `IDLE` means the node was not ticked in the current phase.*
 
-*Animation 1. A deterministic sixteen-second execution loop. The warehouse robot, dynamic obstacle, blackboard state, active BT nodes, action halting, replanning, and execution timeline are synchronized. Users who prefer reduced motion see a static state instead.*
-
-The key architectural point is that there is no explicit transition edge from `Navigate` to `Avoid`. The switch emerges from reevaluating the same prioritized tree against a changed world state.
+The important point is that there is no explicit `Navigate → Avoid → Navigate` transition graph. The change in active behavior emerges from reevaluating the same prioritized tree against a changed world state. The example deliberately does **not** invent a replanning step: when the obstacle clears, nominal navigation simply becomes eligible again. A particular navigation implementation may replan internally, but that is a separate mechanism unless the BT explicitly models it.
 
 ## Formal relationship: decision trees can be represented inside the BT formalism
 
-The two structures are not unrelated. Colledanchise and Ögren (2017) show that BTs can be viewed as a generalization of several switching structures, including decision trees. A decision-tree branch can be represented using BT conditions and control-flow composition, while BTs additionally provide execution semantics such as `Running` and hierarchical behavior composition.
-
-This is an important distinction:
+The two structures are not unrelated. Colledanchise and Ögren (2017) show that BTs can generalize several switching structures, including decision trees. A decision-tree branch can be represented using BT conditions and control-flow composition, while BTs additionally provide execution semantics such as `Running`, repeated ticks, and hierarchical behavior composition.
 
 > A decision tree can be encoded as a restricted behavior-selection structure, but a general behavior tree is not merely a decision tree with different labels.
 
-The extra semantics are what make BTs useful as autonomous-system executives.
-
 ## From task specification to deployed behavior
 
-A BT is not only a tree representation; in a robotics system it sits inside a repeated engineering and execution loop. Task goals and failure modes are converted into conditions/actions, those leaves are composed into prioritized subtrees, the resulting tree is integrated with robot skills and shared state, and repeated ticks close the feedback loop between the controller and the environment.
+A BT is not only a tree representation; in a robotics system it sits inside a repeated engineering and execution loop. Goals and failure modes are converted into conditions/actions, those leaves are composed into prioritized subtrees, the tree is integrated with robot skills and shared state, and repeated ticks close the feedback loop between the controller and the environment.
 
 ```mermaid
 flowchart TB
-  subgraph DESIGN["A. Design-time modeling and construction"]
+  subgraph DESIGN["A. Design-time"]
     direction LR
-    MISSION["Mission specification<br/>goal · constraints · safety · success criteria"] --> MODEL["Action / condition model<br/>preconditions · effects · failure modes"]
-    MODEL --> COMPOSE["BT composition<br/>priority · Sequence · Fallback · subtrees"]
-    COMPOSE --> CHECK["Static checks / simulation<br/>coverage · retries · timeout bounds · replay"]
-    CHECK --> TREE["Deployable tree<br/>versioned structure + port mappings"]
+    MISSION["Mission specification<br/>goal · constraints · safety"] --> MODEL["Action / condition contracts<br/>preconditions · effects · failures"] --> COMPOSE["BT composition<br/>priority · Sequence · Fallback"] --> CHECK["Simulation / checks<br/>coverage · timeout · recovery"] --> TREE["Versioned deployable tree"]
   end
 
-  subgraph INTEGRATION["B. Software integration boundary"]
+  subgraph INTEGRATION["B. Integration"]
     direction LR
-    RUNTIME["BT runtime<br/>tick scheduler · halt semantics"] --> PORTS[("Blackboard / typed ports<br/>goal · pose · obstacle · status")]
-    PORTS --> MW["ROS 2 / middleware<br/>actions · services · topics"]
-    MW --> SKILLS["Robot skills<br/>navigate · dock · avoid"]
-    SKILLS --> SAFE["Safety supervisor<br/>watchdog · e-stop · command limits"]
+    RUNTIME["BT runtime<br/>tick scheduler · halt semantics"] --> PORTS[("Blackboard / typed ports")] --> MW["Middleware<br/>actions · services · topics"] --> SKILLS["Robot skills"] --> SAFE["Safety supervisor"]
   end
 
-  subgraph ONLINE["C. Runtime tick-act-observe loop"]
+  subgraph ONLINE["C. Online tick-act-observe loop"]
     direction LR
-    SENSORS["Sensors<br/>LiDAR · IMU · battery · odometry"] --> STATE["State update<br/>estimate x_t · write blackboard"]
-    STATE --> TICK["Root tick<br/>evaluate priority · propagate S/F/R"]
-    TICK --> ACTIVE["Active skill<br/>start · continue · halt"]
-    ACTIVE --> CONTROL["Controllers<br/>velocity / trajectory"]
-    CONTROL --> ENV["Robot + environment<br/>x_t → x_t+1"]
-    ENV --> SENSORS
+    SENSORS["Sensors"] --> STATE["Estimate x_t<br/>update shared state"] --> TICK["Root tick<br/>propagate S/F/R"] --> ACTIVE["Start / continue / halt skill"] --> CONTROL["Controllers"] --> ENV["Robot + environment<br/>x_t → x_t+1"] --> SENSORS
   end
 
   TREE --> RUNTIME
   SAFE --> ACTIVE
   STATE -. "shared state" .-> PORTS
-  PORTS -. "conditions read / actions write" .-> TICK
-  ACTIVE -. "Failure / timeout" .-> RECOVERY["Recovery escalation<br/>retry · clear map · replan · safe stop"]
-  RECOVERY -. "next root tick" .-> TICK
+  PORTS -. "read / write" .-> TICK
+  ACTIVE -. "Failure / timeout" .-> RECOVERY["Recovery policy<br/>retry · clear · replan · safe stop"]
+  RECOVERY -. "next tick" .-> TICK
 
   classDef design fill:#eef4fa,stroke:#245b88,color:#17202a;
   classDef runtime fill:#eef8f3,stroke:#28775f,color:#17202a;
@@ -202,25 +261,23 @@ flowchart TB
   class PORTS,SENSORS,ENV data;
 ```
 
-*Figure 2. Structured methodological workflow for designing and deploying a behavior tree. Mermaid automatically manages the three engineering lanes and their dependencies. The online loop repeatedly maps current state `x_t` through the BT to an action, changes the environment, observes `x_{t+1}`, and can enter recovery after a skill failure or timeout.*
+*Figure 2. A compact engineering workflow. Mermaid manages the three lanes and their dependencies automatically. The online loop repeatedly maps current state `x_t` through the BT to an active skill, changes the environment, observes `x_{t+1}`, and can enter an explicit recovery policy after a skill failure or timeout.*
 
-This loop also explains why implementation details matter. Blackboard/data-port semantics, action halting, middleware callbacks, and failure recovery determine how the abstract tree interacts with a physical robot and its asynchronous processes.
+Implementation details matter. Blackboard/data-port semantics, action halting, middleware callbacks, and failure recovery determine how the abstract tree interacts with a physical robot and asynchronous processes.
 
 ## Behavior trees vs. nearby autonomy architectures
 
 ### Finite-state machines (FSMs)
 
-FSMs represent behavior using explicit states and transitions. They are effective and mathematically well understood, but large reactive controllers can accumulate many transitions between states. BTs move much of that switching logic into reusable hierarchical control-flow composition. The robotics literature repeatedly identifies modularity and composability as major reasons for using BTs.
-
-BTs and FSMs are not opposites: one can often translate or embed portions of one representation into the other, and implementations frequently combine them. The practical distinction is where transition logic lives and how behaviors are composed.
+FSMs represent behavior using explicit states and transitions. They are effective and mathematically well understood, but large reactive controllers can accumulate many transitions between states. BTs move much of that switching logic into reusable hierarchical control-flow composition. BTs and FSMs are not opposites; systems often combine them.
 
 ### Hierarchical task networks (HTNs) and planners
 
-HTNs and task planners primarily address **how to decompose or generate a plan**. A BT primarily addresses **how to execute and react while carrying out behavior**. Planning systems can therefore generate BTs, and BTs can also call planning components as actions. In autonomy stacks, planning and behavior execution are often complementary layers rather than competing representations.
+HTNs and task planners primarily address **how to decompose or generate a plan**. A BT primarily addresses **how to execute and react while carrying out behavior**. Planning systems can generate BTs, and BTs can call planning components as actions. In autonomy stacks, planning and behavior execution are often complementary layers.
 
 ## A useful mental model
 
-For this knowledge base, use the following default interpretation:
+For this knowledge base:
 
 - A **decision tree** is primarily a *prediction/decision rule over data*.
 - A **behavior tree** is primarily an *execution and task-switching structure over behaviors*.
@@ -228,7 +285,7 @@ For this knowledge base, use the following default interpretation:
 
 ## Terminology caveat
 
-"Decision tree" is also used outside machine learning for decision analysis, where chance nodes, decisions, utilities, and sequential choices may be represented in a tree. Those models are closer to planning under uncertainty than an ML classifier is, but they still do not automatically acquire the tick/status/action semantics of robotics behavior trees. When comparing BTs with a decision tree, specify which decision-tree formalism is intended.
+"Decision tree" is also used outside machine learning for decision analysis, where chance nodes, decisions, utilities, and sequential choices may be represented in a tree. Those models still do not automatically acquire the tick/status/action semantics of robotics BTs.
 
 ## Recommended starting sources
 
@@ -242,4 +299,4 @@ For this knowledge base, use the following default interpretation:
 
 ## Next questions for the knowledge base
 
-The natural follow-on topics are the precise tick semantics of Sequence/Fallback nodes, reactive vs. memory variants, BTs vs. FSMs and statecharts, planning-to-BT compilation, and the formal treatment of safety/robustness in BT composition.
+The natural follow-on topics are precise tick semantics, reactive vs. memory variants, BTs vs. FSMs and statecharts, planning-to-BT compilation, and formal treatment of safety and robustness in BT composition.
