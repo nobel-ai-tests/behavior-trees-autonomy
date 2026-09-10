@@ -229,6 +229,10 @@
   pointer-events: none;
 }
 
+/* Keep the larger type/depth/status labels inside each node card. */
+.kb-sim-tree-meta { transform: translateY(-27px); }
+.kb-sim-tree-status { transform: translateY(-31px); }
+
 .kb-sim-inspector {
   min-height: 108px;
   padding: 9px;
