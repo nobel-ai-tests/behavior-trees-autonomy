@@ -17,6 +17,12 @@ Two canonical control-flow nodes are:
 
 Leaves are usually **conditions** (queries about state) or **actions** (behaviors that can change the world or internal system state). Variants add decorators, parallel nodes, memory, explicit recovery semantics, and application-specific extensions.
 
+### Visual overview: data structure and return semantics
+
+![Behavior tree foundations overview showing the rooted data structure, node types, status interface, and simplified Sequence/Fallback return rules](../assets/figures/topics/behavior-tree-foundations-overview.svg)
+
+*Figure 1. Repository-authored overview of a behavior tree as both a rooted executable data structure and a status-propagating control formalism. The simplified return rules show the essential semantics of memoryless Sequence and Fallback nodes.*
+
 A simplified mobile-robot BT might be written as:
 
 ```text
@@ -76,6 +82,14 @@ A BT is normally embedded in a control loop. Conditions can therefore be checked
 
 This makes the tree part of the agent's **control policy/executive**. In contrast, a decision tree classifier is a **mapping from inputs to outputs**. It may be called repeatedly by another control system, but the classifier itself does not define the lifecycle of an ongoing behavior.
 
+### Animated execution example: navigation, preemption, recovery
+
+![Animated behavior tree execution showing a mobile robot navigating, detecting an obstacle, preempting navigation, avoiding the obstacle, and resuming toward the goal](../assets/animations/topics/behavior-tree-reactive-navigation.svg)
+
+*Animation 1. A deterministic twelve-second execution loop. The robot and the corresponding tree nodes are synchronized: ordinary navigation returns `Running`, the obstacle condition becomes true, the higher-priority avoidance branch takes control, and navigation resumes after recovery. Users who prefer reduced motion see a static state instead.*
+
+The key architectural point is that there is no explicit transition edge from `Navigate` to `Avoid`. The switch emerges from reevaluating the same prioritized tree against a changed world state.
+
 ## Formal relationship: decision trees can be represented inside the BT formalism
 
 The two structures are not unrelated. Colledanchise and Ögren (2017) show that BTs can be viewed as a generalization of several switching structures, including decision trees. A decision-tree branch can be represented using BT conditions and control-flow composition, while BTs additionally provide execution semantics such as `Running` and hierarchical behavior composition.
@@ -85,6 +99,16 @@ This is an important distinction:
 > A decision tree can be encoded as a restricted behavior-selection structure, but a general behavior tree is not merely a decision tree with different labels.
 
 The extra semantics are what make BTs useful as autonomous-system executives.
+
+## From task specification to deployed behavior
+
+A BT is not only a tree representation; in a robotics system it sits inside a repeated engineering and execution loop. Task goals and failure modes are converted into conditions/actions, those leaves are composed into prioritized subtrees, the resulting tree is integrated with robot skills and shared state, and repeated ticks close the feedback loop between the controller and the environment.
+
+![Behavior-tree methodological workflow from task analysis through design, implementation, ticking, monitoring, and recovery](../assets/figures/topics/behavior-tree-design-workflow.svg)
+
+*Figure 2. Methodological workflow for designing and deploying a behavior tree. The control-loop view at the bottom emphasizes that execution repeatedly maps current state `x_t` through the BT to an action, which changes the environment and produces the next state `x_{t+1}`.*
+
+This loop also explains why implementation details matter. Blackboard/data-port semantics, action halting, middleware callbacks, and failure recovery determine how the abstract tree interacts with a physical robot and its asynchronous processes.
 
 ## Behavior trees vs. nearby autonomy architectures
 
