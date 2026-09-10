@@ -15,7 +15,7 @@ Two canonical control-flow nodes are:
 - **Sequence** — ticks children from left to right; returns `Failure` when the first decisive child fails, `Running` when the first unresolved child is still executing, and `Success` only when all children succeed.
 - **Fallback / Selector** — ticks alternatives from left to right; returns `Success` when the first decisive child succeeds, `Running` when the first unresolved child is still executing, and `Failure` only when all children fail.
 
-Leaves are usually **conditions** (queries about current state) or **actions** (behaviors that can change the world or internal system state). Implementations may add decorators, parallel nodes, memory, recovery nodes, blackboards/data ports, and application-specific extensions.
+Leaves are usually **conditions** or **actions**. Implementations may add decorators, parallel nodes, memory, recovery nodes, blackboards/data ports, and application-specific extensions.
 
 ### Practical overview: control flow, shared data, and robot skills
 
@@ -23,8 +23,8 @@ Leaves are usually **conditions** (queries about current state) or **actions** (
 flowchart LR
   subgraph STATE["World state"]
     direction TB
-    SENS["Sensors<br/>LiDAR · odometry · battery"] --> EST["State estimation / monitors<br/>pose · obstacle · system health"]
-    EST --> BB[("Blackboard x_t<br/>goal · obstacle_near · at_goal · fault")]
+    SENS["Sensors<br/>LiDAR · odometry · battery"] --> EST["State estimation / monitors<br/>pose · crossing conflict · system health"]
+    EST --> BB[("Blackboard x_t<br/>goal · crossing_conflict · at_goal · fault")]
   end
 
   subgraph BT["Reactive behavior tree"]
@@ -35,9 +35,9 @@ flowchart LR
     SAFE --> FAULT{"CriticalFault?"}
     FAULT --> STOP["StopRobot"]
 
-    ROOT --> OBS["Sequence<br/>obstacle recovery"]
-    OBS --> OC{"ObstacleNear?"}
-    OC --> AVOID["AvoidObstacle"]
+    ROOT --> CROSS["Sequence<br/>crossing recovery"]
+    CROSS --> CC{"CrossingConflict?"}
+    CC --> YIELD["YieldToCrossing"]
 
     ROOT --> MISSION["Sequence<br/>nominal mission"]
     MISSION --> GV{"GoalValid?"}
@@ -48,7 +48,7 @@ flowchart LR
 
   BB -. "read at each root tick" .-> ROOT
   STOP --> SKILLS["Async robot-skill interface<br/>start · continue · halt"]
-  AVOID --> SKILLS
+  YIELD --> SKILLS
   FOLLOW --> SKILLS
   SKILLS --> NAV["Navigation / local control<br/>planner · controller · velocity command"]
   NAV --> ROBOT["Robot + environment"]
@@ -62,13 +62,13 @@ flowchart LR
   classDef data fill:#f4f7fa,stroke:#718096,color:#17202a;
 
   class ROOT,EXEC control;
-  class SAFE,OBS,MISSION sequence;
-  class FAULT,OC,GV,AT condition;
-  class STOP,AVOID,FOLLOW,SKILLS,NAV action;
+  class SAFE,CROSS,MISSION sequence;
+  class FAULT,CC,GV,AT condition;
+  class STOP,YIELD,FOLLOW,SKILLS,NAV action;
   class SENS,EST,BB,ROBOT data;
 ```
 
-*Figure 1. A practical BT embedded in a robot executive. The tree is declarative Mermaid, so layout and edge routing are managed automatically. Safety and obstacle handling are checked before nominal mission execution. The BT reads current state, ticks an asynchronous skill, and receives `Success`, `Failure`, or `Running` back from that skill.*
+*Figure 1. A practical BT embedded in a robot executive. Safety and a dynamic crossing conflict are checked before nominal mission execution. The diagram is declarative Mermaid, so node placement and edge routing are managed automatically.*
 
 A smaller BT might be written as:
 
@@ -94,7 +94,7 @@ A behavior tree answers a question such as:
 
 > **What should the agent execute now, and what should it try next if conditions or outcomes change?**
 
-A classical machine-learning decision tree answers a question such as:
+A classical machine-learning decision tree answers:
 
 > **Given this feature vector, what class or numeric value should be predicted?**
 
@@ -107,13 +107,11 @@ A classical machine-learning decision tree answers a question such as:
 | Internal nodes | Control-flow operators and/or conditions | Feature tests / split rules |
 | Leaves | Conditions and executable actions/subtrees | Predicted class, probability, or numeric value |
 | Return/output | Usually `Success`, `Failure`, or `Running`; actions may have side effects | A prediction |
-| Time | Designed for repeated evaluation during execution | Usually one root-to-leaf inference per sample |
+| Time | Repeated evaluation during execution | Usually one root-to-leaf inference per sample |
 | Reactivity | High-level choices can be reconsidered as state changes | A new prediction requires another inference call |
 | State/progress | `Running` explicitly represents incomplete execution | Standard prediction trees do not represent an executing action |
-| Construction | Engineered, synthesized, learned, or hybrid | Commonly induced from labeled data by optimizing split criteria |
+| Construction | Engineered, synthesized, learned, or hybrid | Commonly induced from labeled data |
 | Main quality concerns | Modularity, reactivity, robustness, safety, task correctness | Generalization, predictive accuracy, calibration, interpretability |
-
-J. R. Quinlan's ID3 work is a canonical reference for the machine-learning meaning of a decision tree. The CART framework by Breiman, Friedman, Olshen, and Stone established a major classification-and-regression-tree methodology.
 
 ### Why `Running` matters
 
@@ -123,96 +121,107 @@ A standard classifier decision tree has no analogous notion of an action that re
 
 ### Why repeated evaluation matters
 
-A BT is normally embedded in a control loop. Conditions can therefore be checked again as the environment changes. If a higher-priority condition becomes true, a **reactive** control-flow node can switch to that branch on the next tick. A previously running lower-priority action is then halted according to the implementation's interruption semantics.
+A BT is normally embedded in a control loop. Conditions are checked again as the environment changes. If a higher-priority condition becomes true, a **reactive** control-flow node can switch to that branch on the next tick. A previously running lower-priority action is then halted according to the implementation's interruption semantics.
 
-### Structured execution simulation: obstacle preemption and resume
+### Simulated execution scenario: warehouse crossing conflict
+
+The example below is not a sequence of hand-authored animation frames. It runs a small deterministic two-dimensional simulator in the browser. Static shelves define the map, **A\*** generates a collision-free nominal path, the robot follows that path with a simple differential-drive controller, and a pallet truck moves independently across the aisle. The crossing condition is computed from the simulated geometry. The same simulation state feeds the blackboard, BT evaluator, robot motion, and status display.
 
 ```kb-sim
 {
-  "title": "Reactive obstacle preemption during warehouse navigation",
-  "phaseMs": 2400,
+  "title": "Simulated warehouse navigation with reactive yielding",
   "loop": true,
-  "scene": {
+  "world": {
     "width": 12,
     "height": 8,
-    "goal": {"x": 10.7, "y": 2.0, "label": "inspection goal"},
-    "obstacleLabel": "pallet truck",
-    "shelves": [
-      {"x": 0.6, "y": 0.6, "w": 2.0, "h": 1.0},
-      {"x": 3.2, "y": 0.6, "w": 2.0, "h": 1.0},
-      {"x": 6.0, "y": 0.6, "w": 2.0, "h": 1.0},
-      {"x": 0.6, "y": 6.4, "w": 2.0, "h": 1.0},
-      {"x": 3.2, "y": 6.4, "w": 2.0, "h": 1.0},
-      {"x": 6.0, "y": 6.4, "w": 2.0, "h": 1.0}
+    "goal": {"x": 10.8, "y": 2.2, "label": "inspection goal"},
+    "obstacles": [
+      {"x": 0.6, "y": 0.6, "w": 2.0, "h": 1.15},
+      {"x": 3.4, "y": 0.6, "w": 2.0, "h": 1.15},
+      {"x": 6.2, "y": 0.6, "w": 2.0, "h": 1.15},
+      {"x": 9.0, "y": 0.6, "w": 2.0, "h": 1.15},
+      {"x": 0.6, "y": 6.25, "w": 2.0, "h": 1.15},
+      {"x": 3.4, "y": 6.25, "w": 2.0, "h": 1.15},
+      {"x": 6.2, "y": 6.25, "w": 2.0, "h": 1.15},
+      {"x": 9.0, "y": 6.25, "w": 2.0, "h": 1.15},
+      {"x": 7.2, "y": 3.25, "w": 1.15, "h": 1.2}
     ]
+  },
+  "robot": {
+    "x": 1.2,
+    "y": 5.1,
+    "theta": -0.12,
+    "radius": 0.26,
+    "maxLinear": 0.8,
+    "maxAngular": 1.8
+  },
+  "dynamicObstacle": {
+    "x": 5.4,
+    "yMin": 1.2,
+    "yMax": 6.8,
+    "speed": 0.52,
+    "radius": 0.38,
+    "label": "pallet truck"
+  },
+  "control": {
+    "dt": 0.05,
+    "btHz": 10,
+    "sensorRange": 1.35,
+    "goalTolerance": 0.34,
+    "cellSize": 0.38,
+    "waypointTolerance": 0.32,
+    "resetDelay": 2.5
   },
   "tree": {
-    "id": "root", "label": "Reactive Fallback", "kind": "control", "children": [
-      {"id": "safety", "label": "Sequence: safety", "kind": "sequence", "children": [
-        {"id": "fault", "label": "CriticalFault?", "kind": "condition"},
-        {"id": "stop", "label": "StopRobot", "kind": "action"}
-      ]},
-      {"id": "obstacle", "label": "Sequence: obstacle recovery", "kind": "sequence", "children": [
-        {"id": "obstacleNear", "label": "ObstacleNear?", "kind": "condition"},
-        {"id": "avoid", "label": "AvoidObstacle", "kind": "action"}
-      ]},
-      {"id": "mission", "label": "Sequence: mission", "kind": "sequence", "children": [
-        {"id": "goalValid", "label": "GoalValid?", "kind": "condition"},
-        {"id": "goalExec", "label": "Fallback: goal execution", "kind": "control", "children": [
-          {"id": "atGoal", "label": "AtGoal?", "kind": "condition"},
-          {"id": "follow", "label": "FollowPath", "kind": "action"}
-        ]}
-      ]}
+    "id": "root",
+    "label": "Reactive Fallback",
+    "kind": "fallback",
+    "children": [
+      {
+        "id": "safety",
+        "label": "Sequence: safety",
+        "kind": "sequence",
+        "children": [
+          {"id": "fault", "label": "CriticalFault?", "kind": "condition", "condition": "criticalFault"},
+          {"id": "stop", "label": "StopRobot", "kind": "action", "action": "stopRobot"}
+        ]
+      },
+      {
+        "id": "crossing",
+        "label": "Sequence: crossing recovery",
+        "kind": "sequence",
+        "children": [
+          {"id": "conflict", "label": "CrossingConflict?", "kind": "condition", "condition": "crossingConflict"},
+          {"id": "yield", "label": "YieldToCrossing", "kind": "action", "action": "yieldToCrossing"}
+        ]
+      },
+      {
+        "id": "mission",
+        "label": "Sequence: mission",
+        "kind": "sequence",
+        "children": [
+          {"id": "goalValid", "label": "GoalValid?", "kind": "condition", "condition": "goalValid"},
+          {
+            "id": "goalExec",
+            "label": "Fallback: goal execution",
+            "kind": "fallback",
+            "children": [
+              {"id": "atGoal", "label": "AtGoal?", "kind": "condition", "condition": "atGoal"},
+              {"id": "follow", "label": "FollowPath", "kind": "action", "action": "followPath"}
+            ]
+          }
+        ]
+      }
     ]
-  },
-  "phases": [
-    {
-      "title": "Nominal navigation",
-      "event": "The root ticks safety first (Failure), then obstacle recovery (Failure), then the mission branch. AtGoal? is false, so FollowPath is Running.",
-      "robot": {"x": 2.0, "y": 5.3, "heading": -8},
-      "obstacle": {"x": 5.4, "y": 2.0, "visible": true},
-      "blackboard": {"critical_fault": "false", "obstacle_near": "false", "goal_valid": "true", "at_goal": "false", "nav_status": "RUNNING", "active_skill": "FollowPath"},
-      "statuses": {"root":"RUNNING","safety":"FAILURE","fault":"FAILURE","stop":"IDLE","obstacle":"FAILURE","obstacleNear":"FAILURE","avoid":"IDLE","mission":"RUNNING","goalValid":"SUCCESS","goalExec":"RUNNING","atGoal":"FAILURE","follow":"RUNNING"}
-    },
-    {
-      "title": "Obstacle detected — preemption",
-      "event": "LiDAR sets obstacle_near=true before the next root tick. ObstacleNear? succeeds, AvoidObstacle becomes Running, and the previously running FollowPath action is halted because its lower-priority branch is no longer ticked.",
-      "robot": {"x": 4.5, "y": 4.7, "heading": -10},
-      "obstacle": {"x": 5.2, "y": 4.7, "visible": true},
-      "blackboard": {"critical_fault": "false", "obstacle_near": "true", "goal_valid": "true", "at_goal": "false", "nav_status": "HALTED", "active_skill": "AvoidObstacle"},
-      "statuses": {"root":"RUNNING","safety":"FAILURE","fault":"FAILURE","stop":"IDLE","obstacle":"RUNNING","obstacleNear":"SUCCESS","avoid":"RUNNING","mission":"HALTED","goalValid":"IDLE","goalExec":"IDLE","atGoal":"IDLE","follow":"HALTED"}
-    },
-    {
-      "title": "Obstacle avoidance running",
-      "event": "The obstacle remains within the recovery condition, so the same higher-priority branch stays active. AvoidObstacle continues returning Running while the robot creates clearance.",
-      "robot": {"x": 4.4, "y": 3.1, "heading": -55},
-      "obstacle": {"x": 5.2, "y": 4.8, "visible": true},
-      "blackboard": {"critical_fault": "false", "obstacle_near": "true", "goal_valid": "true", "at_goal": "false", "nav_status": "HALTED", "active_skill": "AvoidObstacle"},
-      "statuses": {"root":"RUNNING","safety":"FAILURE","fault":"FAILURE","stop":"IDLE","obstacle":"RUNNING","obstacleNear":"SUCCESS","avoid":"RUNNING","mission":"IDLE","goalValid":"IDLE","goalExec":"IDLE","atGoal":"IDLE","follow":"IDLE"}
-    },
-    {
-      "title": "Obstacle clears — mission resumes",
-      "event": "On the next tick obstacle_near=false, so the obstacle-recovery Sequence fails immediately and the Reactive Fallback continues to the mission branch. FollowPath is ticked again from the robot's current pose.",
-      "robot": {"x": 5.5, "y": 3.0, "heading": -18},
-      "obstacle": {"x": 5.2, "y": 6.0, "visible": true},
-      "blackboard": {"critical_fault": "false", "obstacle_near": "false", "goal_valid": "true", "at_goal": "false", "nav_status": "RUNNING", "active_skill": "FollowPath"},
-      "statuses": {"root":"RUNNING","safety":"FAILURE","fault":"FAILURE","stop":"IDLE","obstacle":"FAILURE","obstacleNear":"FAILURE","avoid":"IDLE","mission":"RUNNING","goalValid":"SUCCESS","goalExec":"RUNNING","atGoal":"FAILURE","follow":"RUNNING"}
-    },
-    {
-      "title": "Goal reached",
-      "event": "AtGoal? now succeeds. Because it is the first child of the goal-execution Fallback, FollowPath is not ticked. The goal-execution Fallback, mission Sequence, and root all return Success.",
-      "robot": {"x": 10.3, "y": 2.0, "heading": 0},
-      "obstacle": {"x": 5.2, "y": 7.1, "visible": true},
-      "blackboard": {"critical_fault": "false", "obstacle_near": "false", "goal_valid": "true", "at_goal": "true", "nav_status": "SUCCESS", "active_skill": "none"},
-      "statuses": {"root":"SUCCESS","safety":"FAILURE","fault":"FAILURE","stop":"IDLE","obstacle":"FAILURE","obstacleNear":"FAILURE","avoid":"IDLE","mission":"SUCCESS","goalValid":"SUCCESS","goalExec":"SUCCESS","atGoal":"SUCCESS","follow":"IDLE"}
-    }
-  ]
+  }
 }
 ```
 
-*Animation 1. A repository-authored, state-driven simulation rather than a hand-positioned SVG animation. The tree hierarchy is generated from nested data, scene objects are positioned from logical coordinates, and every visible node status comes from the same phase definition as the blackboard and robot state. `IDLE` means the node was not ticked in the current phase.*
+*Simulation 1. The scene is generated from a world model, not drawn as a timeline. A* plans around the static shelf geometry. The robot and pallet truck are advanced by the simulator, crossing conflict is computed from their relative geometry, and the BT is evaluated at 10 Hz. `Play/Pause`, `Step`, and `Reset` operate on the simulator itself.*
 
-The important point is that there is no explicit `Navigate → Avoid → Navigate` transition graph. The change in active behavior emerges from reevaluating the same prioritized tree against a changed world state. The example deliberately does **not** invent a replanning step: when the obstacle clears, nominal navigation simply becomes eligible again. A particular navigation implementation may replan internally, but that is a separate mechanism unless the BT explicitly models it.
+The practical consequence is important: the visualization cannot claim that a node is `Running`, `Failure`, or `Success` merely because an animation author assigned that label. The displayed status is the result of evaluating the tree against the current simulated blackboard.
+
+In this particular scenario the recovery action is **yielding**, not a fictitious local planner. When the pallet truck enters the robot's conflict range, `CrossingConflict?` succeeds and `YieldToCrossing` returns `Running`, producing zero commanded velocity. When the truck clears, the crossing sequence fails at its condition on the next root tick, the reactive fallback proceeds to the mission branch, and `FollowPath` resumes.
 
 ## Formal relationship: decision trees can be represented inside the BT formalism
 
