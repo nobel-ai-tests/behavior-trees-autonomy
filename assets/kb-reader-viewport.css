@@ -1,9 +1,17 @@
+:root {
+  --kb-pane-height: calc(100dvh - 252px);
+}
+
+.content-pane,
+.graph-pane {
+  height: var(--kb-pane-height);
+  min-height: 420px;
+  overflow: hidden;
+}
+
 .content-pane {
   display: flex;
   flex-direction: column;
-  height: clamp(600px, 72vh, 820px);
-  min-height: 0;
-  overflow: hidden;
 }
 
 .content-history {
@@ -24,10 +32,52 @@
   padding-top: 32px;
 }
 
+.graph-pane {
+  display: flex;
+  flex-direction: column;
+}
+
+.graph-stage {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.graph-toolbar {
+  flex: 0 0 auto;
+}
+
+.graph-wrap {
+  flex: 1 1 auto;
+  height: auto;
+  min-height: 0;
+}
+
+.inspector {
+  flex: 0 1 40%;
+  max-height: 40%;
+}
+
+.splitter {
+  height: var(--kb-pane-height);
+  min-height: 420px;
+}
+
 @media (max-width: 760px) {
-  .content-pane {
-    height: 72vh;
+  :root {
+    --kb-pane-height: auto;
+  }
+
+  .content-pane,
+  .graph-pane {
+    height: 72dvh;
     min-height: 520px;
+  }
+
+  .graph-wrap {
+    min-height: 0;
   }
 
   .reader article {
