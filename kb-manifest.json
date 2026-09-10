@@ -21,72 +21,84 @@
         "id": "foundations",
         "title": "Foundations",
         "parent": "behavior-trees",
+        "description": "Core behavior-tree definitions, formal models, terminology, and architectural principles.",
         "keywords": ["foundations", "formalism"]
       },
       {
         "id": "semantics",
         "title": "Execution Semantics",
         "parent": "foundations",
+        "description": "Tick-based evaluation and the Success, Failure, and Running status semantics used during BT execution.",
         "keywords": ["tick", "success", "failure", "running"]
       },
       {
         "id": "control-flow",
         "title": "Control Flow",
         "parent": "semantics",
+        "description": "Composition operators such as Sequence and Fallback/Selector that determine how child behaviors execute.",
         "keywords": ["sequence", "fallback", "selector"]
       },
       {
         "id": "reactivity",
         "title": "Reactivity",
         "parent": "foundations",
+        "description": "Repeated condition evaluation, feedback, and preemption that let BTs adapt execution as state changes.",
         "keywords": ["reactive-control", "preemption", "feedback"]
       },
       {
         "id": "modularity",
         "title": "Modularity and Composition",
         "parent": "behavior-trees",
+        "description": "How behavior subtrees encapsulate functionality and compose into larger reusable control structures.",
         "keywords": ["modularity", "composition", "hierarchy"]
       },
       {
         "id": "robot-control",
         "title": "Robot Control",
         "parent": "behavior-trees",
+        "description": "Use of behavior trees as high-level executives and switching structures in robotic control systems.",
         "keywords": ["robotics", "control", "autonomous-systems"]
       },
       {
         "id": "comparisons",
         "title": "Comparisons with Other Architectures",
         "parent": "behavior-trees",
+        "description": "Conceptual and formal comparisons between BTs and alternative decision, planning, and control architectures.",
         "keywords": ["comparison", "architecture"]
       },
       {
         "id": "decision-trees",
         "title": "Decision Trees",
         "parent": "comparisons",
+        "description": "Predictive tree models that route feature tests to classification or regression outputs rather than executing behaviors.",
         "keywords": ["decision-trees", "classification", "regression"]
       },
       {
         "id": "finite-state-machines",
         "title": "Finite-State Machines",
         "parent": "comparisons",
+        "description": "State-and-transition control structures used as a common comparison point for behavior-tree modularity and switching.",
         "keywords": ["FSM", "state-machine", "transitions"]
       },
       {
         "id": "planning",
         "title": "Planning and Task Decomposition",
         "parent": "comparisons",
+        "description": "Plan generation and hierarchical task decomposition methods that can complement or synthesize behavior-tree execution structures.",
         "keywords": ["planning", "HTN", "task-planning"]
       },
       {
         "id": "surveys",
         "title": "Surveys and Reviews",
         "parent": "behavior-trees",
+        "description": "Literature surveys and review articles that map behavior-tree research, applications, methods, and open problems.",
         "keywords": ["survey", "review", "literature-review"]
       },
       {
         "id": "machine-learning",
         "title": "Machine Learning",
         "parent": "decision-trees",
+        "description": "Learning methods relevant to decision-tree induction and to learned or synthesized behavior-tree systems.",
         "keywords": ["machine-learning", "ID3", "induction"]
       }
     ]
@@ -101,7 +113,8 @@
           "title": "Topics overview",
           "path": "topics/README.md",
           "kind": "knowledge",
-          "topics": ["behavior-trees"],
+          "description": "Index of current topic syntheses and the conceptual areas planned for expansion in the knowledge base.",
+          "topics": ["behavior-trees", "foundations"],
           "tags": ["overview"]
         },
         {
@@ -125,7 +138,8 @@
           "title": "Papers overview",
           "path": "papers/README.md",
           "kind": "knowledge",
-          "topics": ["surveys"],
+          "description": "Index of the current paper notes and the standard fields used to summarize technical publications in this repository.",
+          "topics": ["behavior-trees", "surveys", "foundations"],
           "tags": ["overview"]
         },
         {
@@ -138,7 +152,7 @@
           "year": 2014,
           "venue": "IEEE ICRA",
           "doi": "10.1109/ICRA.2014.6907656",
-          "topics": ["foundations", "semantics", "control-flow", "robot-control"],
+          "topics": ["behavior-trees", "foundations", "semantics", "control-flow", "robot-control"],
           "keywords": ["tick", "sequence", "fallback", "robot-control"],
           "related": ["topics/behavior-tree-foundations.md", "papers/colledanchise-ogren-2017-bt-modularity.md"],
           "tags": ["foundations", "semantics", "robot-control", "ICRA"]
@@ -153,7 +167,7 @@
           "year": 2017,
           "venue": "IEEE Transactions on Robotics",
           "doi": "10.1109/TRO.2016.2633567",
-          "topics": ["foundations", "modularity", "robot-control", "comparisons", "decision-trees", "finite-state-machines"],
+          "topics": ["behavior-trees", "foundations", "modularity", "robot-control", "comparisons", "decision-trees", "finite-state-machines"],
           "keywords": ["hybrid-control", "modularity", "subsumption", "decision-tree", "composition"],
           "related": ["topics/behavior-tree-foundations.md", "papers/marzinotto-et-al-2014-unified-bt-framework.md"],
           "tags": ["modularity", "decision-trees", "FSM", "hybrid-control"]
@@ -164,11 +178,11 @@
           "path": "papers/iovino-et-al-2022-survey.md",
           "kind": "paper",
           "description": "A broad survey of behavior-tree research across robotics and AI, including design, synthesis, learning, and application trends.",
-          "authors": ["Matteo Iovino", "Edgars Scukins", "Jesper Styrud", "Petter Ögren", "Christian Smith"],
+          "authors": ["Matteo Iovino", "Edvards Scukins", "Jonathan Styrud", "Petter Ögren", "Christian Smith"],
           "year": 2022,
           "venue": "Robotics and Autonomous Systems",
           "doi": "10.1016/j.robot.2022.104096",
-          "topics": ["behavior-trees", "surveys", "robot-control", "modularity"],
+          "topics": ["behavior-trees", "surveys", "robot-control", "modularity", "planning", "machine-learning"],
           "keywords": ["survey", "robotics", "AI", "synthesis", "learning"],
           "related": ["papers/ogren-sprague-2022-robot-control-systems.md", "topics/behavior-tree-foundations.md"],
           "tags": ["survey", "robotics", "AI", "literature-review"]
@@ -183,7 +197,7 @@
           "year": 2022,
           "venue": "Annual Review of Control, Robotics, and Autonomous Systems",
           "doi": "10.1146/annurev-control-042920-095314",
-          "topics": ["surveys", "robot-control", "reactivity", "modularity"],
+          "topics": ["behavior-trees", "surveys", "robot-control", "reactivity", "modularity"],
           "keywords": ["feedback", "control", "modularity", "reactivity"],
           "related": ["papers/iovino-et-al-2022-survey.md", "papers/colledanchise-ogren-2017-bt-modularity.md"],
           "tags": ["review", "control", "feedback", "modularity"]
@@ -198,7 +212,7 @@
           "year": 1986,
           "venue": "Machine Learning",
           "doi": "10.1007/BF00116251",
-          "topics": ["decision-trees", "machine-learning", "comparisons"],
+          "topics": ["comparisons", "decision-trees", "machine-learning"],
           "keywords": ["ID3", "classification", "information-gain", "induction"],
           "related": ["topics/behavior-tree-foundations.md", "papers/colledanchise-ogren-2017-bt-modularity.md"],
           "tags": ["decision-trees", "machine-learning", "comparison", "ID3"]
@@ -214,8 +228,18 @@
           "title": "Notes overview",
           "path": "notes/README.md",
           "kind": "knowledge",
-          "topics": ["behavior-trees"],
+          "description": "Index of working notes, cross-paper synthesis, research directions, and knowledge-base infrastructure documentation.",
+          "topics": ["behavior-trees", "foundations"],
           "tags": ["overview"]
+        },
+        {
+          "title": "Knowledge Graph Explorer",
+          "path": "notes/knowledge-graph-explorer.md",
+          "kind": "knowledge",
+          "description": "Documents the graph schema, entity relationships, filters, layouts, inspector metadata, and scaling conventions for the GitHub Pages explorer.",
+          "topics": ["behavior-trees", "foundations"],
+          "keywords": ["knowledge-graph", "taxonomy", "metadata", "visualization", "inspector"],
+          "tags": ["graph", "schema", "tooling"]
         }
       ]
     },
@@ -228,7 +252,9 @@
           "title": "References",
           "path": "references.md",
           "kind": "knowledge",
-          "topics": ["behavior-trees", "surveys"],
+          "description": "Consolidated bibliography covering the behavior-tree foundations, surveys, control literature, and decision-tree comparison sources used by the knowledge base.",
+          "topics": ["behavior-trees", "foundations", "surveys", "comparisons", "decision-trees"],
+          "keywords": ["bibliography", "DOI", "papers", "sources"],
           "tags": ["bibliography"]
         }
       ]
