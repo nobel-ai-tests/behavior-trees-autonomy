@@ -1,10 +1,8 @@
 # Model Predictive Control
 
-> **Role in this knowledge base.** Behavior Trees remain the core autonomy architecture studied here. This page is an additional resource for comparing BT execution with another fast decision-making mechanism and for identifying useful hybrid designs.
-
 Model Predictive Control repeatedly solves a finite-horizon optimization problem from the latest measured state, applies only the first control input, then shifts the horizon forward and solves again.
 
-<div role="img" aria-label="Model Predictive Control structured overview" style="border:1px solid #cbd5e1;border-radius:14px;padding:20px;background:#f8fafc;margin:1.25rem 0;">
+<div role="img" aria-label="Model Predictive Control execution overview" style="border:1px solid #cbd5e1;border-radius:14px;padding:20px;background:#f8fafc;margin:1.25rem 0;">
   <div style="font-weight:800;font-size:1.15rem;margin-bottom:4px;">MPC receding-horizon graph</div>
   <div style="color:#64748b;margin-bottom:16px;">Measure, predict, optimize, apply the first input, then repeat from the new state.</div>
   <div style="display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;margin-bottom:18px;">
@@ -23,8 +21,6 @@ Model Predictive Control repeatedly solves a finite-horizon optimization problem
     <div style="padding:12px;border-radius:10px;background:white;border:1px solid #dbe3ec;"><strong>BT integration</strong><br>A BT action can invoke MPC until the skill returns Success or Failure.</div>
   </div>
 </div>
-
-*Repository-authored structured overview rendered directly from Markdown HTML/CSS nodes; no SVG, Mermaid, or binary image asset is required.*
 
 ## Runtime idea
 
@@ -53,8 +49,8 @@ MPC and BTs normally operate at different abstraction levels. A BT is a strong f
 
 A BT can remain the mission/task executive while MPC implements a continuous controller behind a motion, docking, tracking, or manipulation action.
 
-## Related knowledge
+## Related topics
 
 - [Behavior Tree foundations](behavior-tree-foundations.md)
 - [Behavior Trees in robotics](robotics-behavior-trees.md)
-- [Fast decision architectures: additional resources](fast-decision-architectures.md)
+- [Fast decision architectures in robotics](fast-decision-architectures.md)

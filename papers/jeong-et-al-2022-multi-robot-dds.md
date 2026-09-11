@@ -2,7 +2,7 @@
 
 ## Abstract
 
-*Analytical abstract — repository-authored because the source does not provide clear permission to reproduce the complete publisher abstract verbatim.*
+<!-- This section is an analytical summary rather than a verbatim reproduction of the publisher abstract. -->
 
 **Contribution / method.** The paper extends behavior-tree task execution from one synchronously ticked robot to multiple asynchronously operating mobile robots. A supervisory task-planning unit uses a coalesced BT to assign tasks, while DDS carries shared task/action variables between the planner and the robots. Novel task/action node behavior supports asynchronous execution, and each robot can switch to a local recovery BT when a fault occurs.
 
@@ -53,13 +53,9 @@ Three mobile robots are coordinated to travel alternately to four goal positions
 
 The paper is a useful early reference for distributed BT execution because it addresses a limitation often hidden by single-robot examples: asynchronous agents need explicit communication and ownership of recovery behavior. It also connects BTs with middleware-level concerns rather than treating the tree as an isolated controller.
 
-## Repository notes
-
-Core topics: multi-robot systems, mobile robotics, robot task planning, fault tolerance, robot software architecture, and robot control.
+## Related work
 
 The work is complementary to single-robot synthesis papers. Its main contribution is not a new planning search algorithm but an execution architecture for distributing BT-controlled tasks across multiple agents.
-
-The source paper contains 12 figures describing the architecture and experiments; they remain in the linked preprint.
 
 ## Citation
 

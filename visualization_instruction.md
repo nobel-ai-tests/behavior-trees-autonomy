@@ -2,6 +2,8 @@
 
 This file is the repository-level contract for creating, maintaining, and validating diagrams, figures, simulations, and animations in the knowledge base.
 
+Visible research content must also follow [`content_instruction.md`](content_instruction.md). Renderer choices, asset constraints, provenance workflow, authoring instructions, and repository-process commentary must not be exposed in the visible topic or paper narrative. When such information must stay adjacent to an artifact, keep it in HTML comments.
+
 ## 1. Core principle
 
 Visualizations must explain behavior, method, data flow, mathematical structure, or experimental workflow. They should not be decorative.
@@ -16,6 +18,8 @@ Use:
 - **A deterministic simulation model** for animations that claim to demonstrate runtime behavior.
 
 Avoid hand-positioned SVG diagrams unless the subject genuinely requires exact custom geometry that cannot be represented by the structured renderers.
+
+These renderer/format choices are authoring constraints. Do not state them in visible research captions or prose.
 
 ## 2. Mermaid diagrams
 
@@ -204,18 +208,22 @@ For paper briefs, visuals should be placed in this order when applicable:
 6. Experimental/application visual
 7. Contents
 8. Paper-derived discussion
-9. Repository commentary
+9. Related work
 10. Citation (always last)
 
-Only reproduce source figures when reuse rights and source stability are clear. Otherwise create a repository-authored explanatory diagram or point readers to the original PDF.
+Do **not** add visible repository commentary, rendering notes, provenance workflow, redistribution decisions, or authoring instructions to a paper brief. Those belong in `content_instruction.md`, this file, meta documentation, or hidden HTML comments.
 
-Repository-authored figures must not imply they are original figures from the cited paper.
+Only reproduce source figures when reuse rights and source stability are clear. Otherwise create an explanatory diagram or point readers to the original PDF. Keep the source/reuse decision out of the visible research flow unless visible attribution is legally or academically required.
+
+Derived or explanatory visuals must not imply that they are original figures from the cited paper. Record redraw/provenance details in a hidden comment when a visible attribution is not otherwise required.
 
 ## 6. Topic visualizations
 
 A mature topic page should normally contain, where applicable, an overview/architecture diagram, a methodological or execution-flow diagram, a mathematical/data-structure visualization when the topic has meaningful formal structure, and a simulated example when temporal behavior is central to understanding the topic.
 
 Do not add all four mechanically. Use only the visual forms that materially improve comprehension.
+
+Do not add visible notes explaining why the topic exists in the repository, which node category it uses, or what renderer/file format produced its visuals.
 
 ## 7. Visual design
 
@@ -259,7 +267,7 @@ Before considering a visualization complete, verify all of the following.
 
 ### Static diagrams
 
-- diagram renders without Mermaid/parser errors;
+- diagram renders without parser errors;
 - labels do not overlap or extend outside nodes;
 - the first fitted view is readable;
 - zoom in/out works from visible controls;
@@ -302,10 +310,11 @@ For map-navigation simulations also verify:
 - reader scrolling remains usable above, directly over, inside, and below visualization blocks;
 - post-render DOM mutations do not change the reader scroll position;
 - GitHub Pages builds successfully;
+- visible topic/paper content contains no renderer, asset-format, repository-workflow, or authoring-instruction leakage;
 - where possible, perform a real browser interaction check rather than relying only on deployment success.
 
 ## 10. Maintenance rule
 
-When the visualization architecture, interaction contract, renderer, simulation format, or validation procedure changes, update this file in the same change set.
+When the visualization architecture, interaction contract, renderer, simulation format, validation procedure, or visible-content boundary changes, update this file and `content_instruction.md` in the same change set when applicable.
 
 This file is the authoritative process reference for future visualization work in this repository.

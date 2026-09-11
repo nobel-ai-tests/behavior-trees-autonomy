@@ -1,10 +1,8 @@
 # Reactive Architectures and Subsumption
 
-> **Role in this knowledge base.** Behavior Trees remain the core autonomy architecture studied here. This page is an additional resource for comparing BT execution with another fast decision-making mechanism and for identifying useful hybrid designs.
-
 Reactive architectures minimize deliberation. In subsumption-style control, several sensor-driven behaviors can run concurrently and a priority mechanism lets urgent behaviors suppress or override lower-priority outputs.
 
-<div role="img" aria-label="Reactive architectures and subsumption structured overview" style="border:1px solid #cbd5e1;border-radius:14px;padding:20px;background:#f8fafc;margin:1.25rem 0;">
+<div role="img" aria-label="Reactive architectures and subsumption execution overview" style="border:1px solid #cbd5e1;border-radius:14px;padding:20px;background:#f8fafc;margin:1.25rem 0;">
   <div style="font-weight:800;font-size:1.15rem;margin-bottom:4px;">Subsumption execution graph</div>
   <div style="color:#64748b;margin-bottom:16px;">Concurrent sensor-driven behaviors compete through explicit priority and suppression.</div>
   <div style="display:grid;grid-template-columns:minmax(180px,1fr) 54px minmax(180px,1fr) 54px minmax(180px,1fr);gap:10px;align-items:center;margin-bottom:18px;">
@@ -24,8 +22,6 @@ Reactive architectures minimize deliberation. In subsumption-style control, seve
     <div style="padding:12px;border-radius:10px;background:white;border:1px solid #dbe3ec;"><strong>BT integration</strong><br>Use as a low-latency safety layer beneath the task tree.</div>
   </div>
 </div>
-
-*Repository-authored structured overview rendered directly from Markdown HTML/CSS nodes; no SVG, Mermaid, or binary image asset is required.*
 
 ## Runtime idea
 
@@ -57,8 +53,8 @@ Both BTs and subsumption can express priority and reactive preemption, but the r
 
 A BT can remain the mission/task executive while a reactive layer handles collision avoidance, emergency overrides, or other low-latency responses beneath or beside the tree.
 
-## Related knowledge
+## Related topics
 
 - [Behavior Tree foundations](behavior-tree-foundations.md)
 - [Behavior Trees in robotics](robotics-behavior-trees.md)
-- [Fast decision architectures: additional resources](fast-decision-architectures.md)
+- [Fast decision architectures in robotics](fast-decision-architectures.md)

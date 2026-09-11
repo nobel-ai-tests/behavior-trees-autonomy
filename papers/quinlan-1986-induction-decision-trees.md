@@ -2,7 +2,7 @@
 
 ## Abstract
 
-*Analytical abstract — repository-authored because the source does not provide clear permission to reproduce the complete publisher abstract verbatim.*
+<!-- This section is an analytical summary rather than a verbatim reproduction of the publisher abstract. -->
 
 **Contribution / method.** The paper presents ID3 as a practical procedure for inducing classification decision trees from labeled examples. At each internal node, candidate attributes are evaluated using information gain, the selected test partitions the examples, and the process recurses until a classification can be assigned. The paper also develops modifications for noisy labels/attributes and unknown values, including statistical stopping based on a chi-square relevance test and weighted branching when a queried attribute is missing.
 
@@ -12,7 +12,7 @@
 
 **Disadvantages / trade-offs.** The information-gain criterion is biased toward attributes with many possible values: splitting an attribute into finer categories can increase measured gain even when the extra distinctions carry no real predictive value. Noise can create spurious tree complexity, while a relevance threshold strong enough to suppress noise can also reject genuinely useful attributes; the paper therefore uses statistical testing rather than a simple gain threshold. Missing-value handling remains imperfect—the contextual decision-tree imputation method still misidentifies roughly one fifth of the tested unknown values—and stronger noise handling can trade model detail for robustness by stopping growth earlier.
 
-**Limitations.** ID3 is greedy and locally optimizes the next split, so it does not guarantee a globally smallest or most accurate tree. Much of the numerical analysis is based on a specific 551-example, 39-binary-attribute task, making the reported noise and missing-data curves dataset-dependent rather than universal. The treatment focuses primarily on categorical classification and predates modern practices such as large train/validation/test benchmarks, cross-validation protocols at scale, calibrated probabilistic prediction, fairness analysis, and computational comparisons against ensembles or other modern learners. The many-valued-attribute bias is identified but not fully resolved within the basic ID3 criterion, and the stopping/missing-value methods depend on heuristics and statistical assumptions. For this repository, the paper should therefore be used as the canonical foundation for predictive decision-tree induction, not as a modern performance baseline and not as evidence about behavior-tree execution semantics.
+**Limitations.** ID3 is greedy and locally optimizes the next split, so it does not guarantee a globally smallest or most accurate tree. Much of the numerical analysis is based on a specific 551-example, 39-binary-attribute task, making the reported noise and missing-data curves dataset-dependent rather than universal. The treatment focuses primarily on categorical classification and predates modern practices such as large train/validation/test benchmarks, cross-validation protocols at scale, calibrated probabilistic prediction, fairness analysis, and computational comparisons against ensembles or other modern learners. The many-valued-attribute bias is identified but not fully resolved within the basic ID3 criterion, and the stopping/missing-value methods depend on heuristics and statistical assumptions. The paper is therefore best used as a canonical foundation for predictive decision-tree induction, not as a modern performance baseline and not as evidence about behavior-tree execution semantics.
 
 [Source abstract via Springer](https://doi.org/10.1007/BF00116251).
 
@@ -49,15 +49,11 @@ The paper develops the ID3 induction procedure, illustrates its attribute-select
 
 The work established a widely influential decision-tree induction framework and helped make information-based recursive partitioning a standard machine-learning approach.
 
-## Repository notes
+## Related work
 
-This paper is included to provide a precise comparison point for behavior trees. A machine-learning decision tree performs inference or prediction from feature tests, whereas a behavior tree is normally embedded in an agent execution loop and composes conditions and actions using control-flow semantics.
+For comparison with behavior trees, the central distinction is semantic: a machine-learning decision tree performs inference from feature tests, whereas a behavior tree is normally embedded in an agent execution loop and composes conditions and actions using control-flow semantics.
 
-“Decision tree” also has meanings in decision analysis and planning. This note uses Quinlan specifically as the machine-learning and classification baseline.
-
-The paper contains decision-tree examples and diagrams in the linked reading copy. Those figures are not rehosted here unless reuse rights are clear.
-
-Connections in this knowledge base:
+“Decision tree” also has meanings in decision analysis and planning; Quinlan's paper is specifically a machine-learning classification reference.
 
 - Breiman et al. (1984), *Classification and Regression Trees*, is another foundational reference covering classification and regression trees.
 - Colledanchise & Ögren (2017) formally discuss how behavior trees can generalize decision-tree structures in a hybrid-control setting.

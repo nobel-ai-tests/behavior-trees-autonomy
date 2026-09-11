@@ -4,7 +4,7 @@
 
 Behavior Trees (BTs) were invented as a tool to enable modular AI in computer games, but have received an increasing amount of attention in the robotics community in the last decade. With rising demands on agent AI complexity, game programmers found that the Finite State Machines (FSM) that they used scaled poorly and were difficult to extend, adapt and reuse. In BTs, the state transition logic is not dispersed across the individual states, but organized in a hierarchical tree structure, with the states as leaves. This has a significant effect on modularity, which in turn simplifies both synthesis and analysis by humans and algorithms alike. These advantages are needed not only in game AI design, but also in robotics, as is evident from the research being done. In this paper we present a comprehensive survey of the topic of BTs in Artificial Intelligence and Robotic applications. The existing literature is described and categorized based on methods, application areas and contributions, and the paper is concluded with a list of open research challenges.
 
-*Verbatim abstract. The article is licensed CC BY.*
+<!-- Abstract reproduced verbatim from the CC BY article. -->
 
 **Contribution / method.** The paper provides a field-level taxonomy of behavior-tree research spanning foundational theory, applications, design and synthesis methods, implementation libraries, and open research challenges. Its review method is explicit: the authors search Google Scholar, Scopus, and Clarivate Web of Science for both “Behavior Tree” and “Behaviour Tree,” restrict the corpus to English-language papers, remove the unrelated requirements-engineering meaning of the term, dead links, and duplicates, and then organize the retained literature by topic, application area, and methodology.
 
@@ -26,9 +26,9 @@ Behavior Trees (BTs) were invented as a tool to enable modular AI in computer ga
 
 ## Survey overview
 
-![Repository redraw of Figure 1: overview of the topics covered by the survey](../assets/figures/iovino-2022-fig1-survey-overview.svg)
+<!-- provenance: explanatory redraw of the paper's Figure 1; see the linked paper for the original figure -->
 
-*Repository redraw of the paper's Figure 1. The figure organizes the survey along two main dimensions: application domain and BT design method. Use the linked paper for the original figure.*
+![Figure 1 overview of the topics covered by the survey](../assets/figures/iovino-2022-fig1-survey-overview.svg)
 
 The overview is useful as the reading map for the entire paper. On the application side it separates game AI from robotic AI, then breaks robotics into manipulation, mobile ground robots, aerial/underwater robots, and other robotic systems. On the design side it separates manual design from learning, learning from demonstration, and planning/analytic approaches.
 
@@ -54,7 +54,9 @@ This makes the paper especially useful as a field map. It answers three differen
 
 ## Method and workflow: planning to a behavior tree
 
-The planning literature summarized by the survey repeatedly uses a backchaining-style idea: begin with a desired condition, find actions that can establish it, expose the preconditions of those actions, and recursively turn unmet preconditions into subtrees. The following is repository-written pseudocode for that recurring workflow; it is not copied from a source algorithm.
+The planning literature summarized by the survey repeatedly uses a backchaining-style idea: begin with a desired condition, find actions that can establish it, expose the preconditions of those actions, and recursively turn unmet preconditions into subtrees. A generic pseudocode summary of that recurring workflow is shown below.
+
+<!-- provenance: explanatory pseudocode synthesized from the planning workflow discussed by the survey; not verbatim source algorithm text -->
 
 ```text
 procedure BUILD_REACTIVE_BT(goal_conditions, action_library):
@@ -93,18 +95,18 @@ The survey treats planning as one family among several BT-generation approaches 
 
 The survey documents the movement of BTs from game AI into robotics and other AI systems. In robotics, the reviewed work includes manipulation, mobile ground robots, aerial and underwater vehicles, and systems that combine BT execution with planning, learning, or other control architectures.
 
-For this knowledge base, the important point is that “behavior trees in robotics” is not one method. The same execution abstraction appears as a hand-designed executive, a target representation for planners, a program structure optimized by evolutionary search, and a policy representation refined from demonstrations or reinforcement learning.
+An important point is that “behavior trees in robotics” is not one method. The same execution abstraction appears as a hand-designed executive, a target representation for planners, a program structure optimized by evolutionary search, and a policy representation refined from demonstrations or reinforcement learning.
 
 ## Design-method coverage
 
-The paper's methodology section provides the most useful cross-paper classification for the next stages of this repository:
+The paper's methodology section provides a useful cross-paper classification:
 
 - **Learning:** reinforcement learning, evolutionary/genetic approaches, case-based reasoning, and related data-driven methods.
 - **Learning from demonstration:** task structure or behavior logic derived from human demonstrations.
 - **Planning and analytic design:** planners, backchaining, formal action models, or analytic procedures used to construct or refine BTs.
 - **Manual design and other approaches:** hand-authored trees and application-specific engineering methods.
 
-These categories provide a natural bridge from the survey stage into the later planning, synthesis, learning, and execution paper clusters.
+These categories connect the planning, synthesis, learning, and execution strands of the literature without treating any one construction method as the definition of a behavior tree.
 
 ## Open challenges and significance
 
@@ -112,15 +114,11 @@ The survey's main contribution is breadth. It consolidates BT history, theory, a
 
 Because the literature corpus closes in April 2020 even though the journal publication is from 2022, this paper should be used as a foundational survey rather than as a complete inventory of later robotics work.
 
-## Repository notes
-
-This note keeps the survey's overview/taxonomy visual and expresses the planning workflow as repository-written pseudocode instead of a self-made workflow diagram. The pseudocode is intentionally generic and should be read alongside the planning section of the linked full text.
-
-Connections in this knowledge base:
+## Related work
 
 - [Ögren & Sprague (2022)](ogren-sprague-2022-robot-control-systems.md) provides a narrower control-theoretic review organized around modularity, hierarchy, and feedback.
 - [Marzinotto et al. (2014)](marzinotto-et-al-2014-unified-bt-framework.md) and [Colledanchise & Ögren (2017)](colledanchise-ogren-2017-bt-modularity.md) provide formal foundations referenced by the survey.
-- [Behavior Trees in Robotics: Core Research Topics](../topics/robotics-behavior-trees.md) uses the survey taxonomy as one entry point into the repository's planning, learning, manipulation, multi-robot, aerial, and software clusters.
+- [Behavior Trees in Robotics: Core Research Topics](../topics/robotics-behavior-trees.md) synthesizes several of the planning, learning, manipulation, multi-robot, aerial, and software strands identified by the survey.
 
 ## Citation
 

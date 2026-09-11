@@ -1,10 +1,8 @@
 # Learned Policies
 
-> **Role in this knowledge base.** Behavior Trees remain the core autonomy architecture studied here. This page is an additional resource for comparing BT execution with another fast decision-making mechanism and for identifying useful hybrid designs.
-
 A learned policy moves much of the decision-design cost into training. At runtime, observations are mapped to actions through a learned function, often a neural network trained by imitation learning, reinforcement learning, or both.
 
-<div role="img" aria-label="Learned policies structured overview" style="border:1px solid #cbd5e1;border-radius:14px;padding:20px;background:#f8fafc;margin:1.25rem 0;">
+<div role="img" aria-label="Learned-policy execution overview" style="border:1px solid #cbd5e1;border-radius:14px;padding:20px;background:#f8fafc;margin:1.25rem 0;">
   <div style="font-weight:800;font-size:1.15rem;margin-bottom:4px;">Learned-policy execution graph</div>
   <div style="color:#64748b;margin-bottom:16px;">Training absorbs the design/search cost; deployment becomes a short observation-to-action pipeline.</div>
   <div style="display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;margin-bottom:18px;">
@@ -24,8 +22,6 @@ A learned policy moves much of the decision-design cost into training. At runtim
     <div style="padding:12px;border-radius:10px;background:white;border:1px solid #dbe3ec;"><strong>BT integration</strong><br>Use the BT to gate, monitor, and recover learned skills.</div>
   </div>
 </div>
-
-*Repository-authored structured overview rendered directly from Markdown HTML/CSS nodes; no SVG, Mermaid, or binary image asset is required.*
 
 ## Runtime idea
 
@@ -53,8 +49,8 @@ A BT exposes task logic and switching structure directly, whereas a learned poli
 
 A BT can own the interpretable mission logic while learned policies implement perception-rich skills such as grasp selection, local navigation, locomotion, or visuomotor control.
 
-## Related knowledge
+## Related topics
 
 - [Behavior Tree foundations](behavior-tree-foundations.md)
 - [Behavior Trees in robotics](robotics-behavior-trees.md)
-- [Fast decision architectures: additional resources](fast-decision-architectures.md)
+- [Fast decision architectures in robotics](fast-decision-architectures.md)

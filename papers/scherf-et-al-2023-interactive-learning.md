@@ -8,7 +8,7 @@ Method: We propose a new framework to directly learn a BT from only a few human 
 
 Evaluation and results: We evaluate our approach on a robotic trash disposal task with 20 human participants and demonstrate that our method is capable of learning reactive BTs from only a few human demonstrations and interactively resolving possible failure cases at runtime.
 
-*Verbatim abstract. The article is licensed CC BY 4.0.*
+<!-- Abstract reproduced verbatim from the CC BY 4.0 article. -->
 
 **Contribution / method.** The paper introduces ILBERT, an interactive learning-from-demonstration pipeline that records RGB-D demonstrations, segments them into high-level actions, learns continuous preconditions and postconditions from visual features, constructs a BT through backchaining, detects execution-time precondition/postcondition failures or unknown states, and then asks the user for targeted corrective input instead of discarding the whole learned task. The core contribution is therefore not only initial BT induction but an explicit repair loop for imperfect demonstrations.
 
@@ -61,13 +61,9 @@ The approach is evaluated on a robotic trash-disposal task with 20 participants.
 
 The work demonstrates that BTs can serve as an editable intermediate program representation between human demonstration and robot execution. That is important for HRI because the learned policy remains structured enough for targeted correction when a demonstration did not cover the full state space.
 
-## Repository notes
-
-Core topics: learning from demonstration, robot learning, human-robot interaction, behavior synthesis, robot manipulation, fault tolerance, and robot control.
+## Related work
 
 This paper connects planning-based BT generation with interactive robot learning: the backchaining machinery remains recognizable, but the action conditions are learned from demonstrations instead of being supplied entirely by a domain engineer.
-
-The article is CC BY and contains diagrams, algorithms, and experiment figures. They remain in the linked source for now; specific figures can later be embedded with attribution if they materially improve a topic synthesis.
 
 ## Citation
 

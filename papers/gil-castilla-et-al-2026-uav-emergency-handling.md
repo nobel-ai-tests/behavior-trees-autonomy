@@ -4,7 +4,7 @@
 
 Unmanned Aerial Vehicles (UAVs) require reliable and adaptable autonomy frameworks to perform critical tasks such as infrastructure inspection, where safety, mission adaptability, and real-time responsiveness are of prime importance. This paper presents a modular framework for autonomous inspection missions using Behavior Trees (BTs) which can be applied to heterogeneous UAVs. This framework builds on prior efforts to integrate customized commercial UAVs within an open-source system, ensuring adaptability across various mission requirements. By leveraging BTs within the Robotic Operating System (ROS) framework, the architecture emphasizes modularity, scalability and real-time adaptability, overcoming the rigidity of traditional state machine approaches. A clear separation between decision-making and actuation is maintained, with BTs dedicated to execute well-defined tasks and responding to emergencies, whereas high-level decision logic is managed externally. The system supports essential mission tasks while incorporating robust emergency detection and response mechanisms to enhance operational safety. We validated this system in both simulated and real-world scenarios, demonstrating improved mission adaptability and safety across various inspection applications.
 
-*Verbatim abstract. The article is licensed CC BY 4.0.*
+<!-- Abstract reproduced verbatim from the CC BY 4.0 article. -->
 
 **Contribution / method.** The paper defines a ROS-based BT actuation layer for heterogeneous UAV inspection systems. High-level mission decisions remain outside the BT, while the tree handles reusable task execution and prioritized emergency response. Platform-specific interfaces allow the same executive structure to sit above different autopilot ecosystems, and emergency branches are arranged so critical conditions can interrupt nominal mission behavior deterministically.
 
@@ -56,13 +56,9 @@ Validation covers autonomous inspection use cases with heterogeneous UAV platfor
 
 The work demonstrates a contemporary field-robotics use of BTs where modularity is tied directly to operational safety and platform heterogeneity. It is particularly valuable for showing how prioritized BT branches can encode deterministic emergency behavior without entangling that logic with every nominal mission state.
 
-## Repository notes
+## Related work
 
-Core topics: aerial robotics, mission autonomy, fault tolerance, reactivity, robot software architecture, multi-robot systems, and robot control.
-
-This paper extends the knowledge base beyond laboratory manipulation into infrastructure inspection and field deployment. It also provides a useful implementation link through the authors' associated open-source software.
-
-The article is CC BY 4.0; its figures are generally reusable with attribution unless a figure carries a separate credit line. Specific figures can be added later to the aerial-robotics topic page when they materially improve the synthesis.
+The paper extends BT research beyond laboratory manipulation into infrastructure inspection and field deployment. Its associated open-source software provides an implementation reference for heterogeneous UAV mission actuation and emergency handling.
 
 ## Citation
 

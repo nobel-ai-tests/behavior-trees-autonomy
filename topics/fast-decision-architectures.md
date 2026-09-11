@@ -1,10 +1,8 @@
-# Fast Decision Architectures: Additional Resources Around Behavior Trees
+# Fast Decision Architectures in Robotics
 
-**Behavior Trees are the core subject of this knowledge base.** The pages in this branch of the graph are additional resources: they show other ways a robot can make low-latency decisions and make it easier to see what a BT contributes, what it does not replace, and which mechanisms are useful inside BT leaf skills or safety layers.
+Fast robotic decision making can be implemented through several architectural families with different representations, timing assumptions, and control scopes. Finite-state machines and hierarchical FSMs use discrete state transitions; reactive and subsumption systems use prioritized sensor-to-action behaviors; utility systems score competing actions; learned policies map observations to actions through trained models; and Model Predictive Control repeatedly solves a constrained short-horizon optimization problem.
 
-The five comparison families represented here are finite-state machines and hierarchical FSMs, reactive/subsumption architectures, utility-based action selection, learned policies, and Model Predictive Control. They span discrete switching, layered reaction, numerical arbitration, learned inference, and online optimization.
-
-These are not mutually exclusive alternatives. Common hybrid systems use a BT for interpretable mission and task execution, an MPC or learned controller for motion, and an independent reflex or reactive safety layer for hard real-time intervention.
+These mechanisms are not mutually exclusive. A robot may use a Behavior Tree for interpretable mission and task execution, MPC or a learned controller for motion, and an independent reflex or reactive safety layer for low-latency intervention.
 
 ## Comparison axis
 
@@ -16,7 +14,7 @@ These are not mutually exclusive alternatives. Common hybrid systems use a BT fo
 | Learned policy | model inference | perception-to-action skill | leaf/subtree policy |
 | MPC | short-horizon optimization | continuous control | controller behind a BT action |
 
-## Resources
+## Related topics
 
 - [Finite-State Machines and Hierarchical FSMs](finite-state-machines.md)
 - [Reactive Architectures and Subsumption](reactive-architectures-subsumption.md)

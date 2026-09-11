@@ -1,10 +1,8 @@
 # Finite-State Machines and Hierarchical FSMs
 
-> **Role in this knowledge base.** Behavior Trees remain the core autonomy architecture studied here. This page is an additional resource for comparing BT execution with another fast decision-making mechanism and for identifying useful hybrid designs.
-
 An FSM makes a fast decision by maintaining one active discrete state and evaluating transition guards. A hierarchical FSM reduces some structural growth by allowing a state to contain substates.
 
-<div role="img" aria-label="Finite-State Machines and Hierarchical FSMs structured overview" style="border:1px solid #cbd5e1;border-radius:14px;padding:20px;background:#f8fafc;margin:1.25rem 0;">
+<div role="img" aria-label="Finite-State Machines and Hierarchical FSMs execution overview" style="border:1px solid #cbd5e1;border-radius:14px;padding:20px;background:#f8fafc;margin:1.25rem 0;">
   <div style="font-weight:800;font-size:1.15rem;margin-bottom:4px;">FSM / HFSM execution graph</div>
   <div style="color:#64748b;margin-bottom:16px;">Fast decisions through explicit state, guard evaluation, and deterministic transitions.</div>
   <div style="display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;margin-bottom:18px;">
@@ -25,8 +23,6 @@ An FSM makes a fast decision by maintaining one active discrete state and evalua
     <div style="padding:12px;border-radius:10px;background:white;border:1px solid #dbe3ec;"><strong>BT integration</strong><br>Use an FSM below a BT leaf for local mode switching.</div>
   </div>
 </div>
-
-*Repository-authored structured overview rendered directly from Markdown HTML/CSS nodes; no SVG, Mermaid, or binary image asset is required.*
 
 ## Runtime idea
 
@@ -57,8 +53,8 @@ FSMs encode switching as explicit state-to-state edges. BTs instead repeatedly t
 
 A practical robot does not need one architecture at every level. A BT can remain the mission/task executive while an FSM or HFSM handles a narrower mode-switching problem below a leaf node, inside a skill, or in a dedicated subsystem.
 
-## Related knowledge
+## Related topics
 
 - [Behavior Tree foundations](behavior-tree-foundations.md)
 - [Behavior Trees in robotics](robotics-behavior-trees.md)
-- [Fast decision architectures: additional resources](fast-decision-architectures.md)
+- [Fast decision architectures in robotics](fast-decision-architectures.md)

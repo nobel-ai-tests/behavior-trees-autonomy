@@ -2,7 +2,7 @@
 
 ## Abstract
 
-*Analytical abstract — repository-authored because the source does not provide clear permission to reproduce the complete publisher abstract verbatim.*
+<!-- This section is an analytical summary rather than a verbatim reproduction of the publisher abstract. -->
 
 **Contribution / method.** The paper proposes a backchaining planner that creates and incrementally refines a behavior tree while the robot is acting. Starting from a goal condition, the planner selects actions whose effects satisfy that goal, recursively expands unmet preconditions, and embeds the resulting alternatives in reactive BT structure. During execution, already-satisfied conditions cause actions to be skipped, undone effects can cause earlier actions to be reexecuted, and newly discovered blockers can trigger local tree expansion rather than a complete replan.
 
@@ -53,13 +53,9 @@ The examples are manipulation-oriented and emphasize disturbances such as a drop
 
 The paper is an important bridge between symbolic task planning and reactive robot execution. It establishes the design pattern later developed by stronger synthesis methods: use planning to construct BT structure, but exploit BT ticking and condition checks to avoid treating every state change as a replanning event.
 
-## Repository notes
+## Related work
 
-Core topics: robot task planning, behavior synthesis, planning, reactivity, and robot control.
-
-This work is a direct precursor to sound/complete BT-expansion methods and to later approaches that learn preconditions, postconditions, or task structure from demonstration.
-
-The preprint contains the original planning diagrams and algorithm figures; they are linked rather than rehosted here.
+This work is a direct precursor to sound and complete BT-expansion methods and to later approaches that learn preconditions, postconditions, or task structure from demonstration.
 
 ## Citation
 

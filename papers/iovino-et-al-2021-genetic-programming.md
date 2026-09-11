@@ -2,7 +2,7 @@
 
 ## Abstract
 
-*Analytical abstract — repository-authored because the source does not provide clear permission to reproduce the complete publisher abstract verbatim.*
+<!-- This section is an analytical summary rather than a verbatim reproduction of the publisher abstract. -->
 
 **Contribution / method.** The paper learns behavior-tree structure with genetic programming (GP) for a mobile-manipulation task in an unpredictable environment. Candidate BTs are evolved using crossover, mutation, tournament selection, and a fitness function that combines task progress, tree size, execution time, and estimated action-failure probability. To make the search tractable, learning is performed in a lightweight state-machine simulator and the resulting trees are then validated in a more detailed ROS/Gazebo simulation.
 
@@ -51,13 +51,9 @@ The work targets industrial robotic tasks and explicitly studies unpredictable e
 
 The reported experiments show convergence without task-specific search heuristics and successful transfer from the simpler learning simulator to a more realistic one. This makes the paper a core reference for evolutionary BT synthesis in robotics and for the idea that search can operate on an interpretable task representation rather than directly on low-level control parameters.
 
-## Repository notes
-
-Core topics: robot learning, evolutionary learning, behavior synthesis, robot manipulation, fault tolerance, and robot control.
+## Related work
 
 This paper complements planning-based synthesis such as Colledanchise et al. (2019) and Cai et al. (2021): planning uses explicit action models, whereas genetic programming searches directly over candidate BT structures using performance feedback.
-
-The original figures and experiment diagrams remain in the linked paper.
 
 ## Citation
 

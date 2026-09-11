@@ -2,7 +2,7 @@
 
 ## Abstract
 
-*Analytical abstract — repository-authored because the source does not provide clear permission to reproduce the complete publisher abstract verbatim.*
+<!-- This section is an analytical summary rather than a verbatim reproduction of the publisher abstract. -->
 
 **Contribution / method.** The paper gives a functional formulation of behavior trees as switching structures for hybrid dynamical systems, then derives conditions under which properties of component BTs are preserved when trees are composed. It formalizes safety, finite-time success, efficiency bounds, and robustness through regions of attraction, and shows how BTs can represent sequential behavior compositions, the subsumption architecture, and decision-tree structures. The analysis is illustrated with three robot-control examples implemented in ROS.
 
@@ -53,17 +53,13 @@ The similarity between a BT and a decision tree is not only visual. Certain deci
 
 The paper also explains a core architectural distinction from finite-state machines: BTs replace many explicit one-way transitions among states with hierarchical function-call-like control flow up and down the tree.
 
-## Repository notes
+## Related work
 
 The paper is primarily theoretical and architectural. It does not establish that BTs are universally superior to FSMs, decision trees, or other executives; practical tradeoffs depend on the task, implementation, and required semantics.
 
-The manuscript contains formal diagrams and examples that are best viewed in the linked PDF. They are not rehosted here unless redistribution rights are clear.
-
-Connections in this knowledge base:
-
-- Extends the formalization direction of Marzinotto et al. (2014).
-- Complements the broader taxonomy in Iovino et al. (2022).
-- Directly supports comparisons between behavior trees, decision trees, FSMs, and behavior-based control architectures.
+- Marzinotto et al. (2014) provides the earlier unified formalization of BT semantics.
+- Iovino et al. (2022) gives a broader taxonomy of BT research and applications.
+- The generalization analysis directly supports comparisons between behavior trees, decision trees, FSMs, and behavior-based control architectures.
 
 ## Citation
 

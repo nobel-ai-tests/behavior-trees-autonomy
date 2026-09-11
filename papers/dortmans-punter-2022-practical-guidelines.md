@@ -4,7 +4,7 @@
 
 Behavior Trees are a promising approach to model the autonomous behaviour of robots in dynamic environments. Behavior Trees represent action selection decisions as a tree of decision nodes. The hierarchy of these decision nodes provides the planning of actions of the robot including its reactions on exceptions. Behavior Trees enable flexible planning and replanning of robot behavior while supporting better maintainable decision-making than traditional Finite State Machines. This paper presents an overview of lessons, which we have learned when applying Behavior Trees to various autonomous robots. We present these lessons as a sequence of steps that is meant to support robot software practitioners to develop their systems.
 
-*Verbatim abstract. The article is licensed CC BY 4.0.*
+<!-- Abstract reproduced verbatim from the CC BY 4.0 article. -->
 
 **Contribution / method.** The paper turns practitioner experience with behavior-tree-based robots into an engineering workflow for building robot decision logic. The method starts from the robot's context and purpose, builds a nominal “good weather” plan, adds explicit preconditions/postconditions and recovery behavior for robustness, then introduces reactive contingency handling and connects the resulting BT to robot skills, world-state data, middleware, and execution infrastructure.
 
@@ -56,13 +56,9 @@ This paper is particularly useful for connecting BT concepts to ROS-oriented imp
 
 The paper provides a practitioner-focused complement to formal and synthesis-oriented work. It helps explain why BT adoption in robotics depends as much on software architecture, skill interfaces, and observability as on the tree notation itself.
 
-## Repository notes
+## Related work
 
-Core topics: robot software architecture, mobile robotics, robot manipulation, reactivity, fault tolerance, and robot control.
-
-This is a review/guidelines paper rather than a single controlled experiment. It is useful as an implementation bridge between the foundational literature and application-specific systems.
-
-The article is open access and contains multiple explanatory figures and patterns; the repository links to the source rather than duplicating the complete visual set.
+This review/guidelines paper provides an implementation-oriented bridge between foundational BT theory and application-specific systems. Its emphasis on skills, blackboards, recovery structure, and ROS execution complements formal work on BT semantics and synthesis.
 
 ## Citation
 

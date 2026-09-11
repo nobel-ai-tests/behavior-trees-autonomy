@@ -2,7 +2,7 @@
 
 ## Abstract
 
-*Analytical abstract — repository-authored because the source does not provide clear permission to reproduce the complete publisher abstract verbatim.*
+<!-- This section is an analytical summary rather than a verbatim reproduction of the publisher abstract. -->
 
 **Contribution / method.** This review reframes behavior trees through three control-system ideas—modularity, hierarchy, and feedback—and uses that lens to connect BT execution with hybrid switching, finite-time convergence, regions of attraction, safety/invariance, control barrier functions, explainability, reinforcement learning, evolutionary search, and planning. Rather than conducting a systematic literature search, the authors build a control-theoretic synthesis around a common BT model and show how local subtree interfaces and return statuses support reasoning about larger controllers.
 
@@ -23,9 +23,9 @@
 
 ## Control-system overview
 
-![Condensed repository redraw of Figure 1: mobile-manipulator behavior tree](../assets/figures/ogren-sprague-2022-fig1-system-overview.svg)
+<!-- provenance: condensed explanatory redraw of the paper's Figure 1; see the linked paper for the original figure -->
 
-*Condensed repository redraw of the paper's Figure 1. The original mobile-manipulator BT has four prioritized top-level goals and substantially more internal detail; this redraw keeps the system-level structure and representative recovery branches.*
+![Figure 1 mobile-manipulator behavior-tree overview](../assets/figures/ogren-sprague-2022-fig1-system-overview.svg)
 
 The opening example makes the review's argument concrete. A robot controller is organized around prioritized goals such as staying in a safe area, maintaining battery feasibility, moving an object to its goal, and reaching the charger. Each goal can contain lower-level checks and actions while still exposing the same BT interface to its parent.
 
@@ -56,7 +56,9 @@ That organization matters because it treats BTs as more than a software notation
 
 ## Analysis methodology: operating regions
 
-The operating-region analysis can be read as a bottom-up verification procedure. The following pseudocode is a repository-written restatement of that reasoning, not a reproduction of the paper's notation or algorithm text.
+The operating-region analysis can be read as a bottom-up verification procedure. A compact pseudocode summary of that reasoning is shown below.
+
+<!-- provenance: explanatory restatement of the operating-region analysis; not a verbatim source algorithm -->
 
 ```text
 procedure ANALYZE_BT_WITH_OPERATING_REGIONS(tree):
@@ -85,7 +87,9 @@ The key idea is not the specific pseudocode syntax but the decomposition: each s
 
 ## Design workflow: recursive goal expansion
 
-The paper's practical design principle is naturally expressed as recursion. The following pseudocode is repository-authored and summarizes the design logic in our own words.
+The paper's practical design principle is naturally expressed as recursion. The following pseudocode summarizes the design logic.
+
+<!-- provenance: explanatory pseudocode synthesized from the paper's design principle; not verbatim source algorithm text -->
 
 ```text
 function ACHIEVE(desired_condition):
@@ -131,15 +135,11 @@ This paper is especially useful for separating two questions that are often mixe
 
 It also provides a bridge between foundational BT theory and later application papers. Planning, reinforcement learning, evolutionary algorithms, and safety mechanisms appear as extensions or construction methods around a common modular controller interface rather than as competing definitions of a behavior tree.
 
-## Repository notes
-
-This note keeps the review's system-overview visual, but expresses the operating-region analysis and recursive design principle as repository-written pseudocode instead of self-made methodology/workflow diagrams. The pseudocode is intentionally explanatory rather than a claim that the paper publishes these exact algorithms.
-
-Connections in this knowledge base:
+## Related work
 
 - [Iovino et al. (2022)](iovino-et-al-2022-survey.md) provides the broader literature taxonomy across applications and design methods.
 - [Colledanchise & Ögren (2017)](colledanchise-ogren-2017-bt-modularity.md) develops the modularity and hybrid-control foundations that this review extends and synthesizes.
-- [Behavior Tree Foundations](../topics/behavior-tree-foundations.md) gives the repository-level comparison with decision trees, finite-state machines, and planners.
+- [Behavior Tree Foundations](../topics/behavior-tree-foundations.md) provides additional comparison with decision trees, finite-state machines, and planners.
 
 ## Citation
 

@@ -66,6 +66,6 @@ Representative papers:
 - [Cloete, Merkt & Havoutis (2025)](../papers/cloete-et-al-2025-adaptive-manipulation.md)
 - [Gil-Castilla, Maza & Ollero (2026)](../papers/gil-castilla-et-al-2026-uav-emergency-handling.md)
 
-## Research direction from here
+## Open research directions
 
-A useful next expansion is to connect these robotics topics to task-and-motion planning, formal verification/safety, ROS 2 navigation and execution tooling, language-guided robot programming, and long-horizon autonomy. Those areas should be added as separate topic syntheses once enough primary sources are represented in the graph.
+Important directions include tighter integration with task-and-motion planning, formal verification and safety, ROS 2 navigation and execution tooling, language-guided robot programming, long-horizon autonomy, and methods that preserve BT interpretability while introducing learned skills or automatically synthesized structure.

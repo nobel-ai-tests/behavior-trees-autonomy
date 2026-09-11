@@ -2,7 +2,7 @@
 
 ## Abstract
 
-*Analytical abstract — repository-authored because the source does not provide clear permission to reproduce the complete publisher abstract verbatim.*
+<!-- This section is an analytical summary rather than a verbatim reproduction of the publisher abstract. -->
 
 **Contribution / method.** The paper introduces BT Expansion, a planning algorithm that synthesizes behavior trees from STRIPS-style actions using the state-space formulation of BTs. Starting with the goal as a condition node, the algorithm repeatedly expands unsatisfied conditions with actions that can establish them, prunes redundant branches, and grows the tree until the initial state lies inside the tree's region of attraction. The authors prove termination, soundness, and completeness and use the region-of-attraction formulation to characterize reactive recovery from disturbances.
 
@@ -53,13 +53,9 @@ The evaluation uses a simulated mobile manipulator and benchmark test sets. A re
 
 The paper is important because it strengthens the planning side of the BT literature from heuristic synthesis toward formal guarantees. It also makes precise a central robotics claim: if a disturbance is resolvable within the action model, the expanded BT can recover while preserving reactive execution.
 
-## Repository notes
+## Related work
 
-Core topics: robot task planning, behavior synthesis, planning, reactivity, robot manipulation, fault tolerance, and robot control.
-
-This paper is a natural successor to blended reactive planning and acting. It should be read alongside Colledanchise et al. (2019) to see the progression from backchaining-style synthesis toward soundness and completeness results.
-
-The source paper includes algorithm diagrams and a mobile-manipulator example figure; those remain in the linked PDF.
+This paper is a natural successor to blended reactive planning and acting. Read alongside Colledanchise et al. (2019), it shows the progression from backchaining-style synthesis toward soundness and completeness results.
 
 ## Citation
 

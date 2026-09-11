@@ -1,10 +1,8 @@
 # Utility-Based Action Selection
 
-> **Role in this knowledge base.** Behavior Trees remain the core autonomy architecture studied here. This page is an additional resource for comparing BT execution with another fast decision-making mechanism and for identifying useful hybrid designs.
-
 Utility systems assign a numerical score to each candidate action from context such as task value, battery, distance, risk, and confidence. The decision is the argmax over feasible actions.
 
-<div role="img" aria-label="Utility-based action selection structured overview" style="border:1px solid #cbd5e1;border-radius:14px;padding:20px;background:#f8fafc;margin:1.25rem 0;">
+<div role="img" aria-label="Utility-based action selection execution overview" style="border:1px solid #cbd5e1;border-radius:14px;padding:20px;background:#f8fafc;margin:1.25rem 0;">
   <div style="font-weight:800;font-size:1.15rem;margin-bottom:4px;">Utility selection graph</div>
   <div style="color:#64748b;margin-bottom:16px;">Each feasible action is scored from current context; the maximum-utility action wins.</div>
   <div style="display:grid;grid-template-columns:minmax(170px,1fr) 54px minmax(210px,1fr) 54px minmax(170px,1fr);gap:10px;align-items:center;margin-bottom:18px;">
@@ -23,8 +21,6 @@ Utility systems assign a numerical score to each candidate action from context s
     <div style="padding:12px;border-radius:10px;background:white;border:1px solid #dbe3ec;"><strong>BT integration</strong><br>Use utility scoring at a selector where priorities must be context dependent.</div>
   </div>
 </div>
-
-*Repository-authored structured overview rendered directly from Markdown HTML/CSS nodes; no SVG, Mermaid, or binary image asset is required.*
 
 ## Runtime idea
 
@@ -56,8 +52,8 @@ A standard BT selector uses ordered control flow: earlier children are preferred
 
 A BT can remain the explicit task executive while a utility selector ranks navigation modes, manipulation strategies, resource decisions, or other competing skills using current context.
 
-## Related knowledge
+## Related topics
 
 - [Behavior Tree foundations](behavior-tree-foundations.md)
 - [Behavior Trees in robotics](robotics-behavior-trees.md)
-- [Fast decision architectures: additional resources](fast-decision-architectures.md)
+- [Fast decision architectures in robotics](fast-decision-architectures.md)

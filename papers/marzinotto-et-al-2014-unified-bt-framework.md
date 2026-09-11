@@ -2,7 +2,7 @@
 
 ## Abstract
 
-*Analytical abstract — repository-authored because the source does not provide clear permission to reproduce the complete publisher abstract verbatim.*
+<!-- This section is an analytical summary rather than a verbatim reproduction of the publisher abstract. -->
 
 **Contribution / method.** The paper turns the then-inconsistent behavior-tree literature into a unified robot-control formalism. It first reviews conflicting BT terminology and semantics, then defines a compact mathematical representation with explicit Action and Condition subsets and relates BTs to Controlled Hybrid Dynamical Systems (CHDSs). The framework is implemented in a BT library and exercised on a NAO grasping mission.
 
@@ -53,17 +53,13 @@ The framework is demonstrated with a NAO robot in a grasping mission that schedu
 
 The work moves behavior trees from informal game-AI practice toward a robotics/control formalism and supplies vocabulary and semantics that later BT literature builds on.
 
-## Repository notes
+## Related work
 
 The paper is primarily a formalization and representational study rather than a broad empirical comparison across autonomy architectures. Modern BT libraries may add execution semantics beyond the core formulation described here.
 
-The full text contains behavior-tree diagrams and imagery from the NAO demonstration. Those figures are left in the linked source manuscript rather than rehosted here unless redistribution rights are clear.
-
-Connections in this knowledge base:
-
-- Followed by Colledanchise & Ögren (2017), which develops the modularity and generalization arguments in greater depth.
-- Provides foundations for later surveys such as Iovino et al. (2022).
-- Useful when distinguishing BT execution semantics from the inference semantics of a machine-learning decision tree.
+- Colledanchise & Ögren (2017) develops the modularity and generalization arguments in greater depth.
+- Iovino et al. (2022) places the framework in a broader survey of BT research.
+- The formal execution semantics provide a useful basis for distinguishing BTs from predictive machine-learning decision trees.
 
 ## Citation
 
