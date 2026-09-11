@@ -113,4 +113,7 @@
   document.getElementById('resetView')?.addEventListener('click', () => setTimeout(queueEnforce, 0));
 
   enforce();
+
+  import(new URL('assets/kb-meta-nodes.js?v=1', document.baseURI).href)
+    .catch(error => console.warn('Repository meta node support unavailable:', error));
 })();
