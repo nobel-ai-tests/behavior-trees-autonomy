@@ -38,3 +38,17 @@ For technical figures, prefer fenced `mermaid` blocks over hand-positioned SVG w
 - Human-robot collaboration
 - Swarm robotics
 - Marine and underwater robotics
+
+
+## Additional resources: fast decision architectures
+
+**Behavior Trees remain the core topic of this repository.** The following pages are comparison resources for other low-latency decision mechanisms and hybrid architectures:
+
+- [Fast Decision Architectures](fast-decision-architectures.md)
+- [Finite-State Machines and Hierarchical FSMs](finite-state-machines.md)
+- [Reactive Architectures and Subsumption](reactive-architectures-subsumption.md)
+- [Utility-Based Action Selection](utility-action-selection.md)
+- [Learned Policies](learned-policies.md)
+- [Model Predictive Control](model-predictive-control.md)
+
+Program implementations are represented separately under **Program Libraries**, including [Bonsai](../libraries/bonsai.md), a Rust/Python Behavior Tree runtime.

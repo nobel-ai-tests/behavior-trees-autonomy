@@ -13,6 +13,7 @@
   --topic: #315f9b;
   --knowledge: #287a63;
   --paper: #9b5d2d;
+  --program-library: #0f766e;
   --keyword: #7555a6;
   --author: #9c4771;
   --venue: #68717f;
@@ -153,6 +154,7 @@ button:disabled { opacity: .5; cursor: default; }
 .dot.topic { background: var(--topic); }
 .dot.knowledge { background: var(--knowledge); }
 .dot.paper { background: var(--paper); }
+.dot.program-library { background: var(--program-library); }
 .dot.keyword { background: var(--keyword); }
 .dot.author { background: var(--author); }
 .dot.venue { background: var(--venue); }
@@ -296,6 +298,7 @@ body.resizing-columns .splitter span {
 .node.topic circle { fill: var(--topic); }
 .node.knowledge circle { fill: var(--knowledge); }
 .node.paper circle { fill: var(--paper); }
+.node.program-library circle { fill: var(--program-library); }
 .node.keyword circle { fill: var(--keyword); }
 .node.author circle { fill: var(--author); }
 .node.venue circle { fill: var(--venue); }

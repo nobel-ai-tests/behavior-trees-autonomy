@@ -6,6 +6,7 @@
     knowledge: 'General knowledge',
     paper: 'Papers',
     survey: 'Survey papers',
+    'program-library': 'Program libraries',
     keyword: 'Keywords',
     author: 'Authors',
     venue: 'Venues',
@@ -42,7 +43,7 @@
 
   const presetDefs = {
     concepts: {
-      types: ['topic', 'knowledge', 'paper', 'survey'],
+      types: ['topic', 'knowledge', 'paper', 'survey', 'program-library'],
       relations: ['subtopic', 'about', 'related'],
       layout: 'force',
       labelMode: 'smart'
@@ -111,6 +112,7 @@
 
   function documentNodeType(kind, meta) {
     if (kind === 'survey') return 'survey';
+    if (kind === 'program-library') return 'program-library';
     if (kind === 'paper' && (meta.topics || []).includes('surveys')) return 'survey';
     return kind === 'paper' ? 'paper' : 'knowledge';
   }

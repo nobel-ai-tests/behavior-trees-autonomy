@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+      <title id="title">Finite-State Machines and Hierarchical FSMs</title>
+      <desc id="desc">Fast decisions through explicit states and guarded transitions</desc>
+      <defs>
+        <style>
+          text { font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif; }
+          .panel { fill: #ffffff; stroke: #cbd9e8; stroke-width: 2; }
+          .head { fill: #eaf3fb; }
+          .flowbox { fill: #eef5fb; stroke: #6c94bd; stroke-width: 2; rx: 4; }
+        </style>
+        <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#365f91"/></marker>
+      </defs>
+      <rect width="1200" height="760" fill="#f8fafc"/>
+      <text x="600" y="54" text-anchor="middle" font-size="34" font-weight="800" fill="#102a56">Finite-State Machines and Hierarchical FSMs</text>
+      <text x="600" y="86" text-anchor="middle" font-size="19" fill="#52647c">Fast decisions through explicit states and guarded transitions</text>
+      <text x="26" y="35" font-size="11" letter-spacing="2" fill="#6b7e95">BEHAVIOR TREES · ADDITIONAL RESOURCE</text>
+
+      <rect x="24" y="118" width="300" height="430" class="panel"/><rect x="24" y="118" width="300" height="52" class="head"/>
+      <text x="42" y="153" font-size="24" font-weight="800" fill="#102a56">Core idea</text>
+      <text x="44" y="205" font-size="18" font-weight="400" fill="#25344f">One active discrete state</text>
+<text x="44" y="235" font-size="18" font-weight="400" fill="#25344f">Guard checks choose transitions</text>
+<text x="44" y="265" font-size="18" font-weight="400" fill="#25344f">HFSMs nest states to add structure</text>
+
+      <rect x="344" y="118" width="718" height="430" class="panel"/><rect x="344" y="118" width="718" height="52" class="head"/>
+      <text x="364" y="153" font-size="24" font-weight="800" fill="#102a56">Execution structure</text>
+      <rect x="360.0" y="250" width="156.5" height="76" class="flowbox"/><text x="438.2" y="295" text-anchor="middle" font-size="18" font-weight="700" fill="#13294b">OBSERVE</text><line x1="516.5" y1="288" x2="530.5" y2="288" stroke="#365f91" stroke-width="3" marker-end="url(#arrow)"/><rect x="534.5" y="250" width="156.5" height="76" class="flowbox"/><text x="612.8" y="295" text-anchor="middle" font-size="18" font-weight="700" fill="#13294b">CHECK GUARDS</text><line x1="691.0" y1="288" x2="705.0" y2="288" stroke="#365f91" stroke-width="3" marker-end="url(#arrow)"/><rect x="709.0" y="250" width="156.5" height="76" class="flowbox"/><text x="787.2" y="295" text-anchor="middle" font-size="18" font-weight="700" fill="#13294b">TRANSITION</text><line x1="865.5" y1="288" x2="879.5" y2="288" stroke="#365f91" stroke-width="3" marker-end="url(#arrow)"/><rect x="883.5" y="250" width="156.5" height="76" class="flowbox"/><text x="961.8" y="295" text-anchor="middle" font-size="18" font-weight="700" fill="#13294b">EXECUTE STATE</text>
+      <text x="370" y="378" font-size="19" font-weight="700" fill="#102a56">Why it is fast</text>
+      <circle cx="378" cy="409" r="4" fill="#315f9b"/>
+<text x="392" y="414" font-size="17" fill="#25344f">cheap boolean guard checks</text>
+<circle cx="378" cy="436" r="4" fill="#315f9b"/>
+<text x="392" y="441" font-size="17" fill="#25344f">deterministic switching</text>
+<circle cx="378" cy="463" r="4" fill="#315f9b"/>
+<text x="392" y="468" font-size="17" fill="#25344f">bounded per-cycle work</text>
+<circle cx="378" cy="490" r="4" fill="#315f9b"/>
+<text x="392" y="495" font-size="17" fill="#25344f">clear execution trace</text>
+
+      <rect x="1082" y="118" width="94" height="430" fill="#edf5f2" stroke="#bdd8ce" stroke-width="2"/>
+      <text x="1129" y="175" text-anchor="middle" font-size="14" font-weight="800" fill="#19624f">BT CORE</text>
+      <text x="1129" y="204" text-anchor="middle" font-size="13" fill="#365f55">compare</text>
+      <text x="1129" y="226" text-anchor="middle" font-size="13" fill="#365f55">combine</text>
+      <text x="1129" y="248" text-anchor="middle" font-size="13" fill="#365f55">select</text>
+      <line x1="1129" y1="278" x2="1129" y2="485" stroke="#7aa99a" stroke-width="3"/>
+      <circle cx="1129" cy="335" r="13" fill="#287a63"/><circle cx="1129" cy="405" r="13" fill="#287a63"/>
+
+      <rect x="24" y="568" width="1152" height="168" class="panel"/><rect x="24" y="568" width="1152" height="45" class="head"/>
+      <text x="42" y="599" font-size="22" font-weight="800" fill="#102a56">Strengths / limits / typical uses</text>
+      <text x="52" y="648" font-size="18" font-weight="800" fill="#18724f">Strengths</text><circle cx="58" cy="675" r="4" fill="#18724f"/>
+<text x="72" y="680" font-size="17" fill="#25344f">predictable</text>
+<circle cx="58" cy="702" r="4" fill="#18724f"/>
+<text x="72" y="707" font-size="17" fill="#25344f">transparent</text>
+<circle cx="58" cy="729" r="4" fill="#18724f"/>
+<text x="72" y="734" font-size="17" fill="#25344f">low latency</text>
+      <text x="410" y="648" font-size="18" font-weight="800" fill="#a3353c">Limits</text><circle cx="416" cy="675" r="4" fill="#a3353c"/>
+<text x="430" y="680" font-size="17" fill="#25344f">state explosion</text>
+<circle cx="416" cy="702" r="4" fill="#a3353c"/>
+<text x="430" y="707" font-size="17" fill="#25344f">rigid cross-links</text>
+<circle cx="416" cy="729" r="4" fill="#a3353c"/>
+<text x="430" y="734" font-size="17" fill="#25344f">maintenance grows with edges</text>
+      <text x="785" y="648" font-size="18" font-weight="800" fill="#315f9b">Typical uses</text><circle cx="791" cy="675" r="4" fill="#315f9b"/>
+<text x="805" y="680" font-size="17" fill="#25344f">mode switching</text>
+<circle cx="791" cy="702" r="4" fill="#315f9b"/>
+<text x="805" y="707" font-size="17" fill="#25344f">industrial cells</text>
+<circle cx="791" cy="729" r="4" fill="#315f9b"/>
+<text x="805" y="734" font-size="17" fill="#25344f">safety logic</text>
+    </svg>
