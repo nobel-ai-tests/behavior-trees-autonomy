@@ -13,6 +13,31 @@
   <style>
     .reader-head { display: none !important; }
     .reader article { margin-top: 0; padding-top: 32px; }
+
+    /* Author, venue, year, and section remain document metadata only. */
+    #typeFilters .check:has(input[data-type="author"]),
+    #typeFilters .check:has(input[data-type="venue"]),
+    #typeFilters .check:has(input[data-type="year"]),
+    #typeFilters .check:has(input[data-type="section"]),
+    #edgeFilters .check:has(input[data-relation="authored-by"]),
+    #edgeFilters .check:has(input[data-relation="published-in"]),
+    #edgeFilters .check:has(input[data-relation="published"]),
+    #edgeFilters .check:has(input[data-relation="contains"]),
+    .legend span:has(.dot.author),
+    .legend span:has(.dot.venue),
+    .legend span:has(.dot.year),
+    .legend span:has(.dot.section),
+    #graph .node.author,
+    #graph .node.venue,
+    #graph .node.year,
+    #graph .node.section,
+    #graph .edge.authored-by,
+    #graph .edge.published-in,
+    #graph .edge.published,
+    #graph .edge.contains {
+      display: none !important;
+    }
+
     @media (max-width: 760px) {
       .reader article { padding-top: 20px; }
     }
@@ -27,7 +52,7 @@
       <p id="description">Loading knowledge graph…</p>
     </div>
     <div class="header-search">
-      <input id="search" type="search" placeholder="Search topics, papers, authors, keywords…" aria-label="Search knowledge graph" autocomplete="off" />
+      <input id="search" type="search" placeholder="Search topics, papers, knowledge, keywords…" aria-label="Search knowledge graph" autocomplete="off" />
       <span class="search-hint">/ to focus</span>
     </div>
     <div class="header-actions">
@@ -193,9 +218,6 @@
             <span><i class="dot knowledge"></i>general knowledge</span>
             <span><i class="dot paper"></i>paper</span>
             <span><i class="dot keyword"></i>keyword</span>
-            <span><i class="dot author"></i>author</span>
-            <span><i class="dot venue"></i>venue</span>
-            <span><i class="dot year"></i>year</span>
           </div>
           <div class="zoom-controls" aria-label="Zoom controls">
             <button id="zoomIn" type="button" title="Zoom in">+</button>
@@ -227,7 +249,7 @@
   <script src="assets/kb-history.js"></script>
   <script src="assets/kb-inspector.js"></script>
   <script src="assets/kb-reader-links.js"></script>
-  <script src="assets/kb-node-pruning.js"></script>
+  <script src="assets/kb-node-pruning.js?v=2"></script>
   <script src="assets/kb-layout.js"></script>
 </body>
 </html>
