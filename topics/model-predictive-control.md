@@ -4,9 +4,27 @@
 
 Model Predictive Control repeatedly solves a finite-horizon optimization problem from the latest measured state, applies only the first control input, then shifts the horizon forward and solves again.
 
-![Model Predictive Control overview](../assets/figures/mpc-overview.svg)
+<div role="img" aria-label="Model Predictive Control structured overview" style="border:1px solid #cbd5e1;border-radius:14px;padding:20px;background:#f8fafc;margin:1.25rem 0;">
+  <div style="font-weight:800;font-size:1.15rem;margin-bottom:4px;">MPC receding-horizon graph</div>
+  <div style="color:#64748b;margin-bottom:16px;">Measure, predict, optimize, apply the first input, then repeat from the new state.</div>
+  <div style="display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;margin-bottom:18px;">
+    <div style="padding:12px 16px;border:2px solid #64748b;border-radius:10px;background:white;font-weight:700;">Measure state</div>
+    <div style="font-size:1.45rem;">→</div>
+    <div style="padding:12px 16px;border:2px solid #64748b;border-radius:10px;background:white;font-weight:700;">Predict horizon</div>
+    <div style="font-size:1.45rem;">→</div>
+    <div style="padding:12px 16px;border:2px solid #475569;border-radius:10px;background:white;font-weight:800;">Optimize cost + constraints</div>
+    <div style="font-size:1.45rem;">→</div>
+    <div style="padding:12px 16px;border:2px solid #64748b;border-radius:10px;background:white;font-weight:700;">Apply u₀</div>
+    <div style="font-size:1.45rem;">↺</div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;">
+    <div style="padding:12px;border-radius:10px;background:white;border:1px solid #dbe3ec;"><strong>Fast enough when</strong><br>Horizon, model, and solver are chosen for the control-rate budget.</div>
+    <div style="padding:12px;border-radius:10px;background:white;border:1px solid #dbe3ec;"><strong>Key strength</strong><br>Constraints and predicted dynamics are handled explicitly.</div>
+    <div style="padding:12px;border-radius:10px;background:white;border:1px solid #dbe3ec;"><strong>BT integration</strong><br>A BT action can invoke MPC until the skill returns Success or Failure.</div>
+  </div>
+</div>
 
-*Repository-authored overview figure. It is an explanatory synthesis, not a figure reproduced from a paper.*
+*Repository-authored structured overview rendered directly from Markdown HTML/CSS nodes; no SVG, Mermaid, or binary image asset is required.*
 
 ## Runtime idea
 

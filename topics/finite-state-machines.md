@@ -4,9 +4,29 @@
 
 An FSM makes a fast decision by maintaining one active discrete state and evaluating transition guards. A hierarchical FSM reduces some structural growth by allowing a state to contain substates.
 
-![Finite-State Machines and Hierarchical FSMs overview](../assets/figures/fsm-hfsm-overview.svg)
+<div role="img" aria-label="Finite-State Machines and Hierarchical FSMs structured overview" style="border:1px solid #cbd5e1;border-radius:14px;padding:20px;background:#f8fafc;margin:1.25rem 0;">
+  <div style="font-weight:800;font-size:1.15rem;margin-bottom:4px;">FSM / HFSM execution graph</div>
+  <div style="color:#64748b;margin-bottom:16px;">Fast decisions through explicit state, guard evaluation, and deterministic transitions.</div>
+  <div style="display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;margin-bottom:18px;">
+    <div style="padding:12px 16px;border:2px solid #64748b;border-radius:10px;background:white;font-weight:700;">Observe</div>
+    <div style="font-size:1.45rem;">→</div>
+    <div style="padding:12px 16px;border:2px solid #64748b;border-radius:10px;background:white;font-weight:700;">Active state</div>
+    <div style="font-size:1.45rem;">→</div>
+    <div style="padding:12px 16px;border:2px solid #64748b;border-radius:10px;background:white;font-weight:700;">Check guards</div>
+    <div style="font-size:1.45rem;">→</div>
+    <div style="padding:12px 16px;border:2px solid #64748b;border-radius:10px;background:white;font-weight:700;">Transition</div>
+    <div style="font-size:1.45rem;">→</div>
+    <div style="padding:12px 16px;border:2px solid #64748b;border-radius:10px;background:white;font-weight:700;">Execute state</div>
+    <div style="font-size:1.45rem;">↺</div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;">
+    <div style="padding:12px;border-radius:10px;background:white;border:1px solid #dbe3ec;"><strong>Fast because</strong><br>Boolean guards and bounded transition checks.</div>
+    <div style="padding:12px;border-radius:10px;background:white;border:1px solid #dbe3ec;"><strong>HFSM extension</strong><br>Composite states contain nested substates.</div>
+    <div style="padding:12px;border-radius:10px;background:white;border:1px solid #dbe3ec;"><strong>BT integration</strong><br>Use an FSM below a BT leaf for local mode switching.</div>
+  </div>
+</div>
 
-*Repository-authored overview figure. It is an explanatory synthesis, not a figure reproduced from a paper.*
+*Repository-authored structured overview rendered directly from Markdown HTML/CSS nodes; no SVG, Mermaid, or binary image asset is required.*
 
 ## Runtime idea
 
