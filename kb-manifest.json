@@ -11,42 +11,593 @@
       "charge": -190
     },
     "taxonomy": [
-      {"id":"behavior-trees","title":"Behavior Trees","description":"Executable hierarchical structures for behavior selection, sequencing, and switching in autonomous agents.","keywords":["behavior-tree","autonomy"]},
-      {"id":"foundations","title":"Foundations","parent":"behavior-trees","description":"Core behavior-tree definitions, formal models, terminology, and architectural principles.","keywords":["foundations","formalism"]},
-      {"id":"semantics","title":"Execution Semantics","parent":"foundations","description":"Tick-based evaluation and the Success, Failure, and Running status semantics used during BT execution.","keywords":["tick","success","failure","running"]},
-      {"id":"control-flow","title":"Control Flow","parent":"semantics","description":"Composition operators such as Sequence and Fallback/Selector that determine how child behaviors execute.","keywords":["sequence","fallback","selector"]},
-      {"id":"reactivity","title":"Reactivity","parent":"foundations","description":"Repeated condition evaluation, feedback, and preemption that let BTs adapt execution as state changes.","keywords":["reactive-control","preemption","feedback"]},
-      {"id":"modularity","title":"Modularity and Composition","parent":"behavior-trees","description":"How behavior subtrees encapsulate functionality and compose into larger reusable control structures.","keywords":["modularity","composition","hierarchy"]},
-      {"id":"robot-control","title":"Robot Control","parent":"behavior-trees","description":"Use of behavior trees as high-level executives and switching structures in robotic control systems.","keywords":["robotics","control","autonomous-systems"]},
-      {"id":"robot-task-planning","title":"Robot Task Planning","parent":"robot-control","description":"Goal-directed construction and execution of robot task policies from actions, conditions, preconditions, and effects.","keywords":["task-planning","backchaining","planning-and-acting"]},
-      {"id":"behavior-synthesis","title":"Behavior-Tree Synthesis","parent":"robot-task-planning","description":"Automatic generation or refinement of behavior-tree structure using planning, search, optimization, or learned models.","keywords":["synthesis","generation","planning"]},
-      {"id":"robot-learning","title":"Robot Learning","parent":"robot-control","description":"Methods that learn robot task structure, action models, or behavior-tree policies from data, interaction, or optimization.","keywords":["robot-learning","program-learning","policy-learning"]},
-      {"id":"evolutionary-learning","title":"Evolutionary Learning","parent":"robot-learning","description":"Evolutionary and genetic-programming methods that search over behavior-tree structures or robot programs.","keywords":["genetic-programming","evolution","search"]},
-      {"id":"learning-from-demonstration","title":"Learning from Demonstration","parent":"robot-learning","description":"Acquiring robot task structure and action conditions from human demonstrations and interactive teaching.","keywords":["LfD","imitation","demonstration"]},
-      {"id":"robot-manipulation","title":"Robot Manipulation","parent":"robot-control","description":"Behavior-tree coordination of grasping, placement, contact-rich interaction, recovery, and manipulation strategy switching.","keywords":["manipulation","grasping","pick-and-place"]},
-      {"id":"mobile-robotics","title":"Mobile Robotics","parent":"robot-control","description":"Behavior-tree execution for navigation, mobile task sequencing, recovery, and embodied autonomy on mobile platforms.","keywords":["mobile-robot","navigation","mobility"]},
-      {"id":"multi-robot-systems","title":"Multi-Robot Systems","parent":"robot-control","description":"Distributed and coordinated behavior-tree execution across multiple robots, including task allocation and asynchronous recovery.","keywords":["multi-robot","coordination","distributed"]},
-      {"id":"aerial-robotics","title":"Aerial Robotics","parent":"robot-control","description":"Behavior-tree mission execution, inspection, emergency handling, and platform coordination for UAVs and aerial robots.","keywords":["UAV","drone","aerial-robotics"]},
-      {"id":"fault-tolerance","title":"Fault Tolerance and Recovery","parent":"robot-control","description":"Detection, recovery, fallback, replanning, and prioritized emergency behavior used to keep robot execution robust under failures and disturbances.","keywords":["fault-tolerance","recovery","robustness"]},
-      {"id":"robot-software","title":"Robot Software Architecture","parent":"robot-control","description":"Execution engines, middleware, skills, blackboards, asynchronous actions, observability, and deployment patterns for BT-based robot software.","keywords":["ROS","BehaviorTree.CPP","middleware","software-architecture"]},
-      {"id":"human-robot-interaction","title":"Human-Robot Interaction","parent":"robot-control","description":"Behavior-tree methods for interactive teaching, understandable task structure, human guidance, and collaborative robot behavior.","keywords":["HRI","interactive-task-learning","human-in-the-loop"]},
-      {"id":"comparisons","title":"Comparisons with Other Architectures","parent":"behavior-trees","description":"Conceptual and formal comparisons between BTs and alternative decision, planning, and control architectures.","keywords":["comparison","architecture"]},
-      {"id":"decision-trees","title":"Decision Trees","parent":"comparisons","description":"Predictive tree models that route feature tests to classification or regression outputs rather than executing behaviors.","keywords":["decision-trees","classification","regression"]},
-      {"id":"finite-state-machines","title":"Finite-State Machines","parent":"comparisons","description":"State-and-transition control structures used as a common comparison point for behavior-tree modularity and switching.","keywords":["FSM","state-machine","transitions"]},
-      {"id":"planning","title":"Planning and Task Decomposition","parent":"comparisons","description":"Plan generation and hierarchical task decomposition methods that can complement or synthesize behavior-tree execution structures.","keywords":["planning","HTN","task-planning"]},
-      {"id":"surveys","title":"Surveys and Reviews","parent":"behavior-trees","description":"Literature surveys and review articles that map behavior-tree research, applications, methods, and open problems.","keywords":["survey","review","literature-review"]},
-      {"id":"machine-learning","title":"Machine Learning","parent":"decision-trees","description":"Learning methods relevant to decision-tree induction and to learned or synthesized behavior-tree systems.","keywords":["machine-learning","ID3","induction"]}
+      {
+        "id": "behavior-trees",
+        "title": "Behavior Trees",
+        "description": "Executable hierarchical structures for behavior selection, sequencing, and switching in autonomous agents.",
+        "keywords": [
+          "behavior-tree",
+          "autonomy"
+        ]
+      },
+      {
+        "id": "foundations",
+        "title": "Foundations",
+        "parent": "behavior-trees",
+        "description": "Core behavior-tree definitions, formal models, terminology, and architectural principles.",
+        "keywords": [
+          "foundations",
+          "formalism"
+        ]
+      },
+      {
+        "id": "semantics",
+        "title": "Execution Semantics",
+        "parent": "foundations",
+        "description": "Tick-based evaluation and the Success, Failure, and Running status semantics used during BT execution.",
+        "keywords": [
+          "tick",
+          "success",
+          "failure",
+          "running"
+        ]
+      },
+      {
+        "id": "control-flow",
+        "title": "Control Flow",
+        "parent": "semantics",
+        "description": "Composition operators such as Sequence and Fallback/Selector that determine how child behaviors execute.",
+        "keywords": [
+          "sequence",
+          "fallback",
+          "selector"
+        ]
+      },
+      {
+        "id": "reactivity",
+        "title": "Reactivity",
+        "parent": "foundations",
+        "description": "Repeated condition evaluation, feedback, and preemption that let BTs adapt execution as state changes.",
+        "keywords": [
+          "reactive-control",
+          "preemption",
+          "feedback"
+        ]
+      },
+      {
+        "id": "modularity",
+        "title": "Modularity and Composition",
+        "parent": "behavior-trees",
+        "description": "How behavior subtrees encapsulate functionality and compose into larger reusable control structures.",
+        "keywords": [
+          "modularity",
+          "composition",
+          "hierarchy"
+        ]
+      },
+      {
+        "id": "robot-control",
+        "title": "Robot Control",
+        "parent": "behavior-trees",
+        "description": "Use of behavior trees as high-level executives and switching structures in robotic control systems.",
+        "keywords": [
+          "robotics",
+          "control",
+          "autonomous-systems"
+        ]
+      },
+      {
+        "id": "robot-task-planning",
+        "title": "Robot Task Planning",
+        "parent": "robot-control",
+        "description": "Goal-directed construction and execution of robot task policies from actions, conditions, preconditions, and effects.",
+        "keywords": [
+          "task-planning",
+          "backchaining",
+          "planning-and-acting"
+        ]
+      },
+      {
+        "id": "behavior-synthesis",
+        "title": "Behavior-Tree Synthesis",
+        "parent": "robot-task-planning",
+        "description": "Automatic generation or refinement of behavior-tree structure using planning, search, optimization, or learned models.",
+        "keywords": [
+          "synthesis",
+          "generation",
+          "planning"
+        ]
+      },
+      {
+        "id": "robot-learning",
+        "title": "Robot Learning",
+        "parent": "robot-control",
+        "description": "Methods that learn robot task structure, action models, or behavior-tree policies from data, interaction, or optimization.",
+        "keywords": [
+          "robot-learning",
+          "program-learning",
+          "policy-learning"
+        ]
+      },
+      {
+        "id": "evolutionary-learning",
+        "title": "Evolutionary Learning",
+        "parent": "robot-learning",
+        "description": "Evolutionary and genetic-programming methods that search over behavior-tree structures or robot programs.",
+        "keywords": [
+          "genetic-programming",
+          "evolution",
+          "search"
+        ]
+      },
+      {
+        "id": "learning-from-demonstration",
+        "title": "Learning from Demonstration",
+        "parent": "robot-learning",
+        "description": "Acquiring robot task structure and action conditions from human demonstrations and interactive teaching.",
+        "keywords": [
+          "LfD",
+          "imitation",
+          "demonstration"
+        ]
+      },
+      {
+        "id": "robot-manipulation",
+        "title": "Robot Manipulation",
+        "parent": "robot-control",
+        "description": "Behavior-tree coordination of grasping, placement, contact-rich interaction, recovery, and manipulation strategy switching.",
+        "keywords": [
+          "manipulation",
+          "grasping",
+          "pick-and-place"
+        ]
+      },
+      {
+        "id": "mobile-robotics",
+        "title": "Mobile Robotics",
+        "parent": "robot-control",
+        "description": "Behavior-tree execution for navigation, mobile task sequencing, recovery, and embodied autonomy on mobile platforms.",
+        "keywords": [
+          "mobile-robot",
+          "navigation",
+          "mobility"
+        ]
+      },
+      {
+        "id": "multi-robot-systems",
+        "title": "Multi-Robot Systems",
+        "parent": "robot-control",
+        "description": "Distributed and coordinated behavior-tree execution across multiple robots, including task allocation and asynchronous recovery.",
+        "keywords": [
+          "multi-robot",
+          "coordination",
+          "distributed"
+        ]
+      },
+      {
+        "id": "aerial-robotics",
+        "title": "Aerial Robotics",
+        "parent": "robot-control",
+        "description": "Behavior-tree mission execution, inspection, emergency handling, and platform coordination for UAVs and aerial robots.",
+        "keywords": [
+          "UAV",
+          "drone",
+          "aerial-robotics"
+        ]
+      },
+      {
+        "id": "fault-tolerance",
+        "title": "Fault Tolerance and Recovery",
+        "parent": "robot-control",
+        "description": "Detection, recovery, fallback, replanning, and prioritized emergency behavior used to keep robot execution robust under failures and disturbances.",
+        "keywords": [
+          "fault-tolerance",
+          "recovery",
+          "robustness"
+        ]
+      },
+      {
+        "id": "robot-software",
+        "title": "Robot Software Architecture",
+        "parent": "robot-control",
+        "description": "Execution engines, middleware, skills, blackboards, asynchronous actions, observability, and deployment patterns for BT-based robot software.",
+        "keywords": [
+          "ROS",
+          "BehaviorTree.CPP",
+          "middleware",
+          "software-architecture"
+        ]
+      },
+      {
+        "id": "human-robot-interaction",
+        "title": "Human-Robot Interaction",
+        "parent": "robot-control",
+        "description": "Behavior-tree methods for interactive teaching, understandable task structure, human guidance, and collaborative robot behavior.",
+        "keywords": [
+          "HRI",
+          "interactive-task-learning",
+          "human-in-the-loop"
+        ]
+      },
+      {
+        "id": "comparisons",
+        "title": "Comparisons with Other Architectures",
+        "parent": "behavior-trees",
+        "description": "Conceptual and formal comparisons between BTs and alternative decision, planning, and control architectures.",
+        "keywords": [
+          "comparison",
+          "architecture"
+        ]
+      },
+      {
+        "id": "decision-trees",
+        "title": "Decision Trees",
+        "parent": "comparisons",
+        "description": "Predictive tree models that route feature tests to classification or regression outputs rather than executing behaviors.",
+        "keywords": [
+          "decision-trees",
+          "classification",
+          "regression"
+        ]
+      },
+      {
+        "id": "finite-state-machines",
+        "title": "Finite-State Machines",
+        "parent": "fast-decision-architectures",
+        "description": "State-and-transition control structures used as a comparison point for Behavior Tree modularity, reactivity, and switching.",
+        "keywords": [
+          "FSM",
+          "HFSM",
+          "state-machine",
+          "transitions"
+        ]
+      },
+      {
+        "id": "planning",
+        "title": "Planning and Task Decomposition",
+        "parent": "comparisons",
+        "description": "Plan generation and hierarchical task decomposition methods that can complement or synthesize behavior-tree execution structures.",
+        "keywords": [
+          "planning",
+          "HTN",
+          "task-planning"
+        ]
+      },
+      {
+        "id": "surveys",
+        "title": "Surveys and Reviews",
+        "parent": "behavior-trees",
+        "description": "Literature surveys and review articles that map behavior-tree research, applications, methods, and open problems.",
+        "keywords": [
+          "survey",
+          "review",
+          "literature-review"
+        ]
+      },
+      {
+        "id": "machine-learning",
+        "title": "Machine Learning",
+        "parent": "decision-trees",
+        "description": "Learning methods relevant to decision-tree induction and to learned or synthesized behavior-tree systems.",
+        "keywords": [
+          "machine-learning",
+          "ID3",
+          "induction"
+        ]
+      },
+      {
+        "id": "fast-decision-architectures",
+        "title": "Fast Decision Architectures",
+        "parent": "comparisons",
+        "description": "Additional robotics decision and control architectures used to compare with or complement Behavior Trees while keeping BTs as the knowledge base core.",
+        "keywords": [
+          "fast-decision-making",
+          "reactive-control",
+          "real-time"
+        ]
+      },
+      {
+        "id": "reactive-architectures",
+        "title": "Reactive Architectures and Subsumption",
+        "parent": "fast-decision-architectures",
+        "description": "Layered sensor-to-action behaviors in which higher-priority reactions suppress or override lower-priority behaviors.",
+        "keywords": [
+          "subsumption",
+          "reactive-control",
+          "arbitration"
+        ]
+      },
+      {
+        "id": "utility-action-selection",
+        "title": "Utility-Based Action Selection",
+        "parent": "fast-decision-architectures",
+        "description": "Action arbitration by scoring candidate behaviors from state, cost, risk, and task value and selecting the highest-utility option.",
+        "keywords": [
+          "utility",
+          "action-selection",
+          "arbitration"
+        ]
+      },
+      {
+        "id": "learned-policies",
+        "title": "Learned Policies",
+        "parent": "fast-decision-architectures",
+        "description": "Learned observation-to-action mappings, including imitation and reinforcement-learning policies, used for low-latency robot decisions.",
+        "keywords": [
+          "policy-learning",
+          "reinforcement-learning",
+          "imitation-learning"
+        ]
+      },
+      {
+        "id": "model-predictive-control",
+        "title": "Model Predictive Control",
+        "parent": "fast-decision-architectures",
+        "description": "Receding-horizon optimization that repeatedly predicts, optimizes, applies the first control input, and replans from new measurements.",
+        "keywords": [
+          "MPC",
+          "receding-horizon",
+          "optimization"
+        ]
+      },
+      {
+        "id": "program-libraries",
+        "title": "Program Libraries",
+        "parent": "robot-software",
+        "description": "Reusable software libraries and execution engines that implement Behavior Tree semantics and support integration into autonomous systems.",
+        "keywords": [
+          "library",
+          "runtime",
+          "software"
+        ]
+      },
+      {
+        "id": "bonsai",
+        "title": "Bonsai",
+        "parent": "program-libraries",
+        "description": "A Rust Behavior Tree implementation with parallel semantics, event-driven updates, blackboard state, visualization support, and Python bindings.",
+        "keywords": [
+          "bonsai-bt",
+          "Rust",
+          "Python",
+          "behavior-tree-library"
+        ]
+      }
     ]
   },
   "sections": [
     {
       "id": "topics",
       "title": "Topics",
-      "description": "Cross-cutting concepts and synthesis across the literature.",
+      "description": "Cross-cutting concepts and synthesis across the literature. Behavior Trees remain the core; alternative architectures are supplemental comparison resources.",
       "documents": [
-        {"title":"Topics overview","path":"topics/README.md","kind":"knowledge","description":"Index of current topic syntheses and the conceptual areas planned for expansion in the knowledge base.","topics":["behavior-trees","foundations","robot-control"],"tags":["overview"]},
-        {"title":"Behavior tree foundations: what BTs are and how they differ from decision trees","shortTitle":"BT foundations and decision-tree comparison","path":"topics/behavior-tree-foundations.md","kind":"knowledge","description":"Defines behavior trees as executable task-switching structures and contrasts their semantics with predictive decision trees, FSMs, and planners.","topics":["behavior-trees","foundations","semantics","reactivity","comparisons","decision-trees","finite-state-machines","planning"],"keywords":["sequence","fallback","running","tick","task-switching","execution","classifier"],"tags":["foundations","semantics","decision-trees","comparison"]},
-        {"title":"Behavior Trees in Robotics: Core Research Topics","shortTitle":"Robotics research map","path":"topics/robotics-behavior-trees.md","kind":"knowledge","description":"Maps the robotics behavior-tree literature across task planning, synthesis, learning, manipulation, mobile and multi-robot systems, aerial robotics, software architecture, and fault recovery.","topics":["behavior-trees","robot-control","robot-task-planning","behavior-synthesis","robot-learning","robot-manipulation","mobile-robotics","multi-robot-systems","aerial-robotics","fault-tolerance","robot-software","human-robot-interaction"],"keywords":["robotics","planning","learning","manipulation","multi-robot","UAV","ROS","recovery"],"tags":["robotics","literature-map","synthesis"]}
+        {
+          "title": "Topics overview",
+          "path": "topics/README.md",
+          "kind": "knowledge",
+          "description": "Index of current topic syntheses and the conceptual areas planned for expansion in the knowledge base.",
+          "topics": [
+            "behavior-trees",
+            "foundations",
+            "robot-control"
+          ],
+          "tags": [
+            "overview"
+          ]
+        },
+        {
+          "title": "Behavior tree foundations: what BTs are and how they differ from decision trees",
+          "shortTitle": "BT foundations and decision-tree comparison",
+          "path": "topics/behavior-tree-foundations.md",
+          "kind": "knowledge",
+          "description": "Defines behavior trees as executable task-switching structures and contrasts their semantics with predictive decision trees, FSMs, and planners.",
+          "topics": [
+            "behavior-trees",
+            "foundations",
+            "semantics",
+            "reactivity",
+            "comparisons",
+            "decision-trees",
+            "finite-state-machines",
+            "planning"
+          ],
+          "keywords": [
+            "sequence",
+            "fallback",
+            "running",
+            "tick",
+            "task-switching",
+            "execution",
+            "classifier"
+          ],
+          "tags": [
+            "foundations",
+            "semantics",
+            "decision-trees",
+            "comparison"
+          ]
+        },
+        {
+          "title": "Behavior Trees in Robotics: Core Research Topics",
+          "shortTitle": "Robotics research map",
+          "path": "topics/robotics-behavior-trees.md",
+          "kind": "knowledge",
+          "description": "Maps the robotics behavior-tree literature across task planning, synthesis, learning, manipulation, mobile and multi-robot systems, aerial robotics, software architecture, and fault recovery.",
+          "topics": [
+            "behavior-trees",
+            "robot-control",
+            "robot-task-planning",
+            "behavior-synthesis",
+            "robot-learning",
+            "robot-manipulation",
+            "mobile-robotics",
+            "multi-robot-systems",
+            "aerial-robotics",
+            "fault-tolerance",
+            "robot-software",
+            "human-robot-interaction"
+          ],
+          "keywords": [
+            "robotics",
+            "planning",
+            "learning",
+            "manipulation",
+            "multi-robot",
+            "UAV",
+            "ROS",
+            "recovery"
+          ],
+          "tags": [
+            "robotics",
+            "literature-map",
+            "synthesis"
+          ]
+        },
+        {
+          "title": "Fast decision architectures: additional resources around Behavior Trees",
+          "shortTitle": "Fast decision architectures",
+          "path": "topics/fast-decision-architectures.md",
+          "kind": "knowledge",
+          "description": "Positions FSMs, reactive/subsumption systems, utility action selection, learned policies, and MPC as supplemental comparison resources while retaining Behavior Trees as the knowledge-base core.",
+          "topics": [
+            "behavior-trees",
+            "comparisons",
+            "fast-decision-architectures",
+            "robot-control"
+          ],
+          "keywords": [
+            "fast-decision-making",
+            "alternative-architectures",
+            "hybrid-control"
+          ],
+          "tags": [
+            "comparison",
+            "additional-resource",
+            "robotics"
+          ]
+        },
+        {
+          "title": "Finite-State Machines and Hierarchical FSMs for fast robot decisions",
+          "shortTitle": "FSMs and HFSMs",
+          "path": "topics/finite-state-machines.md",
+          "kind": "knowledge",
+          "description": "Explains state-transition execution, hierarchy, latency, and the main structural trade-offs between FSM/HFSM control and Behavior Trees.",
+          "topics": [
+            "behavior-trees",
+            "comparisons",
+            "fast-decision-architectures",
+            "finite-state-machines",
+            "robot-control"
+          ],
+          "keywords": [
+            "FSM",
+            "HFSM",
+            "transitions",
+            "state-explosion"
+          ],
+          "tags": [
+            "comparison",
+            "additional-resource"
+          ]
+        },
+        {
+          "title": "Reactive architectures and subsumption for fast robot decisions",
+          "shortTitle": "Reactive / subsumption",
+          "path": "topics/reactive-architectures-subsumption.md",
+          "kind": "knowledge",
+          "description": "Explains layered reactive behaviors, priority suppression, direct sensor-to-action control, and how subsumption differs from or complements a Behavior Tree.",
+          "topics": [
+            "behavior-trees",
+            "comparisons",
+            "fast-decision-architectures",
+            "reactive-architectures",
+            "reactivity",
+            "robot-control"
+          ],
+          "keywords": [
+            "subsumption",
+            "priority",
+            "suppression",
+            "sensor-to-action"
+          ],
+          "tags": [
+            "comparison",
+            "additional-resource"
+          ]
+        },
+        {
+          "title": "Utility-based action selection for fast robot decisions",
+          "shortTitle": "Utility action selection",
+          "path": "topics/utility-action-selection.md",
+          "kind": "knowledge",
+          "description": "Explains numerical utility scoring and arbitration among competing robot actions, including how utility selectors can complement BT control flow.",
+          "topics": [
+            "behavior-trees",
+            "comparisons",
+            "fast-decision-architectures",
+            "utility-action-selection",
+            "robot-control"
+          ],
+          "keywords": [
+            "utility",
+            "scoring",
+            "arbitration",
+            "multi-objective"
+          ],
+          "tags": [
+            "comparison",
+            "additional-resource"
+          ]
+        },
+        {
+          "title": "Learned policies for fast robot decisions",
+          "shortTitle": "Learned policies",
+          "path": "topics/learned-policies.md",
+          "kind": "knowledge",
+          "description": "Explains low-latency observation-to-action policies trained through imitation or reinforcement learning and their role beneath or beside a Behavior Tree.",
+          "topics": [
+            "behavior-trees",
+            "comparisons",
+            "fast-decision-architectures",
+            "learned-policies",
+            "robot-learning",
+            "machine-learning"
+          ],
+          "keywords": [
+            "policy",
+            "inference",
+            "reinforcement-learning",
+            "imitation-learning"
+          ],
+          "tags": [
+            "comparison",
+            "additional-resource"
+          ]
+        },
+        {
+          "title": "Model Predictive Control for fast robot decisions",
+          "shortTitle": "Model Predictive Control",
+          "path": "topics/model-predictive-control.md",
+          "kind": "knowledge",
+          "description": "Explains short-horizon optimization, receding-horizon replanning, constraints, and how MPC can serve as a continuous-control skill under a Behavior Tree.",
+          "topics": [
+            "behavior-trees",
+            "comparisons",
+            "fast-decision-architectures",
+            "model-predictive-control",
+            "robot-control"
+          ],
+          "keywords": [
+            "MPC",
+            "receding-horizon",
+            "optimization",
+            "constraints"
+          ],
+          "tags": [
+            "comparison",
+            "additional-resource"
+          ]
+        }
       ]
     },
     {
@@ -54,31 +605,697 @@
       "title": "Papers",
       "description": "Notes on individual papers and technical publications.",
       "documents": [
-        {"title":"Papers overview","path":"papers/README.md","kind":"knowledge","description":"Index of the current paper notes and the standard fields used to summarize technical publications in this repository.","topics":["behavior-trees","surveys","foundations","robot-control"],"tags":["overview"]},
-        {"title":"Marzinotto et al. (2014) — Unified BT framework for robot control","shortTitle":"Marzinotto et al. (2014)","path":"papers/marzinotto-et-al-2014-unified-bt-framework.md","kind":"paper","description":"A foundational robotics formulation that gives behavior trees a unified execution semantics for robot control.","authors":["Alejandro Marzinotto","Michele Colledanchise","Christian Smith","Petter Ögren"],"year":2014,"venue":"IEEE ICRA","doi":"10.1109/ICRA.2014.6907656","abstractUrl":"https://www.csc.kth.se/~ccs/Publications/icra14b.html","pdf":"https://www.csc.kth.se/~almc/pdf/unified_bt_framework.pdf","topics":["behavior-trees","foundations","semantics","control-flow","robot-control"],"keywords":["tick","sequence","fallback","robot-control"],"related":["topics/behavior-tree-foundations.md","papers/colledanchise-ogren-2017-bt-modularity.md"],"tags":["foundations","semantics","robot-control","ICRA"]},
-        {"title":"Colledanchise & Ögren (2017) — BT modularity and generalization","shortTitle":"Colledanchise & Ögren (2017)","path":"papers/colledanchise-ogren-2017-bt-modularity.md","kind":"paper","description":"Formalizes BT modularity for hybrid control and relates behavior trees to sequential compositions, subsumption, FSM-like switching, and decision trees.","authors":["Michele Colledanchise","Petter Ögren"],"year":2017,"venue":"IEEE Transactions on Robotics","doi":"10.1109/TRO.2016.2633567","abstractUrl":"https://www.diva-portal.org/smash/get/diva2:1078931/FULLTEXT01.pdf","pdf":"https://www.diva-portal.org/smash/get/diva2:1078931/FULLTEXT01.pdf","topics":["behavior-trees","foundations","modularity","robot-control","comparisons","decision-trees","finite-state-machines"],"keywords":["hybrid-control","modularity","subsumption","decision-tree","composition"],"related":["topics/behavior-tree-foundations.md","papers/marzinotto-et-al-2014-unified-bt-framework.md"],"tags":["modularity","decision-trees","FSM","hybrid-control"]},
-        {"title":"Colledanchise, Almeida & Ögren (2019) — Blended reactive planning and acting","shortTitle":"Colledanchise et al. (2019)","path":"papers/colledanchise-almeida-ogren-2019-blended-planning.md","kind":"paper","description":"Uses backchaining to automatically construct and refine reactive behavior trees while a robot acts in a dynamic environment.","authors":["Michele Colledanchise","Diogo Almeida","Petter Ögren"],"year":2019,"venue":"IEEE ICRA","doi":"10.1109/ICRA.2019.8794128","abstractUrl":"https://arxiv.org/abs/1611.00230","pdf":"https://arxiv.org/pdf/1611.00230","topics":["behavior-trees","robot-control","robot-task-planning","behavior-synthesis","planning","reactivity","robot-manipulation"],"keywords":["backchaining","planning-and-acting","preconditions","postconditions","dynamic-environment"],"related":["papers/cai-et-al-2021-bt-expansion.md","topics/robotics-behavior-trees.md"],"tags":["planning","synthesis","reactivity","ICRA"]},
-        {"title":"Iovino et al. (2021) — Learning BTs with genetic programming","shortTitle":"Iovino et al. (2021)","path":"papers/iovino-et-al-2021-genetic-programming.md","kind":"paper","description":"Uses genetic programming to synthesize fault-tolerant behavior trees for robotic tasks and tests transfer from a simple simulator to a more realistic one.","authors":["Matteo Iovino","Jonathan Styrud","Pietro Falco","Christian Smith"],"year":2021,"venue":"IEEE ICRA","doi":"10.1109/ICRA48506.2021.9562088","abstractUrl":"https://arxiv.org/abs/2011.03252","pdf":"https://arxiv.org/pdf/2011.03252","topics":["behavior-trees","robot-control","robot-learning","evolutionary-learning","behavior-synthesis","robot-manipulation","fault-tolerance","machine-learning"],"keywords":["genetic-programming","evolution","sim-to-sim","industrial-robotics","fault-tolerance"],"related":["papers/cai-et-al-2021-bt-expansion.md","papers/scherf-et-al-2023-interactive-learning.md"],"tags":["learning","genetic-programming","ICRA"]},
-        {"title":"Cai et al. (2021) — BT Expansion for robot behavior planning","shortTitle":"Cai et al. (2021)","path":"papers/cai-et-al-2021-bt-expansion.md","kind":"paper","description":"Introduces a sound and complete behavior-tree expansion algorithm for robot planning with formal disturbance-handling guarantees.","authors":["Zhongxuan Cai","Minglong Li","Wanrong Huang","Wenjing Yang"],"year":2021,"venue":"AAAI","doi":"10.1609/aaai.v35i7.16755","abstractUrl":"https://ojs.aaai.org/index.php/AAAI/article/view/16755","pdf":"https://ojs.aaai.org/index.php/AAAI/article/view/16755/16562","topics":["behavior-trees","robot-control","robot-task-planning","behavior-synthesis","planning","reactivity","robot-manipulation","fault-tolerance"],"keywords":["BT-expansion","soundness","completeness","STRIPS","region-of-attraction"],"related":["papers/colledanchise-almeida-ogren-2019-blended-planning.md","topics/robotics-behavior-trees.md"],"tags":["planning","formal-analysis","synthesis","AAAI"]},
-        {"title":"Dortmans & Punter (2022) — Practical guidelines for robot software development","shortTitle":"Dortmans & Punter (2022)","path":"papers/dortmans-punter-2022-practical-guidelines.md","kind":"paper","description":"Turns behavior-tree theory into practical guidance for robust robot task design, ROS-oriented execution architecture, skills, and maintainable software.","authors":["Eric Dortmans","Teade Punter"],"year":2022,"venue":"Journal of Robotics","doi":"10.1155/2022/3314084","abstractUrl":"https://onlinelibrary.wiley.com/doi/full/10.1155/2022/3314084","pdf":"https://onlinelibrary.wiley.com/doi/pdf/10.1155/2022/3314084","topics":["behavior-trees","robot-control","robot-software","mobile-robotics","robot-manipulation","reactivity","fault-tolerance"],"keywords":["ROS","BehaviorTree.CPP","skills","blackboard","software-architecture","robustness"],"related":["topics/robotics-behavior-trees.md","papers/ogren-sprague-2022-robot-control-systems.md"],"tags":["guidelines","software","ROS","review"]},
-        {"title":"Jeong et al. (2022) — BT task planning for multiple mobile robots","shortTitle":"Jeong et al. (2022)","path":"papers/jeong-et-al-2022-multi-robot-dds.md","kind":"paper","description":"Extends behavior-tree task execution to multiple mobile robots using DDS communication, asynchronous task assignment, and local recovery trees.","authors":["Seungwoo Jeong","Taekwon Ga","Inhwan Jeong","Jongeun Choi"],"year":2022,"venue":"IEEE/ASME AIM","doi":"10.1109/AIM52237.2022.9863364","abstractUrl":"https://arxiv.org/abs/2201.10918","pdf":"https://arxiv.org/pdf/2201.10918","topics":["behavior-trees","robot-control","multi-robot-systems","mobile-robotics","robot-task-planning","fault-tolerance","robot-software"],"keywords":["DDS","multi-robot","task-assignment","asynchronous-execution","recovery"],"related":["topics/robotics-behavior-trees.md","papers/gil-castilla-et-al-2026-uav-emergency-handling.md"],"tags":["multi-robot","mobile-robotics","AIM"]},
-        {"title":"Iovino et al. (2022) — Survey of Behavior Trees in robotics and AI","shortTitle":"Iovino et al. (2022)","path":"papers/iovino-et-al-2022-survey.md","kind":"paper","description":"A broad survey of behavior-tree research across robotics and AI, including design, synthesis, learning, and application trends.","authors":["Matteo Iovino","Edvards Scukins","Jonathan Styrud","Petter Ögren","Christian Smith"],"year":2022,"venue":"Robotics and Autonomous Systems","doi":"10.1016/j.robot.2022.104096","abstractUrl":"https://arxiv.org/abs/2005.05842","pdf":"https://arxiv.org/pdf/2005.05842","topics":["behavior-trees","surveys","robot-control","modularity","planning","machine-learning","robot-learning","behavior-synthesis"],"keywords":["survey","robotics","AI","synthesis","learning"],"related":["papers/ogren-sprague-2022-robot-control-systems.md","topics/robotics-behavior-trees.md"],"tags":["survey","robotics","AI","literature-review"]},
-        {"title":"Ögren & Sprague (2022) — Behavior Trees in robot control systems","shortTitle":"Ögren & Sprague (2022)","path":"papers/ogren-sprague-2022-robot-control-systems.md","kind":"paper","description":"A control-systems review emphasizing feedback, modularity, and the role of behavior trees in robot control architectures.","authors":["Petter Ögren","Christopher I. Sprague"],"year":2022,"venue":"Annual Review of Control, Robotics, and Autonomous Systems","doi":"10.1146/annurev-control-042920-095314","abstractUrl":"https://www.annualreviews.org/content/journals/10.1146/annurev-control-042920-095314","pdf":"https://arxiv.org/pdf/2203.13083","topics":["behavior-trees","surveys","robot-control","reactivity","modularity","fault-tolerance"],"keywords":["feedback","control","modularity","reactivity"],"related":["papers/iovino-et-al-2022-survey.md","topics/robotics-behavior-trees.md"],"tags":["review","control","feedback","modularity"]},
-        {"title":"Scherf et al. (2023) — Interactive learning from imperfect demonstrations","shortTitle":"Scherf et al. (2023)","path":"papers/scherf-et-al-2023-interactive-learning.md","kind":"paper","description":"Learns reactive behavior trees from a few human RGB-D demonstrations and interactively refines the tree when execution exposes missing or imperfect task knowledge.","authors":["Lisa Scherf","Aljoscha Schmidt","Suman Pal","Dorothea Koert"],"year":2023,"venue":"Frontiers in Robotics and AI","doi":"10.3389/frobt.2023.1152595","abstractUrl":"https://www.frontiersin.org/journals/robotics-and-ai/articles/10.3389/frobt.2023.1152595/full","pdf":"https://www.frontiersin.org/journals/robotics-and-ai/articles/10.3389/frobt.2023.1152595/pdf","topics":["behavior-trees","robot-control","robot-learning","learning-from-demonstration","human-robot-interaction","behavior-synthesis","robot-manipulation","fault-tolerance"],"keywords":["ILBERT","RGB-D","interactive-task-learning","backchaining","failure-recovery"],"related":["papers/iovino-et-al-2021-genetic-programming.md","papers/colledanchise-almeida-ogren-2019-blended-planning.md"],"tags":["HRI","learning-from-demonstration","open-access"]},
-        {"title":"Cloete, Merkt & Havoutis (2025) — Adaptive manipulation using Behavior Trees","shortTitle":"Cloete et al. (2025)","path":"papers/cloete-et-al-2025-adaptive-manipulation.md","kind":"paper","description":"Uses an adaptive behavior-tree pattern to switch manipulation strategies from visual and force/torque feedback, including preemptive failure avoidance.","authors":["Jacques Cloete","Wolfgang Merkt","Ioannis Havoutis"],"year":2025,"venue":"IEEE/RSJ IROS","doi":"10.1109/IROS60139.2025.11245892","abstractUrl":"https://arxiv.org/abs/2406.14634","pdf":"https://arxiv.org/pdf/2406.14634","topics":["behavior-trees","robot-control","robot-manipulation","reactivity","fault-tolerance","robot-learning","robot-software"],"keywords":["adaptive-manipulation","force-torque","strategy-switching","BehaviorTree.CPP","preemption"],"related":["topics/robotics-behavior-trees.md","papers/dortmans-punter-2022-practical-guidelines.md"],"tags":["manipulation","adaptive-execution","IROS"]},
-        {"title":"Gil-Castilla, Maza & Ollero (2026) — UAV actuation and emergency handling","shortTitle":"Gil-Castilla et al. (2026)","path":"papers/gil-castilla-et-al-2026-uav-emergency-handling.md","kind":"paper","description":"Presents a modular ROS-based behavior-tree actuation layer for heterogeneous UAV inspection missions with prioritized deterministic emergency handling.","authors":["Miguel Gil-Castilla","Ivan Maza","Anibal Ollero"],"year":2026,"venue":"Journal of Intelligent & Robotic Systems","doi":"10.1007/s10846-026-02367-z","abstractUrl":"https://link.springer.com/article/10.1007/s10846-026-02367-z","pdf":"https://link.springer.com/content/pdf/10.1007/s10846-026-02367-z.pdf","url":"https://github.com/grvc-robotics-lab/grvc-bt","topics":["behavior-trees","robot-control","aerial-robotics","fault-tolerance","reactivity","robot-software","multi-robot-systems"],"keywords":["UAV","ROS","MAVROS","emergency-handling","inspection","heterogeneous-robots"],"related":["topics/robotics-behavior-trees.md","papers/jeong-et-al-2022-multi-robot-dds.md"],"tags":["UAV","field-robotics","open-access","ROS"]},
-        {"title":"Quinlan (1986) — Induction of Decision Trees","shortTitle":"Quinlan (1986)","path":"papers/quinlan-1986-induction-decision-trees.md","kind":"paper","description":"A canonical machine-learning paper on inducing classification decision trees, included as a comparison point for behavior-tree semantics.","authors":["J. Ross Quinlan"],"year":1986,"venue":"Machine Learning","doi":"10.1007/BF00116251","abstractUrl":"https://doi.org/10.1007/BF00116251","pdf":"https://web.engr.oregonstate.edu/~xfern/classes/cs434/decisiontree-quinlan.pdf","topics":["comparisons","decision-trees","machine-learning"],"keywords":["ID3","classification","information-gain","induction"],"related":["topics/behavior-tree-foundations.md","papers/colledanchise-ogren-2017-bt-modularity.md"],"tags":["decision-trees","machine-learning","comparison","ID3"]}
+        {
+          "title": "Papers overview",
+          "path": "papers/README.md",
+          "kind": "knowledge",
+          "description": "Index of the current paper notes and the standard fields used to summarize technical publications in this repository.",
+          "topics": [
+            "behavior-trees",
+            "surveys",
+            "foundations",
+            "robot-control"
+          ],
+          "tags": [
+            "overview"
+          ]
+        },
+        {
+          "title": "Marzinotto et al. (2014) — Unified BT framework for robot control",
+          "shortTitle": "Marzinotto et al. (2014)",
+          "path": "papers/marzinotto-et-al-2014-unified-bt-framework.md",
+          "kind": "paper",
+          "description": "A foundational robotics formulation that gives behavior trees a unified execution semantics for robot control.",
+          "authors": [
+            "Alejandro Marzinotto",
+            "Michele Colledanchise",
+            "Christian Smith",
+            "Petter Ögren"
+          ],
+          "year": 2014,
+          "venue": "IEEE ICRA",
+          "doi": "10.1109/ICRA.2014.6907656",
+          "abstractUrl": "https://www.csc.kth.se/~ccs/Publications/icra14b.html",
+          "pdf": "https://www.csc.kth.se/~almc/pdf/unified_bt_framework.pdf",
+          "topics": [
+            "behavior-trees",
+            "foundations",
+            "semantics",
+            "control-flow",
+            "robot-control"
+          ],
+          "keywords": [
+            "tick",
+            "sequence",
+            "fallback",
+            "robot-control"
+          ],
+          "related": [
+            "topics/behavior-tree-foundations.md",
+            "papers/colledanchise-ogren-2017-bt-modularity.md"
+          ],
+          "tags": [
+            "foundations",
+            "semantics",
+            "robot-control",
+            "ICRA"
+          ]
+        },
+        {
+          "title": "Colledanchise & Ögren (2017) — BT modularity and generalization",
+          "shortTitle": "Colledanchise & Ögren (2017)",
+          "path": "papers/colledanchise-ogren-2017-bt-modularity.md",
+          "kind": "paper",
+          "description": "Formalizes BT modularity for hybrid control and relates behavior trees to sequential compositions, subsumption, FSM-like switching, and decision trees.",
+          "authors": [
+            "Michele Colledanchise",
+            "Petter Ögren"
+          ],
+          "year": 2017,
+          "venue": "IEEE Transactions on Robotics",
+          "doi": "10.1109/TRO.2016.2633567",
+          "abstractUrl": "https://www.diva-portal.org/smash/get/diva2:1078931/FULLTEXT01.pdf",
+          "pdf": "https://www.diva-portal.org/smash/get/diva2:1078931/FULLTEXT01.pdf",
+          "topics": [
+            "behavior-trees",
+            "foundations",
+            "modularity",
+            "robot-control",
+            "comparisons",
+            "decision-trees",
+            "finite-state-machines"
+          ],
+          "keywords": [
+            "hybrid-control",
+            "modularity",
+            "subsumption",
+            "decision-tree",
+            "composition"
+          ],
+          "related": [
+            "topics/behavior-tree-foundations.md",
+            "papers/marzinotto-et-al-2014-unified-bt-framework.md"
+          ],
+          "tags": [
+            "modularity",
+            "decision-trees",
+            "FSM",
+            "hybrid-control"
+          ]
+        },
+        {
+          "title": "Colledanchise, Almeida & Ögren (2019) — Blended reactive planning and acting",
+          "shortTitle": "Colledanchise et al. (2019)",
+          "path": "papers/colledanchise-almeida-ogren-2019-blended-planning.md",
+          "kind": "paper",
+          "description": "Uses backchaining to automatically construct and refine reactive behavior trees while a robot acts in a dynamic environment.",
+          "authors": [
+            "Michele Colledanchise",
+            "Diogo Almeida",
+            "Petter Ögren"
+          ],
+          "year": 2019,
+          "venue": "IEEE ICRA",
+          "doi": "10.1109/ICRA.2019.8794128",
+          "abstractUrl": "https://arxiv.org/abs/1611.00230",
+          "pdf": "https://arxiv.org/pdf/1611.00230",
+          "topics": [
+            "behavior-trees",
+            "robot-control",
+            "robot-task-planning",
+            "behavior-synthesis",
+            "planning",
+            "reactivity",
+            "robot-manipulation"
+          ],
+          "keywords": [
+            "backchaining",
+            "planning-and-acting",
+            "preconditions",
+            "postconditions",
+            "dynamic-environment"
+          ],
+          "related": [
+            "papers/cai-et-al-2021-bt-expansion.md",
+            "topics/robotics-behavior-trees.md"
+          ],
+          "tags": [
+            "planning",
+            "synthesis",
+            "reactivity",
+            "ICRA"
+          ]
+        },
+        {
+          "title": "Iovino et al. (2021) — Learning BTs with genetic programming",
+          "shortTitle": "Iovino et al. (2021)",
+          "path": "papers/iovino-et-al-2021-genetic-programming.md",
+          "kind": "paper",
+          "description": "Uses genetic programming to synthesize fault-tolerant behavior trees for robotic tasks and tests transfer from a simple simulator to a more realistic one.",
+          "authors": [
+            "Matteo Iovino",
+            "Jonathan Styrud",
+            "Pietro Falco",
+            "Christian Smith"
+          ],
+          "year": 2021,
+          "venue": "IEEE ICRA",
+          "doi": "10.1109/ICRA48506.2021.9562088",
+          "abstractUrl": "https://arxiv.org/abs/2011.03252",
+          "pdf": "https://arxiv.org/pdf/2011.03252",
+          "topics": [
+            "behavior-trees",
+            "robot-control",
+            "robot-learning",
+            "evolutionary-learning",
+            "behavior-synthesis",
+            "robot-manipulation",
+            "fault-tolerance",
+            "machine-learning"
+          ],
+          "keywords": [
+            "genetic-programming",
+            "evolution",
+            "sim-to-sim",
+            "industrial-robotics",
+            "fault-tolerance"
+          ],
+          "related": [
+            "papers/cai-et-al-2021-bt-expansion.md",
+            "papers/scherf-et-al-2023-interactive-learning.md"
+          ],
+          "tags": [
+            "learning",
+            "genetic-programming",
+            "ICRA"
+          ]
+        },
+        {
+          "title": "Cai et al. (2021) — BT Expansion for robot behavior planning",
+          "shortTitle": "Cai et al. (2021)",
+          "path": "papers/cai-et-al-2021-bt-expansion.md",
+          "kind": "paper",
+          "description": "Introduces a sound and complete behavior-tree expansion algorithm for robot planning with formal disturbance-handling guarantees.",
+          "authors": [
+            "Zhongxuan Cai",
+            "Minglong Li",
+            "Wanrong Huang",
+            "Wenjing Yang"
+          ],
+          "year": 2021,
+          "venue": "AAAI",
+          "doi": "10.1609/aaai.v35i7.16755",
+          "abstractUrl": "https://ojs.aaai.org/index.php/AAAI/article/view/16755",
+          "pdf": "https://ojs.aaai.org/index.php/AAAI/article/view/16755/16562",
+          "topics": [
+            "behavior-trees",
+            "robot-control",
+            "robot-task-planning",
+            "behavior-synthesis",
+            "planning",
+            "reactivity",
+            "robot-manipulation",
+            "fault-tolerance"
+          ],
+          "keywords": [
+            "BT-expansion",
+            "soundness",
+            "completeness",
+            "STRIPS",
+            "region-of-attraction"
+          ],
+          "related": [
+            "papers/colledanchise-almeida-ogren-2019-blended-planning.md",
+            "topics/robotics-behavior-trees.md"
+          ],
+          "tags": [
+            "planning",
+            "formal-analysis",
+            "synthesis",
+            "AAAI"
+          ]
+        },
+        {
+          "title": "Dortmans & Punter (2022) — Practical guidelines for robot software development",
+          "shortTitle": "Dortmans & Punter (2022)",
+          "path": "papers/dortmans-punter-2022-practical-guidelines.md",
+          "kind": "paper",
+          "description": "Turns behavior-tree theory into practical guidance for robust robot task design, ROS-oriented execution architecture, skills, and maintainable software.",
+          "authors": [
+            "Eric Dortmans",
+            "Teade Punter"
+          ],
+          "year": 2022,
+          "venue": "Journal of Robotics",
+          "doi": "10.1155/2022/3314084",
+          "abstractUrl": "https://onlinelibrary.wiley.com/doi/full/10.1155/2022/3314084",
+          "pdf": "https://onlinelibrary.wiley.com/doi/pdf/10.1155/2022/3314084",
+          "topics": [
+            "behavior-trees",
+            "robot-control",
+            "robot-software",
+            "mobile-robotics",
+            "robot-manipulation",
+            "reactivity",
+            "fault-tolerance"
+          ],
+          "keywords": [
+            "ROS",
+            "BehaviorTree.CPP",
+            "skills",
+            "blackboard",
+            "software-architecture",
+            "robustness"
+          ],
+          "related": [
+            "topics/robotics-behavior-trees.md",
+            "papers/ogren-sprague-2022-robot-control-systems.md"
+          ],
+          "tags": [
+            "guidelines",
+            "software",
+            "ROS",
+            "review"
+          ]
+        },
+        {
+          "title": "Jeong et al. (2022) — BT task planning for multiple mobile robots",
+          "shortTitle": "Jeong et al. (2022)",
+          "path": "papers/jeong-et-al-2022-multi-robot-dds.md",
+          "kind": "paper",
+          "description": "Extends behavior-tree task execution to multiple mobile robots using DDS communication, asynchronous task assignment, and local recovery trees.",
+          "authors": [
+            "Seungwoo Jeong",
+            "Taekwon Ga",
+            "Inhwan Jeong",
+            "Jongeun Choi"
+          ],
+          "year": 2022,
+          "venue": "IEEE/ASME AIM",
+          "doi": "10.1109/AIM52237.2022.9863364",
+          "abstractUrl": "https://arxiv.org/abs/2201.10918",
+          "pdf": "https://arxiv.org/pdf/2201.10918",
+          "topics": [
+            "behavior-trees",
+            "robot-control",
+            "multi-robot-systems",
+            "mobile-robotics",
+            "robot-task-planning",
+            "fault-tolerance",
+            "robot-software"
+          ],
+          "keywords": [
+            "DDS",
+            "multi-robot",
+            "task-assignment",
+            "asynchronous-execution",
+            "recovery"
+          ],
+          "related": [
+            "topics/robotics-behavior-trees.md",
+            "papers/gil-castilla-et-al-2026-uav-emergency-handling.md"
+          ],
+          "tags": [
+            "multi-robot",
+            "mobile-robotics",
+            "AIM"
+          ]
+        },
+        {
+          "title": "Iovino et al. (2022) — Survey of Behavior Trees in robotics and AI",
+          "shortTitle": "Iovino et al. (2022)",
+          "path": "papers/iovino-et-al-2022-survey.md",
+          "kind": "paper",
+          "description": "A broad survey of behavior-tree research across robotics and AI, including design, synthesis, learning, and application trends.",
+          "authors": [
+            "Matteo Iovino",
+            "Edvards Scukins",
+            "Jonathan Styrud",
+            "Petter Ögren",
+            "Christian Smith"
+          ],
+          "year": 2022,
+          "venue": "Robotics and Autonomous Systems",
+          "doi": "10.1016/j.robot.2022.104096",
+          "abstractUrl": "https://arxiv.org/abs/2005.05842",
+          "pdf": "https://arxiv.org/pdf/2005.05842",
+          "topics": [
+            "behavior-trees",
+            "surveys",
+            "robot-control",
+            "modularity",
+            "planning",
+            "machine-learning",
+            "robot-learning",
+            "behavior-synthesis"
+          ],
+          "keywords": [
+            "survey",
+            "robotics",
+            "AI",
+            "synthesis",
+            "learning"
+          ],
+          "related": [
+            "papers/ogren-sprague-2022-robot-control-systems.md",
+            "topics/robotics-behavior-trees.md"
+          ],
+          "tags": [
+            "survey",
+            "robotics",
+            "AI",
+            "literature-review"
+          ]
+        },
+        {
+          "title": "Ögren & Sprague (2022) — Behavior Trees in robot control systems",
+          "shortTitle": "Ögren & Sprague (2022)",
+          "path": "papers/ogren-sprague-2022-robot-control-systems.md",
+          "kind": "paper",
+          "description": "A control-systems review emphasizing feedback, modularity, and the role of behavior trees in robot control architectures.",
+          "authors": [
+            "Petter Ögren",
+            "Christopher I. Sprague"
+          ],
+          "year": 2022,
+          "venue": "Annual Review of Control, Robotics, and Autonomous Systems",
+          "doi": "10.1146/annurev-control-042920-095314",
+          "abstractUrl": "https://www.annualreviews.org/content/journals/10.1146/annurev-control-042920-095314",
+          "pdf": "https://arxiv.org/pdf/2203.13083",
+          "topics": [
+            "behavior-trees",
+            "surveys",
+            "robot-control",
+            "reactivity",
+            "modularity",
+            "fault-tolerance"
+          ],
+          "keywords": [
+            "feedback",
+            "control",
+            "modularity",
+            "reactivity"
+          ],
+          "related": [
+            "papers/iovino-et-al-2022-survey.md",
+            "topics/robotics-behavior-trees.md"
+          ],
+          "tags": [
+            "review",
+            "control",
+            "feedback",
+            "modularity"
+          ]
+        },
+        {
+          "title": "Scherf et al. (2023) — Interactive learning from imperfect demonstrations",
+          "shortTitle": "Scherf et al. (2023)",
+          "path": "papers/scherf-et-al-2023-interactive-learning.md",
+          "kind": "paper",
+          "description": "Learns reactive behavior trees from a few human RGB-D demonstrations and interactively refines the tree when execution exposes missing or imperfect task knowledge.",
+          "authors": [
+            "Lisa Scherf",
+            "Aljoscha Schmidt",
+            "Suman Pal",
+            "Dorothea Koert"
+          ],
+          "year": 2023,
+          "venue": "Frontiers in Robotics and AI",
+          "doi": "10.3389/frobt.2023.1152595",
+          "abstractUrl": "https://www.frontiersin.org/journals/robotics-and-ai/articles/10.3389/frobt.2023.1152595/full",
+          "pdf": "https://www.frontiersin.org/journals/robotics-and-ai/articles/10.3389/frobt.2023.1152595/pdf",
+          "topics": [
+            "behavior-trees",
+            "robot-control",
+            "robot-learning",
+            "learning-from-demonstration",
+            "human-robot-interaction",
+            "behavior-synthesis",
+            "robot-manipulation",
+            "fault-tolerance"
+          ],
+          "keywords": [
+            "ILBERT",
+            "RGB-D",
+            "interactive-task-learning",
+            "backchaining",
+            "failure-recovery"
+          ],
+          "related": [
+            "papers/iovino-et-al-2021-genetic-programming.md",
+            "papers/colledanchise-almeida-ogren-2019-blended-planning.md"
+          ],
+          "tags": [
+            "HRI",
+            "learning-from-demonstration",
+            "open-access"
+          ]
+        },
+        {
+          "title": "Cloete, Merkt & Havoutis (2025) — Adaptive manipulation using Behavior Trees",
+          "shortTitle": "Cloete et al. (2025)",
+          "path": "papers/cloete-et-al-2025-adaptive-manipulation.md",
+          "kind": "paper",
+          "description": "Uses an adaptive behavior-tree pattern to switch manipulation strategies from visual and force/torque feedback, including preemptive failure avoidance.",
+          "authors": [
+            "Jacques Cloete",
+            "Wolfgang Merkt",
+            "Ioannis Havoutis"
+          ],
+          "year": 2025,
+          "venue": "IEEE/RSJ IROS",
+          "doi": "10.1109/IROS60139.2025.11245892",
+          "abstractUrl": "https://arxiv.org/abs/2406.14634",
+          "pdf": "https://arxiv.org/pdf/2406.14634",
+          "topics": [
+            "behavior-trees",
+            "robot-control",
+            "robot-manipulation",
+            "reactivity",
+            "fault-tolerance",
+            "robot-learning",
+            "robot-software"
+          ],
+          "keywords": [
+            "adaptive-manipulation",
+            "force-torque",
+            "strategy-switching",
+            "BehaviorTree.CPP",
+            "preemption"
+          ],
+          "related": [
+            "topics/robotics-behavior-trees.md",
+            "papers/dortmans-punter-2022-practical-guidelines.md"
+          ],
+          "tags": [
+            "manipulation",
+            "adaptive-execution",
+            "IROS"
+          ]
+        },
+        {
+          "title": "Gil-Castilla, Maza & Ollero (2026) — UAV actuation and emergency handling",
+          "shortTitle": "Gil-Castilla et al. (2026)",
+          "path": "papers/gil-castilla-et-al-2026-uav-emergency-handling.md",
+          "kind": "paper",
+          "description": "Presents a modular ROS-based behavior-tree actuation layer for heterogeneous UAV inspection missions with prioritized deterministic emergency handling.",
+          "authors": [
+            "Miguel Gil-Castilla",
+            "Ivan Maza",
+            "Anibal Ollero"
+          ],
+          "year": 2026,
+          "venue": "Journal of Intelligent & Robotic Systems",
+          "doi": "10.1007/s10846-026-02367-z",
+          "abstractUrl": "https://link.springer.com/article/10.1007/s10846-026-02367-z",
+          "pdf": "https://link.springer.com/content/pdf/10.1007/s10846-026-02367-z.pdf",
+          "url": "https://github.com/grvc-robotics-lab/grvc-bt",
+          "topics": [
+            "behavior-trees",
+            "robot-control",
+            "aerial-robotics",
+            "fault-tolerance",
+            "reactivity",
+            "robot-software",
+            "multi-robot-systems"
+          ],
+          "keywords": [
+            "UAV",
+            "ROS",
+            "MAVROS",
+            "emergency-handling",
+            "inspection",
+            "heterogeneous-robots"
+          ],
+          "related": [
+            "topics/robotics-behavior-trees.md",
+            "papers/jeong-et-al-2022-multi-robot-dds.md"
+          ],
+          "tags": [
+            "UAV",
+            "field-robotics",
+            "open-access",
+            "ROS"
+          ]
+        },
+        {
+          "title": "Quinlan (1986) — Induction of Decision Trees",
+          "shortTitle": "Quinlan (1986)",
+          "path": "papers/quinlan-1986-induction-decision-trees.md",
+          "kind": "paper",
+          "description": "A canonical machine-learning paper on inducing classification decision trees, included as a comparison point for behavior-tree semantics.",
+          "authors": [
+            "J. Ross Quinlan"
+          ],
+          "year": 1986,
+          "venue": "Machine Learning",
+          "doi": "10.1007/BF00116251",
+          "abstractUrl": "https://doi.org/10.1007/BF00116251",
+          "pdf": "https://web.engr.oregonstate.edu/~xfern/classes/cs434/decisiontree-quinlan.pdf",
+          "topics": [
+            "comparisons",
+            "decision-trees",
+            "machine-learning"
+          ],
+          "keywords": [
+            "ID3",
+            "classification",
+            "information-gain",
+            "induction"
+          ],
+          "related": [
+            "topics/behavior-tree-foundations.md",
+            "papers/colledanchise-ogren-2017-bt-modularity.md"
+          ],
+          "tags": [
+            "decision-trees",
+            "machine-learning",
+            "comparison",
+            "ID3"
+          ]
+        }
       ]
     },
     {
-      "id":"notes","title":"Notes","description":"Working notes, questions, and synthesis.","documents":[
-        {"title":"Notes overview","path":"notes/README.md","kind":"knowledge","description":"Index of working notes, cross-paper synthesis, research directions, and knowledge-base infrastructure documentation.","topics":["behavior-trees","foundations"],"tags":["overview"]},
-        {"title":"Knowledge Graph Explorer","path":"notes/knowledge-graph-explorer.md","kind":"knowledge","description":"Documents the graph schema, entity relationships, filters, layouts, inspector metadata, and scaling conventions for the GitHub Pages explorer.","topics":["behavior-trees","foundations"],"keywords":["knowledge-graph","taxonomy","metadata","visualization","inspector"],"tags":["graph","schema","tooling"]}
+      "id": "notes",
+      "title": "Notes",
+      "description": "Working notes, questions, and synthesis.",
+      "documents": [
+        {
+          "title": "Notes overview",
+          "path": "notes/README.md",
+          "kind": "knowledge",
+          "description": "Index of working notes, cross-paper synthesis, research directions, and knowledge-base infrastructure documentation.",
+          "topics": [
+            "behavior-trees",
+            "foundations"
+          ],
+          "tags": [
+            "overview"
+          ]
+        },
+        {
+          "title": "Knowledge Graph Explorer",
+          "path": "notes/knowledge-graph-explorer.md",
+          "kind": "knowledge",
+          "description": "Documents the graph schema, entity relationships, filters, layouts, inspector metadata, and scaling conventions for the GitHub Pages explorer.",
+          "topics": [
+            "behavior-trees",
+            "foundations"
+          ],
+          "keywords": [
+            "knowledge-graph",
+            "taxonomy",
+            "metadata",
+            "visualization",
+            "inspector"
+          ],
+          "tags": [
+            "graph",
+            "schema",
+            "tooling"
+          ]
+        }
       ]
     },
     {
-      "id":"references","title":"References","description":"Consolidated bibliography and external links.","documents":[
-        {"title":"References","path":"references.md","kind":"knowledge","description":"Consolidated bibliography covering behavior-tree foundations, robotics applications, planning, learning, control, surveys, and decision-tree comparison sources.","topics":["behavior-trees","foundations","robot-control","robot-task-planning","robot-learning","robot-manipulation","multi-robot-systems","aerial-robotics","surveys","comparisons","decision-trees"],"keywords":["bibliography","DOI","papers","sources","robotics"],"tags":["bibliography"]}
+      "id": "references",
+      "title": "References",
+      "description": "Consolidated bibliography and external links.",
+      "documents": [
+        {
+          "title": "References",
+          "path": "references.md",
+          "kind": "knowledge",
+          "description": "Consolidated bibliography covering behavior-tree foundations, robotics applications, planning, learning, control, surveys, and decision-tree comparison sources.",
+          "topics": [
+            "behavior-trees",
+            "foundations",
+            "robot-control",
+            "robot-task-planning",
+            "robot-learning",
+            "robot-manipulation",
+            "multi-robot-systems",
+            "aerial-robotics",
+            "surveys",
+            "comparisons",
+            "decision-trees"
+          ],
+          "keywords": [
+            "bibliography",
+            "DOI",
+            "papers",
+            "sources",
+            "robotics"
+          ],
+          "tags": [
+            "bibliography"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "libraries",
+      "title": "Program Libraries",
+      "description": "Software implementations and reusable runtimes for Behavior Trees and related autonomy tooling.",
+      "documents": [
+        {
+          "title": "Bonsai — Rust Behavior Tree library",
+          "shortTitle": "Bonsai",
+          "path": "libraries/bonsai.md",
+          "kind": "program-library",
+          "description": "Rust implementation of Behavior Trees with Success/Failure/Running status semantics, compositional and parallel behavior operators, event/delta-time execution, blackboard state, optional visualization, and Python bindings.",
+          "url": "https://github.com/Sollimann/bonsai",
+          "topics": [
+            "behavior-trees",
+            "robot-software",
+            "program-libraries",
+            "bonsai",
+            "semantics",
+            "control-flow",
+            "reactivity"
+          ],
+          "keywords": [
+            "Rust",
+            "bonsai-bt",
+            "Python",
+            "PyPI",
+            "crates.io",
+            "parallel-semantics",
+            "blackboard",
+            "visualizer"
+          ],
+          "related": [
+            "topics/behavior-tree-foundations.md",
+            "topics/robotics-behavior-trees.md"
+          ],
+          "tags": [
+            "program-library",
+            "Rust",
+            "open-source",
+            "MIT"
+          ]
+        }
       ]
     }
   ]
