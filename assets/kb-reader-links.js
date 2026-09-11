@@ -349,8 +349,8 @@
       if (!node) return;
       const type = visualTypeForNode(node);
       group.dataset.visualType = type;
-      group.classList.remove('core-knowledge', 'related-knowledge');
-      if (type === 'core-knowledge' || type === 'related-knowledge') group.classList.add(type);
+      group.classList.toggle('core-knowledge', type === 'core-knowledge');
+      group.classList.toggle('related-knowledge', type === 'related-knowledge');
 
       let shape = group.querySelector('path.kb-node-shape');
       const circle = group.querySelector(':scope > circle');
@@ -401,7 +401,8 @@
     const eyebrow = inspector.querySelector('.eyebrow');
     if (!selected || !eyebrow) return;
     const type = selected.dataset.visualType;
-    if (type && TYPE_LABELS[type]) eyebrow.textContent = TYPE_LABELS[type];
+    const label = type ? TYPE_LABELS[type] : null;
+    if (label && eyebrow.textContent !== label) eyebrow.textContent = label;
   }
 
   function syncAll() {
